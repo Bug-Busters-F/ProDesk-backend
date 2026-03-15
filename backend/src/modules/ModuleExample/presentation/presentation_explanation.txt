@@ -1,0 +1,34 @@
+PRESENTATION
+
+A camada de Presentation é responsável pela comunicação
+entre o sistema e o mundo externo.
+
+Ela recebe requisições e retorna respostas.
+
+No NestJS, esta camada normalmente contém:
+
+- Controllers
+- Guards
+- Pipes
+- Middlewares
+- DTOs de requisição HTTP
+
+Aqui não deve existir lógica de negócio.
+
+O controller apenas recebe os dados da requisição,
+chama um caso de uso da camada de application
+e retorna a resposta.
+
+Dependências permitidas:
+application
+domain
+frameworks (nestjs)
+
+Dependências proibidas:
+infra diretamente (sempre via application)
+
+Exemplo de arquivos:
+
+user.controller.ts
+auth.controller.ts
+create-user.request.dto.ts

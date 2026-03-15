@@ -1,0 +1,38 @@
+APPLICATION
+
+A camada de Application orquestra os casos de uso da aplicação.
+
+Aqui ficam os "use cases" que coordenam as regras de domínio
+para realizar uma ação específica do sistema.
+
+Esta camada utiliza as entidades e interfaces definidas no Domain,
+mas não conhece detalhes de infraestrutura como banco de dados
+ou frameworks HTTP.
+
+O objetivo desta camada é representar o que o sistema faz.
+
+Exemplos de responsabilidades:
+
+- Use cases (casos de uso)
+- Services de aplicação
+- DTOs de entrada e saída
+- Regras de orquestração
+
+A camada de application pode depender apenas de domain.
+
+Dependências permitidas:
+domain
+
+Dependências proibidas:
+infra
+presentation
+frameworks HTTP
+ORMs
+controllers
+
+Exemplo de arquivos:
+
+create-user.usecase.ts
+update-user.usecase.ts
+user.dto.ts
+authenticate-user.service.ts

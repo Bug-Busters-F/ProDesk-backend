@@ -1,0 +1,35 @@
+INFRA
+
+A camada de Infraestrutura contém as implementações técnicas
+necessárias para o sistema funcionar.
+
+Aqui ficam detalhes externos como:
+
+- banco de dados
+- ORMs
+- acesso a APIs externas
+- mensageria
+- filas
+- cache
+- implementações de repositórios
+
+Esta camada implementa as interfaces definidas no Domain.
+
+O objetivo é isolar dependências externas do restante da aplicação.
+
+Dependências permitidas:
+domain
+application
+frameworks
+ORMs
+drivers de banco
+
+Dependências proibidas:
+presentation
+
+Exemplo de arquivos:
+
+user.repository.prisma.ts
+user.repository.typeorm.ts
+redis.cache.service.ts
+email.gateway.ts
