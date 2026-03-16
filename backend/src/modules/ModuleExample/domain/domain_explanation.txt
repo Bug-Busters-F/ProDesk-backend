@@ -1,0 +1,40 @@
+DOMAIN
+
+A camada de Domain representa o núcleo do negócio da aplicação.
+
+Aqui ficam as regras de negócio puras, independentes de frameworks,
+bancos de dados, APIs ou qualquer tecnologia externa.
+
+Esta camada deve conter apenas lógica de domínio e conceitos do negócio.
+
+O objetivo é garantir que o coração do sistema permaneça isolado
+de detalhes de infraestrutura.
+
+Exemplos do que pode existir aqui:
+
+- Entities (entidades de negócio)
+- Value Objects
+- Interfaces de repositório
+- Regras de domínio
+- Exceções de domínio
+
+O domain NÃO deve depender de nenhuma outra camada.
+
+Dependências permitidas:
+nenhuma.
+
+Dependências proibidas:
+application
+infra
+presentation
+frameworks (nestjs, express, etc)
+bancos de dados
+HTTP
+ORMs
+
+Exemplo de arquivos:
+
+user.entity.ts 
+user.repository.ts
+email.value-object.ts
+domain-error.ts
