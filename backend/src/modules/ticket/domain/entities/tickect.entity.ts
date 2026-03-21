@@ -30,6 +30,19 @@ export enum TicketEvents {
   CLOSE_TICKET = 'CLOSE_TICKET',
 }
 
+export enum TicketEventMessage {
+  OPEN_NEW_TICKET_MSG = 'O chamado foi aberto.',
+  NEW_AGENT_MSG = 'O chamado foi atribuido a um novo especialista que entrará em contato.',
+  ESCALATE_MSG = 'O chamado foi escalado e um novo especialista o atenderá.',
+  CLOSE_TICKET_MSG = 'O chamado foi fechado',
+}
+
+export enum TicketValidationErrors {
+  ECALATE_WITH_NO_AGENT_ERROR = 'The ticket must be assigned to an agent before being escalated.',
+  CLOSE_WITH_WRONG_STATUS_ERROR = 'A ticket can only be closed when in progress status.',
+  CLOSE_WITH_NO_SOLUTION_ERROR = 'The solution cannot be empty.',
+}
+
 type TicketHistoryEvent = {
   event: TicketEvents;
   responsibleAgent: string | null;
@@ -72,8 +85,8 @@ export class Ticket {
     return this._status;
   }
 
-  get history() {
-    return this._history;
+  get history(): readonly TicketHistoryEvent[] {
+    return [...this._history];
   }
 
   // Function to create a new ticket instance
@@ -99,7 +112,7 @@ export class Ticket {
       event: TicketEvents.OPEN_NEW_TICKET,
       responsibleAgent: null,
       status: TicketStatus.OPEN,
-      message: 'O chamado foi aberto.',
+      message: TicketEventMessage.OPEN_NEW_TICKET_MSG,
     });
 
     return ticket;
@@ -200,17 +213,14 @@ export class Ticket {
       event: TicketEvents.NEW_AGENT,
       responsibleAgent: this.agentId,
       status: TicketStatus.IN_PROGRESS,
-      message:
-        'O chamado foi atribuido a um novo especialista que entrará em contato.',
+      message: TicketEventMessage.NEW_AGENT_MSG,
     });
   }
 
   // Escalates the ticket to a new responsible group and optionally changes the category
   escalate(groupId: string, category?: TicketCategory): void {
     if (!this.agentId) {
-      throw new Error(
-        'The ticket must be assigned to an agent before being escalated.',
-      );
+      throw new Error(TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR);
     }
 
     this.touch();
@@ -224,17 +234,17 @@ export class Ticket {
       event: TicketEvents.ESCALATE,
       responsibleAgent: this.agentId,
       status: TicketStatus.ESCALATED,
-      message: 'O chamado foi escalado e um novo especialista o atenderá.',
+      message: TicketEventMessage.ESCALATE_MSG,
     });
   }
   // Function to close the ticket and register the solution
   close(solution: string): void {
     if (this.status !== TicketStatus.IN_PROGRESS) {
-      throw new Error('A ticket can only be closed when in progress status');
+      throw new Error(TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR);
     }
 
     if (!solution.trim()) {
-      throw new Error('The solution cannot be empty.');
+      throw new Error(TicketValidationErrors.CLOSE_WITH_NO_SOLUTION_ERROR);
     }
 
     this.touch();
@@ -246,7 +256,7 @@ export class Ticket {
       event: TicketEvents.CLOSE_TICKET,
       responsibleAgent: this.agentId,
       status: TicketStatus.CLOSED,
-      message: 'O chamado foi fechado.',
+      message: TicketEventMessage.CLOSE_TICKET_MSG,
       solution: solution,
     });
   }

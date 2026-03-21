@@ -6,6 +6,8 @@ import {
   TicketPriority,
   TicketStatus,
   TicketEvents,
+  TicketEventMessage,
+  TicketValidationErrors,
 } from './tickect.entity';
 
 describe('Ticket entity', () => {
@@ -40,7 +42,7 @@ describe('Ticket entity', () => {
       event: TicketEvents.OPEN_NEW_TICKET,
       responsibleAgent: null,
       status: TicketStatus.OPEN,
-      message: 'O chamado foi aberto.',
+      message: TicketEventMessage.OPEN_NEW_TICKET_MSG,
     });
   });
 
@@ -62,8 +64,7 @@ describe('Ticket entity', () => {
       event: TicketEvents.NEW_AGENT,
       responsibleAgent: primitiveTicket.agentId,
       status: TicketStatus.IN_PROGRESS,
-      message:
-        'O chamado foi atribuido a um novo especialista que entrará em contato.',
+      message: TicketEventMessage.NEW_AGENT_MSG,
     });
   });
 
@@ -88,13 +89,13 @@ describe('Ticket entity', () => {
       event: TicketEvents.ESCALATE,
       responsibleAgent: newAgentId,
       status: TicketStatus.ESCALATED,
-      message: 'O chamado foi escalado e um novo especialista o atenderá.',
+      message: TicketEventMessage.ESCALATE_MSG,
     });
   });
 
   it('Should throw an error when escalating a ticket without a responsible agent', () => {
     expect(() => ticket.escalate(randomUUID(), TicketCategory.IOT)).toThrow(
-      'The ticket should be related with an agent to be escalated.',
+      TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR,
     );
   });
 
@@ -112,7 +113,7 @@ describe('Ticket entity', () => {
     expect(ticket.history[2]).toMatchObject({
       event: TicketEvents.CLOSE_TICKET,
       status: TicketStatus.CLOSED,
-      message: 'O chamado foi fechado.',
+      message: TicketEventMessage.CLOSE_TICKET_MSG,
       solution: 'Solução exemplo...',
     });
   });
@@ -120,7 +121,7 @@ describe('Ticket entity', () => {
   it('Should throw an error when closing a ticket with OPEN status', () => {
     expect(ticket.status).toBe(TicketStatus.OPEN);
     expect(() => ticket.close('Test solution')).toThrow(
-      'A ticket only can be closed in progress status',
+      TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR,
     );
   });
 
@@ -130,13 +131,15 @@ describe('Ticket entity', () => {
 
     expect(ticket.status).toBe(TicketStatus.ESCALATED);
     expect(() => ticket.close('Test solution')).toThrow(
-      'A ticket only can be closed in progress status',
+      TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR,
     );
   });
 
   it('Should throw an error when closing a ticket with an empty solution', () => {
     ticket.assignToAgent(randomUUID());
 
-    expect(() => ticket.close('  ')).toThrow('The solution cannot be empty.');
+    expect(() => ticket.close('  ')).toThrow(
+      TicketValidationErrors.CLOSE_WITH_NO_SOLUTION_ERROR,
+    );
   });
 });
