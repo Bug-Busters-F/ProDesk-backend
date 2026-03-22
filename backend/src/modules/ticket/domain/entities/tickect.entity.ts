@@ -1,6 +1,6 @@
-// Enum types to assist in typing of entity strucuture
-
 import { randomUUID } from 'crypto';
+
+// Enum types to assist in typing of entity strucuture
 
 export enum TicketStatus {
   OPEN = 'OPEN',
@@ -43,13 +43,13 @@ export enum TicketValidationErrors {
   CLOSE_WITH_NO_SOLUTION_ERROR = 'The solution cannot be empty.',
 }
 
-type TicketHistoryEvent = {
+type TicketHistoryEntry = {
   event: TicketEvents;
   responsibleAgent: string | null;
   status: TicketStatus;
   message: string;
   solution?: string | null;
-  createdAt: Date;
+  ocurredAt: Date;
 };
 
 export class Ticket {
@@ -60,13 +60,13 @@ export class Ticket {
   private agentId: string | null = null;
   private groupId: string | null = null;
   private escalationLevel: number = 1;
-  private fileUrls: string[] = [];
+  private attachmentsUrls: string[] = [];
 
   private createdAt: Date = new Date();
   private updatedAt: Date | null = null;
   private closedAt: Date | null = null;
 
-  private _history: TicketHistoryEvent[] = [];
+  private _history: TicketHistoryEntry[] = [];
 
   constructor(
     private title: string,
@@ -85,7 +85,7 @@ export class Ticket {
     return this._status;
   }
 
-  get history(): readonly TicketHistoryEvent[] {
+  get history(): readonly TicketHistoryEntry[] {
     return [...this._history];
   }
 
@@ -131,7 +131,7 @@ export class Ticket {
     agentId?: string;
     groupId?: string;
     escalationLevel: number;
-    history: TicketHistoryEvent[];
+    history: TicketHistoryEntry[];
     createdAt: Date;
     updatedAt: Date;
     closedAt?: Date;
@@ -148,7 +148,7 @@ export class Ticket {
 
     ticket.agentId = props.agentId ?? null;
     ticket.groupId = props.groupId ?? null;
-    ticket.fileUrls = props.fileUrls ?? [];
+    ticket.attachmentsUrls = props.fileUrls ?? [];
 
     ticket._status = props.status;
     ticket.escalationLevel = props.escalationLevel;
@@ -171,7 +171,7 @@ export class Ticket {
       priority: this.priority,
       description: this.description,
       clientId: this.clientId,
-      fileUrls: this.fileUrls,
+      fileUrls: this.attachmentsUrls,
       status: this.status,
       agentId: this.agentId,
       groupId: this.groupId,
@@ -198,7 +198,7 @@ export class Ticket {
   }): void {
     this._history.push({
       ...props,
-      createdAt: new Date(),
+      ocurredAt: new Date(),
     });
   }
 
@@ -237,6 +237,7 @@ export class Ticket {
       message: TicketEventMessage.ESCALATE_MSG,
     });
   }
+
   // Function to close the ticket and register the solution
   close(solution: string): void {
     if (this.status !== TicketStatus.IN_PROGRESS) {

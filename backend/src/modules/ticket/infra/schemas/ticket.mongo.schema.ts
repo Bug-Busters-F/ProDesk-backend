@@ -1,0 +1,88 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
+
+import {
+  TicketCategory,
+  TicketEventMessage,
+  TicketEvents,
+  TicketPriority,
+  TicketStatus,
+} from '../../domain/entities/tickect.entity';
+
+@Schema({ _id: false })
+export class TicketHistoryEntrySchema {
+  @Prop({ required: true, enum: Object.values(TicketEvents) })
+  event: string;
+
+  @Prop({ default: null })
+  responsibleAgent: string | null;
+
+  @Prop({ required: true, enum: Object.values(TicketStatus) })
+  status: string;
+
+  @Prop({ required: true, enum: Object.values(TicketEventMessage) })
+  message: string;
+
+  @Prop({ default: null })
+  solution: string | null;
+
+  @Prop({ required: true })
+  occurredAt: Date;
+}
+
+const TicketHistoryEntrySchemaFactory = SchemaFactory.createForClass(
+  TicketHistoryEntrySchema,
+);
+
+@Schema({ collection: 'tickets', timestamps: false })
+export class TicketSchemaClass extends Document {
+  @Prop({ type: String })
+  _id: string;
+
+  @Prop({ required: true })
+  title: string;
+
+  @Prop({ required: true })
+  description: string;
+
+  @Prop({ required: true, enum: Object.values(TicketCategory) })
+  category: string;
+
+  @Prop({ required: true, enum: Object.values(TicketPriority) })
+  priority: string;
+
+  @Prop({
+    required: true,
+    default: TicketStatus.OPEN,
+    enum: Object.values(TicketStatus),
+  })
+  status: string;
+
+  @Prop({ type: [TicketHistoryEntrySchemaFactory], default: [] })
+  history: TicketHistoryEntrySchema[];
+
+  @Prop({ required: true })
+  clientId: string;
+
+  @Prop({ default: null })
+  agentId: string;
+
+  @Prop({ default: 1 })
+  escalationLevet: number;
+
+  @Prop({ type: [String], default: [] })
+  attachmentsUrls: string[];
+
+  @Prop({ required: true })
+  createdAt: Date;
+
+  @Prop({ default: null })
+  updatedAt: Date | null;
+
+  @Prop({ default: null })
+  closedAt: Date | null;
+}
+
+export type TicketDocument = HydratedDocument<TicketSchemaClass>;
+
+export const TicketSchema = SchemaFactory.createForClass(TicketSchemaClass);
