@@ -1,0 +1,52 @@
+CONVENÇÃO DE NOMES DE ARQUIVOS
+
+Para manter consistência no projeto utilizamos o padrão:
+
+classe.categoria.ts
+
+
+Exemplos:
+
+user.entity.ts
+create-user.usecase.ts
+user.controller.ts
+user.repository.ts
+
+
+Testes unitários
+
+Arquivos de testes unitários seguem o padrão:
+
+classe.categoria.spec.ts
+
+
+Exemplos:
+
+user.entity.spec.ts
+create-user.usecase.spec.ts
+user.service.spec.ts
+
+
+Testes de integração
+
+Arquivos de testes de integração seguem o padrão:
+
+classe.categoria.spec.int.ts
+
+
+Exemplos:
+
+user.controller.spec.int.ts
+user.repository.spec.int.ts
+
+
+Resumo
+
+Implementação:
+classe.categoria.ts
+
+Teste unitário:
+classe.categoria.spec.ts
+
+Teste de integração:
+classe.categoria.spec.int.ts

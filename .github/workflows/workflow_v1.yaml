@@ -1,0 +1,52 @@
+name: CI Pipeline
+on: [pull_request, ]
+
+jobs:
+    unit-tests:
+        runs-on: ubuntu-latest
+        
+        steps: 
+            - uses: actions/checkout@v3
+
+            - name: Using NodeJS
+              uses: actions/setup-node@v3
+              with:
+                node-version: "22.x"
+
+            - name: Install packages
+              working-directory: backend
+              run: npm ci
+
+            - name: Run unit tests
+              working-directory: backend
+              run: npm run test 
+
+    integration-tests:
+        runs-on: ubuntu-latest
+        needs: unit-tests
+        steps:
+            - name: Placeholder
+              run: echo "Integration tests will be implemented later"
+
+    build-procces:
+        runs-on: ubuntu-latest
+        needs: integration-tests
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Using NodeJS
+              uses: actions/setup-node@v3
+              with:
+                node-version: "22.x"
+
+            - name: Install packages
+              working-directory: backend
+              run: npm ci
+
+            - name: Build Process
+              working-directory: backend
+              run: npm run build
+              
+            
+    
