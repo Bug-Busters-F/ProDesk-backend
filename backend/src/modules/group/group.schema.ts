@@ -1,11 +1,13 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
+export type GroupDocument = Group & Document;
+
 @Schema()
 export class Group {
-  @Prop({ required: true })
+  @Prop({ required: true , unique: true})
   name: string;
 
-  @Prop()
+  @Prop({required: false})
   description: string;
 }
 

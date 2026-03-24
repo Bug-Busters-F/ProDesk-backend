@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
 import * as bcrypt from 'bcrypt';
@@ -6,6 +6,7 @@ import { CreateUserDTO } from '../user/dtos/createUserDTO';
 import { UserDetails } from '../user/user.interface';
 import { ExistingUserDTO } from '../user/dtos/existingUserDTO';
 import { JwtService } from '@nestjs/jwt';
+import { UserRole } from '../user/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
 
         const existingUser = await this.userService.findByEmail(email);
 
-        if (existingUser) return "Email taken!"
+        if (existingUser) throw new BadRequestException("Email taken!")
 
         const hashPassword = await this.hashPassword(password);
 
@@ -52,13 +53,30 @@ export class AuthService {
         return this.userService._getUser(user);
     }
 
-async login(existingUser: ExistingUserDTO): Promise<{token: string} | null>{
-    const {email, password} = existingUser;
-    const user = await this.validateUser(email, password);
+    async login(existingUser: ExistingUserDTO): Promise<{token: string} | null>{
+        const {email, password} = existingUser;
+        const user = await this.validateUser(email, password);
 
-    if (!user) return null;
+        if (!user) return null;
 
-    const jwt = await this.jwtService.signAsync({user});
-    return {token: jwt};
-}
+        const jwt = await this.jwtService.signAsync({sub: user.id, email: user.email, role: user.role});
+        return {token: jwt};
+    }
+
+    async createFirstAdmin(){
+        const admin = {
+            name : "admin",
+            email : "admin@pro4tech.com", 
+            password : "Pro4Tech",
+            role : UserRole.ADMIN
+        }
+
+        const user = await this.userService.findByEmail(admin.email);
+        const doesUserExist = !!user;
+
+        if (!doesUserExist){
+            this.register(admin)
+        };
+
+    }
 }
