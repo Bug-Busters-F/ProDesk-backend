@@ -1,25 +1,41 @@
+import { Model } from 'mongoose';
 import { Ticket } from '../../domain/entities/tickect.entity';
 import { ITicketRepository } from '../../domain/repository/ticket.repository.interface';
+import { TicketSchemaClass } from '../schemas/ticket.mongo.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { TicketMapper } from '../mappers/ticket.mapper';
 
 export class TicketMongoRepository extends ITicketRepository {
-  //   constructor(private readonly mongoServer: )
+  constructor(
+    @InjectModel(TicketSchemaClass.name)
+    private readonly ticketModel: Model<TicketSchemaClass>,
+  ) {
+    super();
+  }
 
-  create(ticket: Ticket): Promise<Ticket> {
-    throw new Error('Method not implemented.');
+  async create(ticket: Ticket): Promise<Ticket> {
+    const raw = TicketMapper.toPersistence(ticket);
+    const created = await this.ticketModel.create(raw);
+    return TicketMapper.toDomain(created);
   }
-  save(ticket: Ticket): Promise<Ticket> {
-    throw new Error('Method not implemented.');
+  // async save(ticket: Ticket): Promise<Ticket> {}
+
+  // async update(ticket: Ticket): Promise<Ticket> {}
+
+  async readAll(filter?: any): Promise<Ticket[]> {
+    const tickets = await this.ticketModel.find();
+    const mappedTickets = tickets.map((t) => TicketMapper.toDomain(t));
+    return mappedTickets;
   }
-  update(ticket: Ticket): Promise<Ticket> {
-    throw new Error('Method not implemented.');
+  async readById(id: string): Promise<Ticket | null> {
+    const foundedTicket = await this.ticketModel.findById(id);
+
+    if (!foundedTicket) return null;
+
+    return TicketMapper.toDomain(foundedTicket);
   }
-  findAll(filter?: any): Promise<Ticket[]> {
-    throw new Error('Method not implemented.');
-  }
-  findById(id: string): Promise<Ticket | null> {
-    throw new Error('Method not implemented.');
-  }
-  delete(id: string): boolean {
-    throw new Error('Method not implemented.');
+  async delete(id: string): Promise<boolean> {
+    const result = await this.ticketModel.findByIdAndDelete(id);
+    return result !== null;
   }
 }

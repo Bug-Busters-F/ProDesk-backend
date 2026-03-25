@@ -43,13 +43,13 @@ export enum TicketValidationErrors {
   CLOSE_WITH_NO_SOLUTION_ERROR = 'The solution cannot be empty.',
 }
 
-type TicketHistoryEntry = {
+export type TicketHistoryEntry = {
   event: TicketEvents;
   responsibleAgent: string | null;
   status: TicketStatus;
   message: string;
   solution?: string | null;
-  ocurredAt: Date;
+  occurredAt: Date;
 };
 
 export class Ticket {
@@ -57,8 +57,8 @@ export class Ticket {
   private _id: string;
 
   private _status: TicketStatus = TicketStatus.OPEN;
-  private agentId: string | null = null;
-  private groupId: string | null = null;
+  private _agentId: string | null = null;
+  private _groupId: string | null = null;
   private escalationLevel: number = 1;
   private attachmentsUrls: string[] = [];
 
@@ -73,12 +73,24 @@ export class Ticket {
     private category: TicketCategory,
     private priority: TicketPriority,
     private description: string,
-    private readonly clientId: string,
+    private readonly _clientId: string,
   ) {}
 
   // Getters (only properties which domain should expose)
   get id() {
     return this._id;
+  }
+
+  get agentId() {
+    return this._agentId;
+  }
+
+  get groupId() {
+    return this._groupId;
+  }
+
+  get clientId() {
+    return this._clientId;
   }
 
   get status() {
@@ -120,7 +132,7 @@ export class Ticket {
 
   // Restore function to convert an object into a ticket instance
   static restore(props: {
-    id: string;
+    _id: string;
     title: string;
     category: TicketCategory;
     priority: TicketPriority;
@@ -133,7 +145,7 @@ export class Ticket {
     escalationLevel: number;
     history: TicketHistoryEntry[];
     createdAt: Date;
-    updatedAt: Date;
+    updatedAt?: Date | null;
     closedAt?: Date;
   }): Ticket {
     const ticket = new Ticket(
@@ -144,10 +156,10 @@ export class Ticket {
       props.clientId,
     );
 
-    ticket._id = props.id;
+    ticket._id = props._id;
 
-    ticket.agentId = props.agentId ?? null;
-    ticket.groupId = props.groupId ?? null;
+    ticket._agentId = props.agentId ?? null;
+    ticket._groupId = props.groupId ?? null;
     ticket.attachmentsUrls = props.fileUrls ?? [];
 
     ticket._status = props.status;
@@ -165,18 +177,17 @@ export class Ticket {
   // Convert a ticket instance into an object
   toPrimitives() {
     return {
-      id: this._id,
+      _id: this._id,
       title: this.title,
       category: this.category,
       priority: this.priority,
       description: this.description,
-      clientId: this.clientId,
+      clientId: this._clientId,
       fileUrls: this.attachmentsUrls,
       status: this.status,
-      agentId: this.agentId,
-      groupId: this.groupId,
+      agentId: this._agentId,
+      groupId: this._groupId,
       escalationLevel: this.escalationLevel,
-      history: this.history,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       closedAt: this.closedAt,
@@ -198,7 +209,7 @@ export class Ticket {
   }): void {
     this._history.push({
       ...props,
-      ocurredAt: new Date(),
+      occurredAt: new Date(),
     });
   }
 
@@ -206,12 +217,12 @@ export class Ticket {
   assignToAgent(agentId: string): void {
     this.touch();
 
-    this.agentId = agentId;
+    this._agentId = agentId;
     this._status = TicketStatus.IN_PROGRESS;
 
     this.addHistory({
       event: TicketEvents.NEW_AGENT,
-      responsibleAgent: this.agentId,
+      responsibleAgent: this._agentId,
       status: TicketStatus.IN_PROGRESS,
       message: TicketEventMessage.NEW_AGENT_MSG,
     });
@@ -219,20 +230,20 @@ export class Ticket {
 
   // Escalates the ticket to a new responsible group and optionally changes the category
   escalate(groupId: string, category?: TicketCategory): void {
-    if (!this.agentId) {
+    if (!this._agentId) {
       throw new Error(TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR);
     }
 
     this.touch();
 
-    this.groupId = groupId;
+    this._groupId = groupId;
     this.category = category ?? this.category;
     this.escalationLevel++;
     this._status = TicketStatus.ESCALATED;
 
     this.addHistory({
       event: TicketEvents.ESCALATE,
-      responsibleAgent: this.agentId,
+      responsibleAgent: this._agentId,
       status: TicketStatus.ESCALATED,
       message: TicketEventMessage.ESCALATE_MSG,
     });
@@ -255,7 +266,7 @@ export class Ticket {
 
     this.addHistory({
       event: TicketEvents.CLOSE_TICKET,
-      responsibleAgent: this.agentId,
+      responsibleAgent: this._agentId,
       status: TicketStatus.CLOSED,
       message: TicketEventMessage.CLOSE_TICKET_MSG,
       solution: solution,

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Document } from 'mongoose';
 
 import {
   TicketCategory,
@@ -14,7 +14,7 @@ export class TicketHistoryEntrySchema {
   @Prop({ required: true, enum: Object.values(TicketEvents) })
   event: string;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   responsibleAgent: string | null;
 
   @Prop({ required: true, enum: Object.values(TicketStatus) })
@@ -23,7 +23,7 @@ export class TicketHistoryEntrySchema {
   @Prop({ required: true, enum: Object.values(TicketEventMessage) })
   message: string;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   solution: string | null;
 
   @Prop({ required: true })
@@ -35,7 +35,7 @@ const TicketHistoryEntrySchemaFactory = SchemaFactory.createForClass(
 );
 
 @Schema({ collection: 'tickets', timestamps: false })
-export class TicketSchemaClass extends Document {
+export class TicketSchemaClass {
   @Prop({ type: String })
   _id: string;
 
@@ -64,11 +64,11 @@ export class TicketSchemaClass extends Document {
   @Prop({ required: true })
   clientId: string;
 
-  @Prop({ default: null })
-  agentId: string;
+  @Prop({ type: String, default: null })
+  agentId: string | null;
 
   @Prop({ default: 1 })
-  escalationLevet: number;
+  escalationLevel: number;
 
   @Prop({ type: [String], default: [] })
   attachmentsUrls: string[];
@@ -76,10 +76,10 @@ export class TicketSchemaClass extends Document {
   @Prop({ required: true })
   createdAt: Date;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   updatedAt: Date | null;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   closedAt: Date | null;
 }
 
