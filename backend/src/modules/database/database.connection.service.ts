@@ -6,9 +6,7 @@ import { Connection } from 'mongoose';
 export class DatabaseConnectionService implements OnApplicationBootstrap {
   private readonly logger = new Logger('Database');
 
-  constructor(
-    @InjectConnection() private readonly connection: Connection,
-  ) {}
+  constructor(@InjectConnection() private readonly connection: Connection) {}
 
   async onApplicationBootstrap() {
     try {
