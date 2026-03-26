@@ -12,13 +12,13 @@ export class MessageRepositoryMongodb implements IMessageRepository {
     ) {}
 
     // Método para salvar uma nova mensagem no banco
-    async create(messageData: any): Promise<Message> {
+    async create(messageData: any): Promise<MessageDocument> {
         const createdMessage = new this.messageModel(messageData);
         return createdMessage.save();
     }
 
     // Método para buscar todo o histórico de um chamado
-    async findByTicketId(ticketId: string): Promise<Message[]> {
-        return this.messageModel.find({ ticketId }).sort({ createdAt: 1}).exec();
+    async findByChatId(chatId: string): Promise<Message[]> {
+        return this.messageModel.find({ chatId }).sort({ createdAt: 1}).exec();
     }
 }

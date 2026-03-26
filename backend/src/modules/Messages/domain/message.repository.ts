@@ -1,6 +1,6 @@
-export interface IMessageRepository {
-    create(messageData: any): Promise<any>;
-    findByTicketId(ticketId: string): Promise<any[]>;
-}
+import { Message, MessageDocument } from "../infra/message.schema";
 
-// Any temporário para simplificar, ideal é ter uma entidade de domínio para a mensagem.
+export interface IMessageRepository {
+    create(messageData: any): Promise<MessageDocument>;
+    findByChatId(chatId: string): Promise<Message[]>;
+}
