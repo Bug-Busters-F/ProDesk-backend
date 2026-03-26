@@ -3,12 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, UserRole } from './user.schema';
 import { UserDetails } from './user.interface';
+import { CompanyService } from '../company/company.service';
+import { GroupService } from '../group/group.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel("User")
-    private readonly userModel: Model<UserDocument>,
+    private readonly userModel: Model<UserDocument>, private companyService: CompanyService, private groupService: GroupService
   ) {}
 
   async findAll(
@@ -94,23 +96,41 @@ export class UserService {
       .exec();
   }
 
-async createUser(
-  name: string,
-  email: string,
-  password: string,
-  role: UserRole,
-  companyId?: string,
-  groupId?: string
-): Promise<UserDocument> {
+  async createUser(
+    name: string,
+    email: string,
+    password: string,
+    role: UserRole,
+    companyId?: string,
+    groupId?: string
+  ): Promise<UserDocument> {
 
-  const newUser = new this.userModel({
-    name,
-    email,
-    password,
-    role,
-    companyId,
-    groupId,
-  });
+
+    if (companyId) {
+      const company = await this.companyService.findById(companyId);
+
+      if (!company) {
+        throw new NotFoundException('Company not found');
+      }
+    }
+
+
+    if (groupId) {
+      const group = await this.groupService.findById(groupId);
+
+      if (!group) {
+        throw new NotFoundException('Group not found');
+      }
+    }
+
+    const newUser = new this.userModel({
+      name,
+      email,
+      password,
+      role,
+      companyId,
+      groupId,
+    });
 
     const savedUser = await newUser.save();
 
@@ -118,7 +138,7 @@ async createUser(
     await savedUser.populate("groupId");
 
     return savedUser;
-}
+  }
 
   async updateUser(
     id: string,
@@ -135,6 +155,23 @@ async createUser(
       const existingUser = await this.findByEmail(data.email!);
       
       if (existingUser) throw new BadRequestException("Email taken!")
+    }
+
+    if (data.companyId) {
+      const company = await this.companyService.findById(data.companyId);
+
+      if (!company) {
+        throw new NotFoundException('Company not found');
+      }
+    }
+
+
+    if (data.groupId) {
+      const group = await this.groupService.findById(data.groupId);
+
+      if (!group) {
+        throw new NotFoundException('Group not found');
+      }
     }
 
     const updatedUser = await this.userModel

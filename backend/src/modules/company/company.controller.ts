@@ -70,6 +70,25 @@ export class CompanyController {
     return this.companyService.findById(id);
   }
 
+  @Get('cnpj/:cnpj')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
+  @ApiOperation({ summary: 'Buscar empresa pelo CNPJ' })
+  @ApiParam({ name: 'cnpj', example: '612345678000199' })
+  @ApiResponse({ status: 200, description: 'Empresa encontrada' })
+  @ApiResponse({ status: 404, description: 'Empresa não encontrada' })
+  @ApiResponse({
+    status: 401,
+    description: 'Não autenticado (token inválido ou ausente)'
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (permissão insuficiente)'
+  })
+  getCompanyByCNPJ(@Param('cnpj') cnpj: string): Promise<CompanyDetails> {
+    return this.companyService.findByCnpj(cnpj);
+  }
+
   @Patch(':id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)

@@ -29,6 +29,18 @@ export class CompanyService {
     return this._getCompany(company);
   }
 
+  async findByCnpj(cnpj: string): Promise<CompanyDetails> {
+    const company = await this.companyModel
+      .findOne({ cnpj })
+      .exec();
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    return this._getCompany(company);
+  }
+
   async findAll(): Promise<CompanyDetails[]> {
     const companies = await this.companyModel.find().exec();
 
