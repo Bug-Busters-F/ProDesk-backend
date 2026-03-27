@@ -6,9 +6,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { GroupModule } from './modules/group/group.module';
 import { CompanyModule } from './modules/company/company.module';
 import { MongooseModule } from '@nestjs/mongoose';
-
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { MessageModule } from './modules/Messages/message.module';
 
 @Module({
@@ -21,8 +18,8 @@ import { MessageModule } from './modules/Messages/message.module';
     AuthModule,
     GroupModule,
     CompanyModule,
-    MongooseModule.forRoot(process.env.MONGO_URI!)
-    MessageModule
+    MongooseModule.forRoot(process.env.MONGO_URI!),
+    MessageModule,
   ],
   controllers: [],
   providers: [],
