@@ -6,11 +6,11 @@ import {
   TicketPriority,
   TicketStatus,
   TicketHistoryEntry,
-} from '../../domain/entities/tickect.entity';
-import { TicketDocument } from '../schemas/ticket.mongo.schema';
+} from '../../domain/entities/ticket.entity';
+import { TicketDocument, TicketLean } from '../schemas/ticket.mongo.schema';
 
 export class TicketMapper {
-  static toDomain(doc: TicketDocument): Ticket {
+  static toDomain(doc: TicketDocument | TicketLean): Ticket {
     return Ticket.restore({
       _id: doc._id.toString(),
       title: doc.title,

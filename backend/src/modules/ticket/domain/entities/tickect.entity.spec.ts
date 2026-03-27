@@ -8,7 +8,7 @@ import {
   TicketEvents,
   TicketEventMessage,
   TicketValidationErrors,
-} from './tickect.entity';
+} from './ticket.entity';
 
 describe('Ticket entity', () => {
   let ticket: Ticket;

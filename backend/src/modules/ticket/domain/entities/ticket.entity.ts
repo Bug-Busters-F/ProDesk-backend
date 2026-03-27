@@ -168,7 +168,7 @@ export class Ticket {
     ticket._history = props.history;
 
     ticket.createdAt = props.createdAt;
-    ticket.updatedAt = props.updatedAt;
+    ticket.updatedAt = props.updatedAt ?? null;
     ticket.closedAt = props.closedAt ?? null;
 
     return ticket;

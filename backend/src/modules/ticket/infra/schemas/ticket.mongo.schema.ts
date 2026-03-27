@@ -7,7 +7,7 @@ import {
   TicketEvents,
   TicketPriority,
   TicketStatus,
-} from '../../domain/entities/tickect.entity';
+} from '../../domain/entities/ticket.entity';
 
 @Schema({ _id: false })
 export class TicketHistoryEntrySchema {
@@ -67,6 +67,9 @@ export class TicketSchemaClass {
   @Prop({ type: String, default: null })
   agentId: string | null;
 
+  @Prop({ type: String, default: null })
+  groupId: string | null;
+
   @Prop({ default: 1 })
   escalationLevel: number;
 
@@ -84,5 +87,7 @@ export class TicketSchemaClass {
 }
 
 export type TicketDocument = HydratedDocument<TicketSchemaClass>;
+
+export type TicketLean = TicketSchemaClass & { _id: string };
 
 export const TicketSchema = SchemaFactory.createForClass(TicketSchemaClass);
