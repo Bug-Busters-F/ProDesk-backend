@@ -42,8 +42,15 @@ export class NlpProvider implements OnModuleInit {
 
     const result = await this.manager.process('pt', normalized);
 
+    const isValidCategory = Object.values(TicketCategory).includes(
+      result.intent as TicketCategory
+    );
+
     return {
-      category: result.intent as TicketCategory,
+      category:
+        result.intent === 'None' || !isValidCategory
+          ? null
+          : (result.intent as TicketCategory),
       confidence: result.score,
     };
   }
