@@ -16,8 +16,8 @@
     "test": "jest --testPathPatterns \"^(?!.*\\.int\\.spec\\.ts).*\\.spec\\.ts$\"",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:integration": "jest --testPathPatterns \"\\.int\\.spec\\.ts$\" --runInBand --forceExit",
-    "test:integration:debug": "jest --testPathPatterns \"\\.int\\.spec\\.ts$\" --runInBand --detectOpenHandles --forceExit",
+    "test:integration": "jest --config ./jest.integration.json",
+    "test:integration:debug": "jest --config ./jest.integration.json --runInBand --detectOpenHandles --forceExit",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
@@ -71,9 +71,6 @@
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
-    "clearMocks": true,
-    "setupFilesAfterEnv": [
-      "./test/mongodb.setup.ts"
-    ]
+    "clearMocks": true
   }
 }

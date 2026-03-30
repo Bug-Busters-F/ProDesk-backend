@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { randomUUID } from 'crypto';
 import {
   Ticket,
@@ -17,11 +18,11 @@ describe('CreateTicketUseCase', () => {
     clientId: randomUUID(),
   };
 
-  beforeAll(() => {
-    const fakeTicket = Ticket.create(input);
+  beforeEach(() => {
+    const ticket = Ticket.create(input);
 
     repository = {
-      create: jest.fn().mockResolvedValue(fakeTicket),
+      create: jest.fn().mockResolvedValue(ticket),
     };
 
     useCase = new CreateTicketUseCase(repository);
@@ -34,6 +35,8 @@ describe('CreateTicketUseCase', () => {
     expect(typeof output._id).toBe('string');
     expect(output.status).toBe(TicketStatus.OPEN);
     expect(output.createdAt).toBeInstanceOf(Date);
+
+    expect(repository.create).toHaveBeenCalledTimes(1);
 
     expect(output).not.toHaveProperty('escalate');
     expect(output).not.toHaveProperty('close');
