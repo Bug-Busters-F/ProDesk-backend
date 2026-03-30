@@ -11,7 +11,6 @@ export class TriageService {
   constructor(private readonly nlp: NlpProvider) {}
 
   async classify(description: string): Promise<Category> {
-    // 1. Regras (alta precisão)
     const ruleMatch = RulesEngine.match(description);
     if (ruleMatch) {
       return new Category(
@@ -21,7 +20,6 @@ export class TriageService {
       );
     }
 
-    // 2. NLP
     const nlpResult = await this.nlp.classify(description);
 
     if (
@@ -35,7 +33,6 @@ export class TriageService {
       );
     }
 
-    // 3. Fallback seguro
     return new Category(TicketCategory.OTHER, 0.5, 'fallback');
   }
 }

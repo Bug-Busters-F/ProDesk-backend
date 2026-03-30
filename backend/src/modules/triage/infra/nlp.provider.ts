@@ -15,20 +15,26 @@ export class NlpProvider implements OnModuleInit {
   }
 
   private addTrainingData() {
-    // FINANCEIRO
-    this.manager.addDocument('pt', 'não consigo pagar', TicketCategory.WEB_APP);
-    this.manager.addDocument('pt', 'erro no boleto', TicketCategory.WEB_APP);
-    this.manager.addDocument('pt', 'problema com pagamento', TicketCategory.WEB_APP);
+    this.manager.addDocument('pt', 'site não abre', TicketCategory.WEB_APP);
+    this.manager.addDocument('pt', 'erro na página', TicketCategory.WEB_APP);
+    this.manager.addDocument('pt', 'aplicação web travando', TicketCategory.WEB_APP);
+    this.manager.addDocument('pt', 'problema no login', TicketCategory.WEB_APP);
+    this.manager.addDocument('pt', 'não consigo acessar o sistema', TicketCategory.WEB_APP);
 
-    // SUPORTE
-    this.manager.addDocument('pt', 'app não funciona', TicketCategory.IA);
-    this.manager.addDocument('pt', 'erro no sistema', TicketCategory.IA);
-    this.manager.addDocument('pt', 'aplicação travando', TicketCategory.IA);
+    this.manager.addDocument('pt', 'ia não está respondendo', TicketCategory.IA);
+    this.manager.addDocument('pt', 'erro na classificação automática', TicketCategory.IA);
+    this.manager.addDocument('pt', 'modelo não está funcionando', TicketCategory.IA);
+    this.manager.addDocument('pt', 'problema com chatbot', TicketCategory.IA);
 
-    // ACESSO
-    this.manager.addDocument('pt', 'não consigo entrar', TicketCategory.BI);
-    this.manager.addDocument('pt', 'esqueci minha senha', TicketCategory.BI);
-    this.manager.addDocument('pt', 'problema no login', TicketCategory.BI);
+    this.manager.addDocument('pt', 'relatório não carrega', TicketCategory.BI);
+    this.manager.addDocument('pt', 'erro no dashboard', TicketCategory.BI);
+    this.manager.addDocument('pt', 'dados incorretos', TicketCategory.BI);
+    this.manager.addDocument('pt', 'problema com métricas', TicketCategory.BI);
+
+    this.manager.addDocument('pt', 'sensor não responde', TicketCategory.IOT);
+    this.manager.addDocument('pt', 'dispositivo desconectado', TicketCategory.IOT);
+    this.manager.addDocument('pt', 'erro no equipamento', TicketCategory.IOT);
+    this.manager.addDocument('pt', 'falha na comunicação com dispositivo', TicketCategory.IOT);
   }
 
   async classify(text: string) {

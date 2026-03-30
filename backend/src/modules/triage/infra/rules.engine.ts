@@ -8,19 +8,24 @@ type Rule = {
 
 const RULES: Rule[] = [
   {
-    pattern: /(boleto|pagamento|fatura)/i,
+    pattern: /(site|página|frontend|tela|login|acesso)/i,
     category: TicketCategory.WEB_APP,
     confidence: 0.95,
   },
   {
-    pattern: /(senha|login|acesso)/i,
+    pattern: /(ia|inteligência artificial|modelo|chatbot|classificação)/i,
     category: TicketCategory.IA,
     confidence: 0.95,
   },
   {
-    pattern: /(erro|bug|falha|travando)/i,
+    pattern: /(relatório|dashboard|dados|métricas|indicadores)/i,
     category: TicketCategory.BI,
-    confidence: 0.9,
+    confidence: 0.95,
+  },
+  {
+    pattern: /(sensor|dispositivo|iot|equipamento|hardware)/i,
+    category: TicketCategory.IOT,
+    confidence: 0.95,
   },
 ];
 
