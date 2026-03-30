@@ -17,7 +17,6 @@ describe('Ticket entity', () => {
     ticket = Ticket.create({
       title: 'Chamado para testes',
       category: TicketCategory.BI,
-      priority: TicketPriority.LOW,
       description: 'Descrição do chamado para testes',
       clientId: randomUUID(),
     });
@@ -43,6 +42,7 @@ describe('Ticket entity', () => {
     expect(primitiveTicket.createdAt).toBeInstanceOf(Date);
     expect(primitiveTicket.updatedAt).toBeNull();
     expect(primitiveTicket.closedAt).toBeNull();
+    expect(primitiveTicket.priority).toBe(TicketPriority.LOW)
   });
 
   it('assignToAgent should add event in history and update the fields: agentId, status and updateAt', () => {

@@ -61,7 +61,6 @@ describe('ITicketRepository', () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 1',
       category: TicketCategory.IA,
-      priority: TicketPriority.MEDIUM,
       description: 'descricao do chamado 1',
       clientId: randomUUID(),
     });
@@ -85,7 +84,6 @@ describe('ITicketRepository', () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 2',
       category: TicketCategory.BI,
-      priority: TicketPriority.LOW,
       description: 'descricao do chamado 2',
       clientId: randomUUID(),
     });
@@ -105,7 +103,6 @@ describe('ITicketRepository', () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 3',
       category: TicketCategory.BI,
-      priority: TicketPriority.LOW,
       description: 'descricao do chamado 3',
       clientId: randomUUID(),
     });
@@ -135,7 +132,6 @@ describe('ITicketRepository', () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 5',
       category: TicketCategory.BI,
-      priority: TicketPriority.LOW,
       description: 'descricao do chamado 5',
       clientId: randomUUID(),
     });
@@ -160,7 +156,6 @@ describe('ITicketRepository', () => {
     const ticket = Ticket.create({
       title: 'chamado 5',
       category: TicketCategory.BI,
-      priority: TicketPriority.LOW,
       description: 'descricao do chamado 5',
       clientId: randomUUID(),
     });
@@ -176,7 +171,6 @@ describe('ITicketRepository', () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 5',
       category: TicketCategory.BI,
-      priority: TicketPriority.LOW,
       description: 'descricao do chamado 5',
       clientId: randomUUID(),
     });

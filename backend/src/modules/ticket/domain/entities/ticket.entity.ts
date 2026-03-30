@@ -61,6 +61,7 @@ export class Ticket {
   private _groupId: string | null = null;
   private escalationLevel: number = 1;
   private attachmentsUrls: string[] = [];
+  private priority = TicketPriority.LOW;
 
   private createdAt: Date = new Date();
   private updatedAt: Date | null = null;
@@ -71,7 +72,6 @@ export class Ticket {
   constructor(
     private title: string,
     private category: TicketCategory,
-    private priority: TicketPriority,
     private description: string,
     private readonly _clientId: string,
   ) {}
@@ -105,14 +105,12 @@ export class Ticket {
   static create(props: {
     title: string;
     category: TicketCategory;
-    priority: TicketPriority;
     description: string;
     clientId: string;
   }): Ticket {
     const ticket = new Ticket(
       props.title,
       props.category,
-      props.priority,
       props.description,
       props.clientId,
     );
@@ -151,12 +149,13 @@ export class Ticket {
     const ticket = new Ticket(
       props.title,
       props.category,
-      props.priority,
       props.description,
       props.clientId,
     );
 
     ticket._id = props._id;
+
+    ticket.priority = TicketPriority.LOW;
 
     ticket._agentId = props.agentId ?? null;
     ticket._groupId = props.groupId ?? null;
