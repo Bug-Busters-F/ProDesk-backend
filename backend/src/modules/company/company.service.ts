@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CompanyDocument } from './company.schema';
 import { Model } from 'mongoose';
@@ -12,11 +12,16 @@ export class CompanyService {
   ) {}
 
   async createCompany(name: string, cnpj: string): Promise<CompanyDetails> {
-    const newCompany = new this.companyModel({name, cnpj});
+      const cnpjExist = await this.companyModel.findOne({ cnpj });
 
-    const savedCompany = await newCompany.save();
+      if (cnpjExist) {
+        throw new BadRequestException("CNPJ already exists!");
+      }
 
-    return this._getCompany(savedCompany);
+      const newCompany = new this.companyModel({ name, cnpj });
+      const savedCompany = await newCompany.save();
+
+      return this._getCompany(savedCompany);
   }
 
   async findById(id: string): Promise<CompanyDetails> {
@@ -49,6 +54,14 @@ export class CompanyService {
 
   async updateCompany(id: string, data: Partial<CompanyDetails>
   ): Promise<CompanyDetails> {
+      const cnpj = data.cnpj
+      const cnpjExist = await this.companyModel.findOne({ cnpj });
+
+      if (cnpjExist) {
+        throw new BadRequestException("CNPJ already exists!");
+      }
+
+
     const updateCompany = await this.companyModel
     .findByIdAndUpdate(id, data, { new: true }
     ).exec();
