@@ -1,6 +1,18 @@
 # Módulo de Chat — Guia de Integração Frontend / Mobile
 
-O módulo de Chat opera em **tempo real** utilizando a biblioteca **Socket.IO** através de WebSockets. Não há rotas REST (GET/POST) para tráfego local das mensagens, toda a comunicação é baseada em eventos via Socket.
+O módulo de Chat opera em **tempo real** utilizando a biblioteca **Socket.IO** através de WebSockets. Não há rotas REST para tráfego das mensagens (elas trafegam por eventos), no entanto, a **criação e listagem** de chats ocorre via rotas REST.
+
+---
+
+## 0. Criação do Chat (REST API)
+
+Antes de conectar ao WebSocket, o chat precisa existir no banco vinculado ao chamado (Ticket).
+Essa criação é feita via requisição HTTP clássica (a ser implementada na fase de REST do módulo):
+- **Endpoint (Planejado):** `POST /chat`
+- **Body necessário:** `{ ticketId: string, clientId: string, agentId: string, groupId: string }`
+*(Nota: O atendente entra no campo `agentId` e a equipe dele no `groupId`)*.
+
+Após criar o chat (ou recuperar o `chatId` via `GET /chat/:ticketId`), o frontend pode iniciar a conexão em tempo real utilizando o Socket.IO para esse `chatId`.
 
 ## 1. Conexão e Autenticação
 

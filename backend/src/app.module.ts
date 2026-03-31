@@ -7,6 +7,7 @@ import { GroupModule } from './modules/group/group.module';
 import { CompanyModule } from './modules/company/company.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MessageModule } from './modules/Messages/message.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MessageModule } from './modules/Messages/message.module';
     CompanyModule,
     MongooseModule.forRoot(process.env.MONGO_URI!),
     MessageModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],
