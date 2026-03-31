@@ -14,8 +14,8 @@ export class ChatService {
     private readonly messageRepository: IMessageRepository,
   ) {}
 
-  async createChat(ticketId: string, clientId: string, attendantId: string): Promise<ChatDetails> {
-    return this.chatRepository.create({ ticketId, clientId, attendantId });
+  async createChat(ticketId: string, clientId: string, agentId: string, groupId: string): Promise<ChatDetails> {
+    return this.chatRepository.create({ ticketId, clientId, agentId, groupId });
   }
 
   async getChatById(chatId: string): Promise<ChatDetails> {
@@ -38,7 +38,7 @@ export class ChatService {
 
     // ADMINs podem enviar mensagem em qualquer chat
     if (senderRole !== UserRole.ADMIN) {
-      if (chat.clientId !== senderId && chat.attendantId !== senderId) {
+      if (chat.clientId !== senderId && chat.agentId !== senderId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }
     }
@@ -59,7 +59,7 @@ export class ChatService {
 
     // ADMINs podem ver histórico de qualquer chat
     if (userRole !== UserRole.ADMIN) {
-      if (chat.clientId !== userId && chat.attendantId !== userId) {
+      if (chat.clientId !== userId && chat.agentId !== userId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }
     }
@@ -80,6 +80,6 @@ export class ChatService {
     if (!chat) {
       return false;
     }
-    return chat.clientId === userId || chat.attendantId === userId;
+    return chat.clientId === userId || chat.agentId === userId;
   }
 }

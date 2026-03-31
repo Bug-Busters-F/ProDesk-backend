@@ -26,7 +26,8 @@ const mockMessageRepository: jest.Mocked<IMessageRepository> = {
 
 const TICKET_ID = '507f1f77bcf86cd799439011';
 const CLIENT_ID = '507f1f77bcf86cd799439022';
-const ATTENDANT_ID = '507f1f77bcf86cd799439033';
+const AGENT_ID = '507f1f77bcf86cd799439033';
+const GROUP_ID = '507f1f77bcf86cd799439034';
 const OUTSIDER_ID = '507f1f77bcf86cd799439044';
 const CHAT_ID = '507f1f77bcf86cd799439055';
 
@@ -34,7 +35,8 @@ const mockChat: ChatDetails = {
   id: CHAT_ID,
   ticketId: TICKET_ID,
   clientId: CLIENT_ID,
-  attendantId: ATTENDANT_ID,
+  agentId: AGENT_ID,
+  groupId: GROUP_ID,
   status: ChatStatus.OPEN,
   createdAt: new Date('2026-01-01'),
 };
@@ -83,14 +85,15 @@ describe('ChatService', () => {
       mockChatRepository.create.mockResolvedValue(mockChat);
 
       // Act: chama o método
-      const result = await service.createChat(TICKET_ID, CLIENT_ID, ATTENDANT_ID);
+      const result = await service.createChat(TICKET_ID, CLIENT_ID, AGENT_ID, GROUP_ID);
 
       // Assert: verifica o resultado
       expect(result).toEqual(mockChat);
       expect(mockChatRepository.create).toHaveBeenCalledWith({
         ticketId: TICKET_ID,
         clientId: CLIENT_ID,
-        attendantId: ATTENDANT_ID,
+        agentId: AGENT_ID,
+        groupId: GROUP_ID,
       });
       expect(mockChatRepository.create).toHaveBeenCalledTimes(1);
     });
@@ -126,10 +129,10 @@ describe('ChatService', () => {
       expect(result).toBe(true);
     });
 
-    it('should return true when userId is the attendantId', async () => {
+    it('should return true when userId is the agentId', async () => {
       mockChatRepository.findById.mockResolvedValue(mockChat);
 
-      const result = await service.isParticipant(CHAT_ID, ATTENDANT_ID);
+      const result = await service.isParticipant(CHAT_ID, AGENT_ID);
 
       expect(result).toBe(true);
     });
@@ -224,7 +227,7 @@ describe('ChatService', () => {
   describe('getChatHistory', () => {
     const mockMessages = [
       { chatId: CHAT_ID, senderId: CLIENT_ID, content: 'Oi', createdAt: new Date() },
-      { chatId: CHAT_ID, senderId: ATTENDANT_ID, content: 'Olá!', createdAt: new Date() },
+      { chatId: CHAT_ID, senderId: AGENT_ID, content: 'Olá!', createdAt: new Date() },
     ];
 
     it('should return messages when user is a participant', async () => {

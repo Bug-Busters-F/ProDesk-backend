@@ -4,7 +4,8 @@ export interface IChatRepository {
   create(data: {
     ticketId: string;
     clientId: string;
-    attendantId: string;
+    agentId: string;
+    groupId: string;
   }): Promise<ChatDetails>;
 
   findById(id: string): Promise<ChatDetails | null>;

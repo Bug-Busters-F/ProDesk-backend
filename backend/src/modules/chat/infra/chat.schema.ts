@@ -12,7 +12,10 @@ export class Chat {
   clientId: Types.ObjectId;
 
   @Prop({ required: true, type: Types.ObjectId })
-  attendantId: Types.ObjectId;
+  agentId: Types.ObjectId;
+
+  @Prop({ required: true, type: Types.ObjectId })
+  groupId: Types.ObjectId;
 
   @Prop({ default: 'open', enum: ['open', 'closed'] })
   status: string;

@@ -16,7 +16,8 @@ export class ChatRepositoryMongodb implements IChatRepository {
       id: doc._id.toString(),
       ticketId: doc.ticketId.toString(),
       clientId: doc.clientId.toString(),
-      attendantId: doc.attendantId.toString(),
+      agentId: doc.agentId.toString(),
+      groupId: doc.groupId.toString(),
       status: doc.status as ChatStatus,
       createdAt: (doc as any).createdAt,
       updatedAt: (doc as any).updatedAt,
@@ -26,7 +27,8 @@ export class ChatRepositoryMongodb implements IChatRepository {
   async create(data: {
     ticketId: string;
     clientId: string;
-    attendantId: string;
+    agentId: string;
+    groupId: string;
   }): Promise<ChatDetails> {
     const createdChat = new this.chatModel(data);
     const saved = await createdChat.save();
@@ -42,7 +44,7 @@ export class ChatRepositoryMongodb implements IChatRepository {
   async findByParticipant(userId: string): Promise<ChatDetails[]> {
     const docs = await this.chatModel
       .find({
-        $or: [{ clientId: userId }, { attendantId: userId }],
+        $or: [{ clientId: userId }, { agentId: userId }],
       })
       .sort({ createdAt: -1 })
       .exec();
