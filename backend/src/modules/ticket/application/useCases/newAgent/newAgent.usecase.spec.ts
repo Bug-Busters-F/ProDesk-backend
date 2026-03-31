@@ -38,7 +38,7 @@ describe('NewAgentTicketUseCase', () => {
     repository.readById.mockResolvedValue(ticket);
 
     ticket.assignToAgent(input.agentId);
-    repository.readById.mockResolvedValue(ticket);
+    repository.save.mockResolvedValue(ticket);
 
     const output = await useCase.execute(input);
 
@@ -46,9 +46,12 @@ describe('NewAgentTicketUseCase', () => {
     expect(output.id).toBe(ticket.id);
     expect(output.agentId).toBe(input.agentId);
     expect(output.status).toBe(TicketStatus.IN_PROGRESS);
-    expect(output.updatedAt).toBeInstanceOf(Date);
 
-    expect(repository.readAll).toHaveBeenCalledTimes(1);
+    expect(repository.readById).toHaveBeenCalledTimes(1);
+    expect(repository.readById).toHaveBeenCalledWith(input.id);
+
+    expect(repository.save).toHaveBeenCalledTimes(1);
+    expect(repository.save).toHaveBeenCalledWith(ticket);
 
     expect(output).not.toHaveProperty('toPrimitives');
     expect(output).not.toHaveProperty('escalate');

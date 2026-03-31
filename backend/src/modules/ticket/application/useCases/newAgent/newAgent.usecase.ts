@@ -1,4 +1,4 @@
-import { Ticket, TicketStatus } from '../../../domain/entities/ticket.entity';
+import { TicketStatus } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 
 export interface NewAgentTicketInput {
@@ -10,14 +10,13 @@ export interface NewAgentTicketOutput {
   id: string;
   agentId: string | null;
   status: TicketStatus;
-  escalationLevel: number;
 }
 
 export class NewAgentTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 
   async execute(input: NewAgentTicketInput): Promise<NewAgentTicketOutput> {
-    const foundedTicket = await this.repository.readById();
+    const foundedTicket = await this.repository.readById(input.id);
 
     if (!foundedTicket) {
       throw new Error('Ticket not found.');
@@ -33,7 +32,8 @@ export class NewAgentTicketUseCase {
 
     return {
       id: updatedTicket.id,
-      agentId: updatedTicket.agentId, 
-    }
+      agentId: updatedTicket.agentId,
+      status: updatedTicket.status,
+    };
   }
 }
