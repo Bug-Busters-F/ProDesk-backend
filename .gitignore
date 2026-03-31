@@ -43,6 +43,7 @@ coverage/
 # ======================
 tmp/
 temp/
+*_output.txt
 
 # ======================
 # Database local

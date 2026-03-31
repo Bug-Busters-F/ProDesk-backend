@@ -6,11 +6,6 @@ import { IChatRepository } from '../domain/chat.repository.js';
 import { IMessageRepository } from '../../Messages/domain/message.repository.js';
 import { UserRole } from '../../user/user.schema.js';
 
-// ========================================================
-// Mocks dos repositórios
-// ========================================================
-// No TDD, criamos mocks (objetos falsos) que simulam o banco de dados.
-// Assim testamos APENAS a lógica do ChatService, sem depender do MongoDB.
 
 const mockChatRepository: jest.Mocked<IChatRepository> = {
   create: jest.fn(),
@@ -25,9 +20,9 @@ const mockMessageRepository: jest.Mocked<IMessageRepository> = {
   findByChatId: jest.fn(),
 };
 
-// ========================================================
+
 // Dados de teste reutilizáveis
-// ========================================================
+
 
 const TICKET_ID = '507f1f77bcf86cd799439011';
 const CLIENT_ID = '507f1f77bcf86cd799439022';
@@ -44,9 +39,9 @@ const mockChat: ChatDetails = {
   createdAt: new Date('2026-01-01'),
 };
 
-// ========================================================
+
 // Suite de testes
-// ========================================================
+
 
 describe('ChatService', () => {
   let service: ChatService;
@@ -79,9 +74,9 @@ describe('ChatService', () => {
     expect(service).toBeDefined();
   });
 
-  // --------------------------------------------------
+
   // createChat
-  // --------------------------------------------------
+
   describe('createChat', () => {
     it('should create a chat and return its details', async () => {
       // Arrange: configura o mock para retornar o chat esperado
@@ -101,9 +96,7 @@ describe('ChatService', () => {
     });
   });
 
-  // --------------------------------------------------
   // getChatById
-  // --------------------------------------------------
   describe('getChatById', () => {
     it('should return chat details when chat exists', async () => {
       mockChatRepository.findById.mockResolvedValue(mockChat);
@@ -123,9 +116,7 @@ describe('ChatService', () => {
     });
   });
 
-  // --------------------------------------------------
   // isParticipant
-  // --------------------------------------------------
   describe('isParticipant', () => {
     it('should return true when userId is the clientId', async () => {
       mockChatRepository.findById.mockResolvedValue(mockChat);
@@ -160,9 +151,9 @@ describe('ChatService', () => {
     });
   });
 
-  // --------------------------------------------------
+
   // sendMessage
-  // --------------------------------------------------
+
   describe('sendMessage', () => {
     const mockSavedMessage = {
       id: 'msg-001',
@@ -229,9 +220,7 @@ describe('ChatService', () => {
     });
   });
 
-  // --------------------------------------------------
   // getChatHistory
-  // --------------------------------------------------
   describe('getChatHistory', () => {
     const mockMessages = [
       { chatId: CHAT_ID, senderId: CLIENT_ID, content: 'Oi', createdAt: new Date() },
@@ -276,9 +265,7 @@ describe('ChatService', () => {
     });
   });
 
-  // --------------------------------------------------
   // closeChat
-  // --------------------------------------------------
   describe('closeChat', () => {
     it('should close the chat and return updated details', async () => {
       const closedChat = { ...mockChat, status: ChatStatus.CLOSED };
@@ -302,9 +289,7 @@ describe('ChatService', () => {
     });
   });
 
-  // --------------------------------------------------
   // getChatsByUser
-  // --------------------------------------------------
   describe('getChatsByUser', () => {
     it('should return all chats where user is a participant', async () => {
       const chats = [mockChat];
