@@ -6,7 +6,7 @@ import {
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 
 export interface EscalateTicketInput {
-  ticketId: string;
+  id: string;
   groupId: string;
   category: TicketCategory;
 }
@@ -30,7 +30,7 @@ export class EscalateTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 
   async execute(input: EscalateTicketInput): Promise<EscalateTicketOutput> {
-    const foundedTicket = await this.repository.readById(input.ticketId);
+    const foundedTicket = await this.repository.readById(input.id);
 
     if (!foundedTicket) {
       throw new Error('Ticket not found');

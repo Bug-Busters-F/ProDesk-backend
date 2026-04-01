@@ -29,7 +29,7 @@ describe('CreateTicketUseCase', () => {
   });
 
   it('Should exec usecase successfully and return the ticket', async () => {
-    const output = await useCase.exec(input);
+    const output = await useCase.execute(input);
 
     expect(output).toBeDefined();
     expect(typeof output._id).toBe('string');

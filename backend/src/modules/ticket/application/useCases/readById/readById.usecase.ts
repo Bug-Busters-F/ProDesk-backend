@@ -21,7 +21,7 @@ export interface ReadByIdTicketOutput {
   closedAt: Date | null;
 }
 
-export class ReadAllTicketUseCase {
+export class ReadByIdTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 
   async execute(id: string): Promise<ReadByIdTicketOutput> {

@@ -2,11 +2,11 @@
 import { randomUUID } from 'crypto';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 import { Ticket, TicketCategory } from '../../../domain/entities/ticket.entity';
-import { ReadAllTicketUseCase } from './readById.usecase';
+import { ReadByIdTicketUseCase } from './readById.usecase';
 
 describe('ReadByIdTicketUseCase', () => {
   let repository: jest.Mocked<ITicketRepository>;
-  let useCase: ReadAllTicketUseCase;
+  let useCase: ReadByIdTicketUseCase;
   let ticket: Ticket;
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe('ReadByIdTicketUseCase', () => {
       readById: jest.fn(),
     } as unknown as jest.Mocked<ITicketRepository>;
 
-    useCase = new ReadAllTicketUseCase(repository);
+    useCase = new ReadByIdTicketUseCase(repository);
   });
 
   it('should read a ticket by id successfully', async () => {

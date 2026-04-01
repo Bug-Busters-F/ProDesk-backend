@@ -31,7 +31,7 @@ describe('EscalateTicketUseCase', () => {
 
   it('should escalate ticket successfully', async () => {
     const input: EscalateTicketInput = {
-      ticketId: ticket.id,
+      id: ticket.id,
       groupId: randomUUID(),
       category: TicketCategory.IOT,
     };
@@ -51,36 +51,11 @@ describe('EscalateTicketUseCase', () => {
     expect(output.escalationLevel).toBe(2);
     expect(output.updatedAt).toBeInstanceOf(Date);
 
-    expect(repository.readById).toHaveBeenCalledWith(input.ticketId);
+    expect(repository.readById).toHaveBeenCalledWith(input.id);
     expect(repository.save).toHaveBeenCalledWith(expect.any(Ticket));
 
     expect(output).not.toHaveProperty('toPrimitives');
     expect(output).not.toHaveProperty('escalate');
     expect(output).not.toHaveProperty('assignToAgent');
   });
-
-  // it('should throw when ticket is not found', async () => {
-  //   repository.readById.mockResolvedValue(null);
-
-  //   const input: EscalateTicketInput = {
-  //     ticketId: randomUUID(),
-  //     groupId: randomUUID(),
-  //     category: TicketCategory.IOT,
-  //   };
-
-  //   await expect(useCase.execute(input)).rejects.toThrow(TicketNotFoundException);
-  // });
-
-  // it('should throw when save fails', async () => {
-  //   repository.readById.mockResolvedValue(ticket);
-  //   repository.save.mockResolvedValue(null);
-
-  //   const input: EscalateTicketInput = {
-  //     ticketId: ticket.id,
-  //     groupId: randomUUID(),
-  //     category: TicketCategory.IOT,
-  //   };
-
-  //   await expect(useCase.execute(input)).rejects.toThrow(TicketEscalationFailedException);
-  // });
 });

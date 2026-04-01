@@ -1,7 +1,6 @@
 import {
   Ticket,
   TicketCategory,
-  TicketPriority,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
@@ -27,7 +26,7 @@ export interface CreateTicketOutput {
 export class CreateTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 
-  async exec(input: CreateTicketInput): Promise<CreateTicketOutput> {
+  async execute(input: CreateTicketInput): Promise<CreateTicketOutput> {
     const ticket = Ticket.create(input);
 
     const created = await this.repository.create(ticket);
