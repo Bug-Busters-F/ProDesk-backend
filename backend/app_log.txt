@@ -1,0 +1,704 @@
+﻿[32m[Nest] 8284  - [39m31/03/2026, 19:27:11 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+node : [31m[Nest] 8284  - [39m31/03/2026, 19:27:11 [31m 
+ ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (1)...[39m
+No linha:1 caractere:1
++ node dist/main.js 2>&1 | Out-File -FilePath app_log.txt 
+-Encoding utf ...
++ ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([31m[Nest] 8 
+   28...ing (1)...[39m:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:40:136
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[32m[Nest] 8284  - [39m31/03/2026, 19:27:11 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 8284  - [39m31/03/2026, 19:27:11 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMongooseModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 8284  - [39m31/03/2026, 19:27:11 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMongooseModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 8284  - [39m31/03/2026, 19:27:11 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 8284  - [39m31/03/2026, 19:27:11 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 8284  - [39m31/03/2026, 19:27:11 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 8284  - [39m31/03/2026, 19:27:11 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:11 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (1)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:65:123
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:14 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (2)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:40:136
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:14 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (2)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:65:123
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:17 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (3)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:40:136
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:17 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (3)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:65:123
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:20 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (4)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:40:136
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:20 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (4)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:65:123
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:23 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (5)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:40:136
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:23 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (5)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:65:123
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:26 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (6)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:40:136
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:26 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (6)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:65:123
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:29 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (7)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:40:136
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:29 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (7)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:65:123
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:32 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (8)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:40:136
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:32 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (8)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:65:123
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:35 [31m  
+ERROR[39m [38;5;3m[MongooseModule] [39m[31mUnable to 
+connect to the database. Retrying (9)...[39m
+MongooseError: The `uri` parameter to `openUri()` must be 
+a string, got "undefined". Make sure the first parameter 
+to `mongoose.connect()` or `mongoose.createConnection()` 
+is a string.
+    at NativeConnection.createClient (C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\node_modules\mon
+goose\lib\drivers\node-mongodb-native\connection.js:230:11)
+    at NativeConnection.openUri (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\mongoose
+\lib\connection.js:1074:34)
+    at Mongoose.createConnection (C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\node_modules\mongoos
+e\lib\mongoose.js:419:10)
+    at MongooseCoreModule.createMongooseConnection (C:\User
+s\davim\OneDrive\Documentos\API5\ProDesk-backend\backend\no
+de_modules\@nestjs\mongoose\dist\mongoose-core.module.js:11
+4:37)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\@nestjs\mongoose\dist\mongoose-cor
+e.module.js:40:136
+    at Observable._subscribe (C:\Users\davim\OneDrive\Docum
+entos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\c
+js\internal\observable\defer.js:8:31)
+    at Observable._trySubscribe (C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\node_modules\rxjs\dis
+t\cjs\internal\Observable.js:41:25)
+    at C:\Users\davim\OneDrive\Documentos\API5\ProDesk-back
+end\backend\node_modules\rxjs\dist\cjs\internal\Observable.
+js:35:31
+    at Object.errorContext (C:\Users\davim\OneDrive\Documen
+tos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cjs
+\internal\util\errorContext.js:22:9)
+    at Observable.subscribe (C:\Users\davim\OneDrive\Docume
+ntos\API5\ProDesk-backend\backend\node_modules\rxjs\dist\cj
+s\internal\Observable.js:26:24)
+[31m[Nest] 8284  - [39m31/03/2026, 19:27:35 [31m  
+ERROR[39m [38;5;3m[ExceptionHandler] [39mMongooseError: 
+The `uri` parameter to `openUri()` must be a string, got 
+"undefined". Make sure the first parameter to 
+`mongoose.connect()` or `mongoose.createConnection()` is a 
+string.
+    at NativeConnection.createClient [90m(C:\Users\davim\O
+neDrive\Documentos\API5\ProDesk-backend\backend\[39mnode_m
+odules\[4mmongoose[24m\lib\drivers\node-mongodb-native\co
+nnection.js:230:11[90m)[39m
+    at NativeConnection.openUri [90m(C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\[39mnode_module
+s\[4mmongoose[24m\lib\connection.js:1074:34[90m)[39m
+    at Mongoose.createConnection [90m(C:\Users\davim\OneDr
+ive\Documentos\API5\ProDesk-backend\backend\[39mnode_modul
+es\[4mmongoose[24m\lib\mongoose.js:419:10[90m)[39m
+    at MongooseCoreModule.createMongooseConnection [90m(C:
+\Users\davim\OneDrive\Documentos\API5\ProDesk-backend\backe
+nd\[39mnode_modules\[4m@nestjs\mongoose[24m\dist\mongoos
+e-core.module.js:114:37[90m)[39m
+    at [90mC:\Users\davim\OneDrive\Documentos\API5\ProDesk
+-backend\backend\[39mnode_modules\[4m@nestjs\mongoose[24
+m\dist\mongoose-core.module.js:40:136
+    at Observable._subscribe [90m(C:\Users\davim\OneDrive\
+Documentos\API5\ProDesk-backend\backend\[39mnode_modules\
+[4mrxjs[24m\dist\cjs\internal\observable\defer.js:8:31[90
+m)[39m
+    at Observable._trySubscribe [90m(C:\Users\davim\OneDri
+ve\Documentos\API5\ProDesk-backend\backend\[39mnode_module
+s\[4mrxjs[24m\dist\cjs\internal\Observable.js:41:25[90m)
+[39m
+    at [90mC:\Users\davim\OneDrive\Documentos\API5\ProDesk
+-backend\backend\[39mnode_modules\[4mrxjs[24m\dist\cjs\i
+nternal\Observable.js:35:31
+    at Object.errorContext [90m(C:\Users\davim\OneDrive\Do
+cumentos\API5\ProDesk-backend\backend\[39mnode_modules\[4
+mrxjs[24m\dist\cjs\internal\util\errorContext.js:22:9[90m
+)[39m
+    at Observable.subscribe [90m(C:\Users\davim\OneDrive\D
+ocumentos\API5\ProDesk-backend\backend\[39mnode_modules\[
+4mrxjs[24m\dist\cjs\internal\Observable.js:26:24[90m)[39
+m
