@@ -3,12 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CategoryDocument } from './category.schema';
 import { CategoryDetails } from './category.interface';
+import { GroupService } from '../group/group.service';
 
 @Injectable()
 export class CategoryService {
   constructor(
-    @InjectModel('Category') private readonly categoryModel: Model<CategoryDocument>,
-  ) {}
+    @InjectModel('Category') private readonly categoryModel: Model<CategoryDocument>, private groupService: GroupService,
+  ) { }
 
   async findAll(): Promise<CategoryDetails[]> {
     const categories = await this.categoryModel.find().exec();
@@ -32,6 +33,17 @@ export class CategoryService {
     trainingPhrases?: string[],
     groupIds?: string[],
   ): Promise<CategoryDetails> {
+
+    if (groupIds && groupIds.length > 0) {
+      for (const groupId of groupIds) {
+        const group = await this.groupService.findById(groupId);
+
+        if (!group) {
+          throw new NotFoundException(`Group not found: ${groupId}`);
+        }
+      }
+    }
+
     const newCategory = new this.categoryModel({
       name,
       keywords,
@@ -48,6 +60,17 @@ export class CategoryService {
     id: string,
     data: Partial<CategoryDetails>,
   ): Promise<CategoryDetails> {
+
+    if (data.groupIds && data.groupIds.length > 0) {
+      for (const groupId of data.groupIds) {
+        const group = await this.groupService.findById(groupId);
+
+        if (!group) {
+          throw new NotFoundException(`Group not found: ${groupId}`);
+        }
+      }
+    }
+
     const updatedCategory = await this.categoryModel
       .findByIdAndUpdate(id, data, { new: true })
       .exec();
