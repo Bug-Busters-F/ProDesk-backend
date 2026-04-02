@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { CategoryDocument } from './category.schema';
 import { CategoryDetails } from './category.interface';
 import { GroupService } from '../group/group.service';
+import categoriesSeed from './seed/categories.seed.json';
 
 @Injectable()
 export class CategoryService {
@@ -89,6 +90,24 @@ export class CategoryService {
 
     if (!deletedCategory) {
       throw new NotFoundException('Category not found');
+    }
+  }
+
+  async createInitialCategories() {
+    const existingCategories = await this.categoryModel.find();
+
+    for (const category of categoriesSeed) {
+      const exists = existingCategories.find(
+        c => c.name === category.name,
+      );
+
+      if (!exists) {
+        await this.createCategory(
+          category.name,
+          category.keywords,
+          category.trainingPhrases,
+        );
+      }
     }
   }
 

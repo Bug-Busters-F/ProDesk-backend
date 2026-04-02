@@ -29,7 +29,9 @@ import { UpdateCategoryDTO } from './dtos/updateCategoryDTO';
 @ApiBearerAuth()
 @Controller('category')
 export class CategoryController {
-  constructor(private categoryService: CategoryService) {}
+  constructor(private categoryService: CategoryService) {
+    this.categoryService.createInitialCategories();
+  }
 
   @Post()
   @UseGuards(JwtGuard, RolesGuard)

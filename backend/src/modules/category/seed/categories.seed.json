@@ -1,0 +1,182 @@
+[
+    {
+        "name": "WEB | APP",
+        "keywords": [
+            "site",
+            "aplicativo",
+            "app",
+            "pagina",
+            "frontend",
+            "backend",
+            "login",
+            "interface",
+            "navegador",
+            "api"
+        ],
+        "trainingPhrases": [
+            "não consigo acessar o site",
+            "a página não carrega no navegador",
+            "erro ao fazer login no sistema",
+            "o aplicativo não abre no celular",
+            "app fecha sozinho",
+            "problema na interface do sistema",
+            "erro ao carregar a página inicial",
+            "não consigo navegar no sistema",
+            "falha ao acessar a aplicação web",
+            "erro ao consumir a api",
+            "o sistema web está fora do ar",
+            "a tela fica em branco ao abrir",
+            "não consigo entrar na conta",
+            "problema ao clicar nos botões do site",
+            "o app trava ao iniciar"
+        ]
+    },
+    {
+        "name": "AI",
+        "keywords": [
+            "ia",
+            "inteligencia artificial",
+            "modelo",
+            "machine learning",
+            "predicao",
+            "classificacao",
+            "algoritmo",
+            "treinamento",
+            "inferência",
+            "nlp"
+        ],
+        "trainingPhrases": [
+            "a inteligência artificial está retornando respostas erradas",
+            "o modelo de ia não está funcionando corretamente",
+            "resultado inesperado da previsão do modelo",
+            "erro no processamento de linguagem natural",
+            "o modelo não reconhece a intenção corretamente",
+            "falha na classificação automática",
+            "problema no treinamento do modelo",
+            "a ia não está aprendendo corretamente",
+            "resposta incoerente da inteligência artificial",
+            "erro na inferência do modelo",
+            "resultado inconsistente do algoritmo",
+            "problema com o modelo de machine learning",
+            "a previsão está incorreta",
+            "erro na análise de texto pela ia",
+            "modelo não responde como esperado"
+        ]
+    },
+    {
+        "name": "BI",
+        "keywords": [
+            "bi",
+            "dashboard",
+            "relatorio",
+            "dados",
+            "grafico",
+            "indicador",
+            "kpi",
+            "analytics",
+            "painel",
+            "visualizacao"
+        ],
+        "trainingPhrases": [
+            "o dashboard não está carregando",
+            "erro ao gerar relatório",
+            "os dados do painel estão incorretos",
+            "problema na visualização dos gráficos",
+            "relatório não atualiza com dados novos",
+            "indicadores estão errados no dashboard",
+            "falha ao carregar o painel de BI",
+            "dados inconsistentes no relatório",
+            "não consigo visualizar os gráficos",
+            "erro na atualização dos dados",
+            "painel apresenta valores incorretos",
+            "problema na consulta de dados",
+            "dashboard mostra informações desatualizadas",
+            "erro ao acessar relatórios",
+            "visualização de dados não funciona"
+        ]
+    },
+    {
+        "name": "RPA",
+        "keywords": [
+            "rpa",
+            "robô",
+            "bot",
+            "automacao",
+            "processo automatizado",
+            "script",
+            "workflow",
+            "automatica",
+            "job"
+        ],
+        "trainingPhrases": [
+            "o robô não executou a tarefa",
+            "falha na automação do processo",
+            "bot parou de funcionar",
+            "erro na execução do robô",
+            "processo automatizado não iniciou",
+            "automação falhou durante execução",
+            "o bot travou no meio do processo",
+            "erro no workflow automatizado",
+            "tarefa automática não foi concluída",
+            "problema na execução do script",
+            "robô não completou a atividade",
+            "falha ao rodar automação",
+            "erro no job automatizado",
+            "bot não responde",
+            "automação não está funcionando"
+        ]
+    },
+    {
+        "name": "IoT",
+        "keywords": [
+            "iot",
+            "dispositivo",
+            "sensor",
+            "equipamento",
+            "hardware",
+            "conexao",
+            "rede",
+            "telemetria",
+            "firmware",
+            "gateway"
+        ],
+        "trainingPhrases": [
+            "o dispositivo não conecta na rede",
+            "sensor não está enviando dados",
+            "equipamento está offline",
+            "falha na comunicação com o dispositivo",
+            "dispositivo não responde aos comandos",
+            "equipamento não aparece no sistema",
+            "falha na integração com o dispositivo",
+            "sensor parou de funcionar",
+            "erro na rede de dispositivos",
+            "dispositivo desconectando frequentemente",
+            "dados de telemetria não chegam",
+            "a impressora não conecta na rede",
+            "impressora não responde aos comandos",
+            "erro ao enviar impressão para o dispositivo",
+            "a impressora está offline no sistema",
+            "não consigo imprimir pela rede",
+            "o leitor de código de barras não funciona",
+            "scanner não está enviando dados",
+            "câmera de segurança não conecta",
+            "falha na comunicação com a câmera",
+            "o dispositivo de controle de acesso não responde",
+            "catraca eletrônica não está funcionando",
+            "sensor de presença não detecta movimento",
+            "sensor de temperatura não envia dados",
+            "terminal de ponto não conecta ao sistema",
+            "o relógio de ponto não está registrando",
+            "equipamento de monitoramento está offline",
+            "falha na conexão com o dispositivo físico",
+            "o hardware não aparece no sistema",
+            "dispositivo de rede desconectando sozinho",
+            "problema com equipamento conectado"
+        ]
+    },
+    {
+        "name": "OUTROS",
+        "keywords": [],
+        "trainingPhrases": []
+    }
+]
