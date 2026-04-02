@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ChatService } from './chat.service.js';
+import { ChatService } from './chat.service';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { ChatDetails, ChatStatus } from '../domain/chat.entity.js';
-import { IChatRepository } from '../domain/chat.repository.js';
-import { IMessageRepository } from '../../Messages/domain/message.repository.js';
-import { UserRole } from '../../user/user.schema.js';
+import { ChatDetails, ChatStatus } from '../domain/chat.entity';
+import { IChatRepository } from '../domain/chat.repository';
+import { IMessageRepository } from '../../Messages/domain/message.repository';
+import { UserRole } from '../../user/user.schema';
 
 
 const mockChatRepository: jest.Mocked<IChatRepository> = {

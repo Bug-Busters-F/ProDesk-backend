@@ -1,4 +1,4 @@
-import { ChatDetails, ChatStatus } from './chat.entity.js';
+import { ChatDetails, ChatStatus } from './chat.entity';
 
 export interface IChatRepository {
   create(data: {

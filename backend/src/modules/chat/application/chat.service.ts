@@ -1,9 +1,9 @@
 import { Inject, Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
-import type { IChatRepository } from '../domain/chat.repository.js';
-import type { IMessageRepository } from '../../Messages/domain/message.repository.js';
-import type { ChatDetails } from '../domain/chat.entity.js';
-import { ChatStatus } from '../domain/chat.entity.js';
-import { UserRole } from '../../user/user.schema.js';
+import type { IChatRepository } from '../domain/chat.repository';
+import type { IMessageRepository } from '../../Messages/domain/message.repository';
+import type { ChatDetails } from '../domain/chat.entity';
+import { ChatStatus } from '../domain/chat.entity';
+import { UserRole } from '../../user/user.schema';
 
 @Injectable()
 export class ChatService {
