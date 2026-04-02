@@ -12,8 +12,8 @@ import { ReadAllTicketUseCase } from './application/useCases/readAll/readAll.use
 import { ReadByIdTicketUseCase } from './application/useCases/readById/readById.usecase';
 import { GetHistoryTicketUseCase } from './application/useCases/getHistory/getHistory.usecase';
 import { EscalateTicketUseCase } from './application/useCases/escalate/escalate.usecase';
-import { AssignAgentRequest } from './presentation/dtos/assignAgent.dto';
 import { DeleteTicketUseCase } from './application/useCases/delete/delete.usecase';
+import { NewAgentTicketUseCase } from './application/useCases/newAgent/newAgent.usecase';
 
 @Module({
   imports: [
@@ -29,8 +29,8 @@ import { DeleteTicketUseCase } from './application/useCases/delete/delete.usecas
     ReadByIdTicketUseCase,
     GetHistoryTicketUseCase,
     EscalateTicketUseCase,
-    AssignAgentRequest,
     DeleteTicketUseCase,
+    NewAgentTicketUseCase,
   ],
 })
 export class TicketModule {}

@@ -8,6 +8,7 @@ import { CompanyModule } from './modules/company/company.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MessageModule } from './modules/Messages/message.module';
 import { TriageModule } from './modules/triage/triage.module';
+import { TicketModule } from './modules/ticket/ticket.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { TriageModule } from './modules/triage/triage.module';
     CompanyModule,
     MongooseModule.forRoot(process.env.MONGO_URI!),
     MessageModule,
-    TriageModule
+    TriageModule,
+    TicketModule,
   ],
   controllers: [],
   providers: [],

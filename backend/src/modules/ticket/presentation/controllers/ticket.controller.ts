@@ -18,7 +18,18 @@ import { CreateTicketRequest } from '../dtos/create.dto';
 import { EscalateTicketRequest } from '../dtos/escalateTicket.dto';
 import { TicketMapper } from '../mappers/ticket.mapper';
 import { AssignAgentRequest } from '../dtos/assignAgent.dto';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { TicketCategory } from '../../domain/entities/ticket.entity';
+import { randomUUID } from 'crypto';
 
+@ApiTags('Ticket')
 @Controller('tickets')
 export class TicketController {
   constructor(
@@ -32,6 +43,9 @@ export class TicketController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Cria um ticket' })
+  @ApiBody({ type: CreateTicketRequest })
+  @ApiResponse({ status: 201, description: 'Ticket criado com sucesso.' })
   async create(@Body() body: CreateTicketRequest) {
     const data = TicketMapper.toCreateInput(body);
 
@@ -41,6 +55,11 @@ export class TicketController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Retorna todos os tickets' })
+  @ApiResponse({
+    status: 200,
+    description: 'Todos os tickets retornados com sucesso.',
+  })
   async getAll() {
     const response = await this.readAllUseCase.execute();
 
@@ -48,6 +67,9 @@ export class TicketController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Retorna um ticket pelo ID' })
+  @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiResponse({ status: 200, description: 'Ticket encontrado com sucesso.' })
   async getById(@Param('id') id: string) {
     const response = await this.readByIdUseCase.execute(id);
 
@@ -55,6 +77,9 @@ export class TicketController {
   }
 
   @Get(':id/history')
+  @ApiOperation({ summary: 'Retorna o histórico de um ticket pelo ID' })
+  @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiResponse({ status: 200, description: 'Histórico retornado com sucesso.' })
   async getHistoryById(@Param('id') id: string) {
     const response = await this.getHistoryUseCase.execute(id);
 
@@ -62,6 +87,10 @@ export class TicketController {
   }
 
   @Put(':id/escalate')
+  @ApiOperation({ summary: 'Escalona um ticket' })
+  @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiBody({ type: EscalateTicketRequest })
+  @ApiResponse({ status: 200, description: 'Ticket escalonado com sucesso.' })
   async escalateTicket(
     @Param('id') id: string,
     @Body() body: EscalateTicketRequest,
@@ -74,6 +103,10 @@ export class TicketController {
   }
 
   @Put(':id/assignAgent')
+  @ApiOperation({ summary: 'Atribui um agente ao ticket' })
+  @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiBody({ type: AssignAgentRequest })
+  @ApiResponse({ status: 200, description: 'Agente atribuído com sucesso.' })
   async assignAgent(@Param('id') id: string, @Body() body: AssignAgentRequest) {
     const data = TicketMapper.toNewAgentInput(id, body);
 
@@ -83,6 +116,9 @@ export class TicketController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Remove um ticket' })
+  @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiResponse({ status: 200, description: 'Ticket removido com sucesso.' })
   async delete(@Param() id: string) {
     const response = await this.deleteUseCase.execute(id);
 
