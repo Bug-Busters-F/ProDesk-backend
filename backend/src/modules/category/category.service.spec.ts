@@ -5,6 +5,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { CategoryService } from './category.service';
 import { CategorySchema } from './category.schema';
+import { GroupService } from '../group/group.service';
 
 describe('CategoryService (Integration)', () => {
   let service: CategoryService;
@@ -21,7 +22,15 @@ describe('CategoryService (Integration)', () => {
           { name: 'Category', schema: CategorySchema },
         ]),
       ],
-      providers: [CategoryService],
+      providers: [
+        CategoryService,
+        {
+          provide: GroupService,
+          useValue: {
+            findById: jest.fn().mockResolvedValue({ id: 'mock-group' }),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<CategoryService>(CategoryService);
@@ -41,12 +50,12 @@ describe('CategoryService (Integration)', () => {
   });
 
   it('should create a category successfully', async () => {
-    const category = await service.createCategory('IoT', ['sensor','dispositivo','iot','equipamento','hardware'],['dispositivo desconectado','erro no equipamento','falha na comunicação com dispositivo']);
+    const category = await service.createCategory('IoT', ['sensor', 'dispositivo', 'iot', 'equipamento', 'hardware'], ['dispositivo desconectado', 'erro no equipamento', 'falha na comunicação com dispositivo']);
 
     expect(category).toBeDefined();
     expect(category.name).toBe('IoT');
-    expect(category.keywords).toStrictEqual(['sensor','dispositivo','iot','equipamento','hardware']);
-    expect(category.trainingPhrases).toStrictEqual(['dispositivo desconectado','erro no equipamento','falha na comunicação com dispositivo']);
+    expect(category.keywords).toStrictEqual(['sensor', 'dispositivo', 'iot', 'equipamento', 'hardware']);
+    expect(category.trainingPhrases).toStrictEqual(['dispositivo desconectado', 'erro no equipamento', 'falha na comunicação com dispositivo']);
   });
 
   it('should return all categories', async () => {
