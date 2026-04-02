@@ -22,5 +22,6 @@
     "strictBindCallApply": false,
     "strictPropertyInitialization": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": ["src/**/*"]
 }
