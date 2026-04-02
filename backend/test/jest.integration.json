@@ -1,0 +1,11 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "..",
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "testMatch": [
+    "<rootDir>/src/**/*.int.spec.ts",
+    "<rootDir>/test/**/*.int.spec.ts"
+  ],
+  "setupFilesAfterEnv": ["<rootDir>/test/mongodb.setup.ts"]
+}
