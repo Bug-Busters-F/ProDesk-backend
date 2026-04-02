@@ -13,11 +13,11 @@ export class ChatRepositoryMongodb implements IChatRepository {
 
   private toDetails(doc: ChatDocument): ChatDetails {
     return {
-      id: doc._id.toString(),
-      ticketId: doc.ticketId.toString(),
-      clientId: doc.clientId.toString(),
-      agentId: doc.agentId.toString(),
-      groupId: doc.groupId.toString(),
+      id: doc._id?.toString() || '',
+      ticketId: doc.ticketId?.toString() || '',
+      clientId: doc.clientId?.toString() || '',
+      agentId: doc.agentId?.toString() || '',
+      groupId: doc.groupId?.toString() || '',
       status: doc.status as ChatStatus,
       createdAt: (doc as any).createdAt,
       updatedAt: (doc as any).updatedAt,
