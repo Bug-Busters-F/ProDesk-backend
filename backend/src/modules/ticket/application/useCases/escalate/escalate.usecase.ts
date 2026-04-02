@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   TicketCategory,
   TicketPriority,
@@ -26,6 +27,7 @@ export interface EscalateTicketOutput {
   updatedAt: Date | null;
 }
 
+@Injectable()
 export class EscalateTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 

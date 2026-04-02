@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   TicketEvents,
   TicketStatus,
@@ -18,6 +19,7 @@ export interface GetHistoryTicketOutput {
   history: TicketHistoryEntryOutput[];
 }
 
+@Injectable()
 export class GetHistoryTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 

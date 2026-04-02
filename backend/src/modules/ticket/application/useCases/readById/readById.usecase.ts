@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   TicketCategory,
   TicketPriority,
@@ -21,6 +22,7 @@ export interface ReadByIdTicketOutput {
   closedAt: Date | null;
 }
 
+@Injectable()
 export class ReadByIdTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 

@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   Ticket,
   TicketCategory,
@@ -23,6 +24,7 @@ export interface CreateTicketOutput {
   createdAt: Date;
 }
 
+@Injectable()
 export class CreateTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 

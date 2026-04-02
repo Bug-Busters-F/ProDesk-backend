@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { TicketStatus } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 
@@ -12,6 +13,7 @@ export interface NewAgentTicketOutput {
   status: TicketStatus;
 }
 
+@Injectable()
 export class NewAgentTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 
