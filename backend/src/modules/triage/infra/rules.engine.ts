@@ -1,47 +1,30 @@
-import { TicketCategory } from '../../shared/domain/ticket-category.enum';
+import { Injectable } from "@nestjs/common";
+import { CategoryService } from "../../category/category.service";
+import { normalizeIntent } from '../../shared/utils/intent-normalizer';
 
-type Rule = {
-  pattern: RegExp;
-  category: TicketCategory;
-  confidence: number;
-};
-
-const RULES: Rule[] = [
-  {
-    pattern: /(site|página|frontend|tela|login|acesso)/i,
-    category: TicketCategory.WEB_APP,
-    confidence: 0.95,
-  },
-  {
-    pattern: /(ia|inteligência artificial|modelo|chatbot|classificação)/i,
-    category: TicketCategory.IA,
-    confidence: 0.95,
-  },
-  {
-    pattern: /(relatório|dashboard|dados|métricas|indicadores)/i,
-    category: TicketCategory.BI,
-    confidence: 0.95,
-  },
-  {
-    pattern: /(sensor|dispositivo|iot|equipamento|hardware)/i,
-    category: TicketCategory.IOT,
-    confidence: 0.95,
-  },
-];
-
+@Injectable()
 export class RulesEngine {
-  static match(text: string) {
-    const matches = RULES.filter((rule) => rule.pattern.test(text)).sort(
-      (a, b) => b.confidence - a.confidence,
-    );
+  constructor(private readonly categoryService: CategoryService) { }
+
+  async match(text: string) {
+    const categories = await this.categoryService.findAll();
+
+    const matches: { category: string; confidence: number }[] = [];
+
+    for (const category of categories) {
+      for (const keyword of category.keywords || []) {
+        if (text.toLowerCase().includes(keyword.toLowerCase())) {
+          matches.push({
+            category: normalizeIntent(category.name),
+            confidence: 0.95,
+          });
+          break;
+        }
+      }
+    }
 
     if (matches.length === 0) return null;
 
-    const best = matches[0];
-
-    return {
-      category: best.category,
-      confidence: best.confidence,
-    };
+    return matches[0];
   }
 }

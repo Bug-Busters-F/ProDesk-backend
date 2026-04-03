@@ -30,6 +30,16 @@ export class CategoryService {
     return this._getCategory(category);
   }
 
+  async findByName(name: string): Promise<CategoryDetails> {
+    const category = await this.categoryModel.findOne({ name }).exec();
+
+    if (!category) {
+      throw new NotFoundException(`Category not found: ${name}`);
+    }
+
+    return this._getCategory(category);
+  }
+
   async createCategory(
     name: string,
     keywords?: string[],
