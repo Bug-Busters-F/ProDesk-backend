@@ -38,6 +38,8 @@
     "node-nlp": "^5.0.0-alpha.5",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "@nestjs/platform-socket.io": "^11.1.17",
+    "@nestjs/websockets": "^11.1.17",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "socket.io": "^4.8.3"
