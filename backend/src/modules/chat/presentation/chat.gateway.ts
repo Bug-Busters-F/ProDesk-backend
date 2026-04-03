@@ -35,6 +35,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
       }
 
+      // ==========================================
+      // BYPASS DE TESTES (Remover em Produção)
+      // ==========================================
+      if (token.startsWith('TEST_TOKEN_')) {
+        const role = token.split('_').pop().toLowerCase();
+        client.data.user = {
+          id: role === 'cliente' ? '507f1f77bcf86cd799439022' : '507f1f77bcf86cd799439033',
+          email: `${role}@teste.com`,
+          role: role,
+        };
+        console.log(`[MODO TESTE] Usuário mockado conectado: ${client.id} (${role})`);
+        return;
+      }
+      // ==========================================
+
       const payload = await this.jwtService.verifyAsync(token);
       client.data.user = {
         id: payload.sub,
