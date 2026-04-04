@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { randomUUID } from 'crypto';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
-import { Ticket, TicketCategory } from '../../../domain/entities/ticket.entity';
+import { Ticket } from '../../../domain/entities/ticket.entity';
 import { ReadAllTicketUseCase } from './readAll.usecase';
 
 describe('ReadAllTicketUseCase', () => {
@@ -12,7 +12,7 @@ describe('ReadAllTicketUseCase', () => {
   beforeEach(() => {
     ticket = Ticket.create({
       title: 'titulo do ticket',
-      category: TicketCategory.BI,
+      category: 'bi',
       description: 'descricao do ticket',
       clientId: randomUUID(),
     });

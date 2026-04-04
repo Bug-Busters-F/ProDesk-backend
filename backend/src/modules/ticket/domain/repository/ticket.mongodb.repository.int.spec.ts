@@ -10,7 +10,6 @@ import { TicketMongoRepository } from '../../infra/repositories/ticket.mongodb.r
 import { Connection } from 'mongoose';
 import {
   Ticket,
-  TicketCategory,
   TicketPriority,
   TicketStatus,
 } from '../entities/ticket.entity';
@@ -60,10 +59,11 @@ describe('ITicketRepository', () => {
   it('Should Create a ticket successfully', async () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 1',
-      category: TicketCategory.IA,
+      category: 'ia',
       description: 'descricao do chamado 1',
       clientId: randomUUID(),
     });
+
     const createResult = await repository.create(ticketToCreate);
 
     expect(createResult).toBeDefined();
@@ -83,7 +83,7 @@ describe('ITicketRepository', () => {
   it('Should read all successfully', async () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 2',
-      category: TicketCategory.BI,
+      category: 'bi',
       description: 'descricao do chamado 2',
       clientId: randomUUID(),
     });
@@ -102,7 +102,7 @@ describe('ITicketRepository', () => {
   it('Should read a ticket by id successfully', async () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 3',
-      category: TicketCategory.BI,
+      category: 'bi',
       description: 'descricao do chamado 3',
       clientId: randomUUID(),
     });
@@ -117,24 +117,24 @@ describe('ITicketRepository', () => {
     const primitiveResult = resultById?.toPrimitives();
 
     expect(primitiveResult?.title).toBe('chamado 3');
-    expect(primitiveResult?.category).toBe(TicketCategory.BI);
+    expect(primitiveResult?.category).toBe('bi');
     expect(primitiveResult?.priority).toBe(TicketPriority.LOW);
     expect(primitiveResult?.description).toBe('descricao do chamado 3');
   });
 
   it('Should return null when try to read a non-existent ticket by id', async () => {
     const result = await repository.readById(randomUUID());
-
     expect(result).toBeNull();
   });
 
   it('Should Save a ticket successfully', async () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 5',
-      category: TicketCategory.BI,
+      category: 'bi',
       description: 'descricao do chamado 5',
       clientId: randomUUID(),
     });
+
     const ticket = await repository.create(ticketToCreate);
 
     expect(ticket).toBeDefined();
@@ -142,7 +142,6 @@ describe('ITicketRepository', () => {
     expect(ticket.status).toBe(TicketStatus.OPEN);
 
     const newAgentId = randomUUID();
-
     ticket.assignToAgent(newAgentId);
 
     const savedTicket = await repository.save(ticket);
@@ -155,7 +154,7 @@ describe('ITicketRepository', () => {
   it('Should return null when try to save a non-existent ticket', async () => {
     const ticket = Ticket.create({
       title: 'chamado 5',
-      category: TicketCategory.BI,
+      category: 'bi',
       description: 'descricao do chamado 5',
       clientId: randomUUID(),
     });
@@ -170,10 +169,11 @@ describe('ITicketRepository', () => {
   it('Should delete a ticket by id successfully', async () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 5',
-      category: TicketCategory.BI,
+      category: 'bi',
       description: 'descricao do chamado 5',
       clientId: randomUUID(),
     });
+
     const createdTicket = await repository.create(ticketToCreate);
 
     expect(createdTicket).toBeDefined();
@@ -188,8 +188,7 @@ describe('ITicketRepository', () => {
   });
 
   it('Should return false when try to delete a non-existent ticket', async () => {
-    const deleteResult = await repository.delete(randomUUID());
-
+    const deleteResult = await repository.delete(randomUUID());    
     expect(deleteResult).toBe(false);
   });
 });

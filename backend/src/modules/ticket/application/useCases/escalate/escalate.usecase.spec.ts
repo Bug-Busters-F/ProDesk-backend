@@ -4,7 +4,6 @@ import { ITicketRepository } from '../../../domain/repository/ticket.repository.
 import { EscalateTicketInput, EscalateTicketUseCase } from './escalate.usecase';
 import {
   Ticket,
-  TicketCategory,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 
@@ -16,7 +15,7 @@ describe('EscalateTicketUseCase', () => {
   beforeEach(() => {
     ticket = Ticket.create({
       title: 'titulo do ticket',
-      category: TicketCategory.BI,
+      category: 'bi',
       description: 'descricao do ticket',
       clientId: randomUUID(),
     });
@@ -33,7 +32,7 @@ describe('EscalateTicketUseCase', () => {
     const input: EscalateTicketInput = {
       id: ticket.id,
       groupId: randomUUID(),
-      category: TicketCategory.IOT,
+      category: 'iot',
     };
 
     ticket.assignToAgent(randomUUID());

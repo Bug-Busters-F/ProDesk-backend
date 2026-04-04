@@ -3,7 +3,6 @@ import { randomUUID } from 'crypto';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 import {
   Ticket,
-  TicketCategory,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { NewAgentTicketUseCase } from './newAgent.usecase';
@@ -16,7 +15,7 @@ describe('NewAgentTicketUseCase', () => {
   beforeEach(() => {
     ticket = Ticket.create({
       title: 'titulo do ticket',
-      category: TicketCategory.BI,
+      category: 'bi',
       description: 'descricao do ticket',
       clientId: randomUUID(),
     });

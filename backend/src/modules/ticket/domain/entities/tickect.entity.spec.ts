@@ -2,7 +2,6 @@
 import { randomUUID } from 'crypto';
 import {
   Ticket,
-  TicketCategory,
   TicketPriority,
   TicketStatus,
   TicketEvents,
@@ -16,7 +15,7 @@ describe('Ticket entity', () => {
   beforeEach(() => {
     ticket = Ticket.create({
       title: 'Chamado para testes',
-      category: TicketCategory.BI,
+      category: 'bi',
       description: 'Descrição do chamado para testes',
       clientId: randomUUID(),
     });
@@ -70,7 +69,8 @@ describe('Ticket entity', () => {
     ticket.assignToAgent(newAgentId);
 
     const newGroupId = randomUUID();
-    ticket.escalate(newGroupId, TicketCategory.IA);
+    ticket.escalate(newGroupId, 'ia');
+
     expect(ticket.status).toBe(TicketStatus.ESCALATED);
     expect(ticket.history.length).toBe(3);
     expect(ticket.history[2]).toMatchObject({
@@ -83,14 +83,14 @@ describe('Ticket entity', () => {
     const primitiveTicket = ticket.toPrimitives();
 
     expect(primitiveTicket.groupId).toBe(newGroupId);
-    expect(primitiveTicket.category).toBe(TicketCategory.IA);
+    expect(primitiveTicket.category).toBe('ia');
     expect(primitiveTicket.escalationLevel).toBe(2);
     expect(primitiveTicket.updatedAt).toBeInstanceOf(Date);
     expect(primitiveTicket.updatedAt).not.toBeNull();
   });
 
   it('Should throw an error when escalating a ticket without a responsible agent', () => {
-    expect(() => ticket.escalate(randomUUID(), TicketCategory.IOT)).toThrow(
+    expect(() => ticket.escalate(randomUUID(), 'iot')).toThrow(
       TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR,
     );
   });
@@ -122,7 +122,7 @@ describe('Ticket entity', () => {
 
   it('Should throw an error when closing a ticket with ESCALATED status', () => {
     ticket.assignToAgent(randomUUID());
-    ticket.escalate(randomUUID(), TicketCategory.WEB_APP);
+    ticket.escalate(randomUUID(), 'web_app');
 
     expect(ticket.status).toBe(TicketStatus.ESCALATED);
     expect(() => ticket.close('Test solution')).toThrow(

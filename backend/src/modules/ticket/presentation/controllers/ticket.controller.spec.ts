@@ -12,7 +12,6 @@ import { DeleteTicketUseCase } from '../../application/useCases/delete/delete.us
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import {
   Ticket,
-  TicketCategory,
   TicketStatus,
 } from '../../domain/entities/ticket.entity';
 import { randomUUID } from 'crypto';
@@ -32,7 +31,7 @@ describe('TicketController', () => {
 
   const ticketData = {
     title: 'chamado 1',
-    category: TicketCategory.BI,
+    category: 'bi',
     description: 'descricao do chamado 1',
     clientId: randomUUID(),
   };
@@ -261,7 +260,7 @@ describe('TicketController', () => {
 
     const payload = {
       groupUD: randomUUID(),
-      category: TicketCategory.IOT,
+      category: 'iot',
     };
 
     const response = await request(httpServer)
@@ -286,7 +285,7 @@ describe('TicketController', () => {
     const groupId = randomUUID();
 
     ticket.assignToAgent(agentId);
-    ticket.escalate(groupId, TicketCategory.IOT);
+    ticket.escalate(groupId, 'iot');
 
     const primitives = ticket.toPrimitives();
 
@@ -307,7 +306,7 @@ describe('TicketController', () => {
 
     const payload = {
       groupUD: randomUUID(),
-      category: TicketCategory.IOT,
+      category: 'iot',
     };
 
     const response = await request(httpServer)

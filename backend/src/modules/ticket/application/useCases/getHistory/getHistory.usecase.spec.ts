@@ -3,7 +3,6 @@ import { randomUUID } from 'crypto';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 import {
   Ticket,
-  TicketCategory,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { GetHistoryTicketUseCase } from './getHistory.usecase';
@@ -16,7 +15,7 @@ describe('GetHistoryTicketUseCase', () => {
   beforeEach(() => {
     ticket = Ticket.create({
       title: 'titulo do ticket',
-      category: TicketCategory.IOT,
+      category: 'iot',
       description: 'descricao do ticket',
       clientId: randomUUID(),
     });
