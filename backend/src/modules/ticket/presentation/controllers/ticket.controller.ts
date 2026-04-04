@@ -26,7 +26,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { TicketCategory } from '../../domain/entities/ticket.entity';
 import { randomUUID } from 'crypto';
 
 @ApiTags('Ticket')

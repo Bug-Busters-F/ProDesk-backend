@@ -9,7 +9,6 @@ export class TicketMapper {
   static toCreateInput(req: CreateTicketRequest): CreateTicketInput {
     return {
       title: req.title,
-      category: req.category,
       description: req.description,
       clientId: req.clientId,
     };

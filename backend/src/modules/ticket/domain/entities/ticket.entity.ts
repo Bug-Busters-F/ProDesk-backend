@@ -16,6 +16,7 @@ export enum TicketPriority {
   CRITICAL = 'CRITICAL',
 }
 
+<<<<<<< HEAD
 export enum TicketCategory {
   WEB_APP = 'WEB_APP',
   IA = 'ARTIFICIAL_INTELLIGENCE',
@@ -24,6 +25,8 @@ export enum TicketCategory {
   OTHER = 'OTHER',
 }
 
+=======
+>>>>>>> f1adf82 (feat(ticket): Integrar triagem na criação de chamado)
 export enum TicketEvents {
   OPEN_NEW_TICKET = 'OPEN_NEW_TICKET',
   ESCALATE = 'ESCALATE',
@@ -72,7 +75,7 @@ export class Ticket {
 
   constructor(
     private title: string,
-    private category: TicketCategory,
+    private category: string,
     private description: string,
     private readonly _clientId: string,
   ) {}
@@ -105,7 +108,7 @@ export class Ticket {
   // Function to create a new ticket instance
   static create(props: {
     title: string;
-    category: TicketCategory;
+    category: string;
     description: string;
     clientId: string;
   }): Ticket {
@@ -133,7 +136,7 @@ export class Ticket {
   static restore(props: {
     _id: string;
     title: string;
-    category: TicketCategory;
+    category: string;
     priority: TicketPriority;
     description: string;
     fileUrls?: string[];
@@ -229,7 +232,7 @@ export class Ticket {
   }
 
   // Escalates the ticket to a new responsible group and optionally changes the category
-  escalate(groupId: string, category?: TicketCategory): void {
+  escalate(groupId: string, category?: string): void {
     if (!this._agentId) {
       throw new Error(TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR);
     }

@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
   Ticket,
-  TicketCategory,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
+import { TriageService } from '../../../../triage/application/triage.service';
 
 export interface CreateTicketInput {
   title: string;
-  category: TicketCategory;
   description: string;
   clientId: string;
 }
@@ -16,7 +15,7 @@ export interface CreateTicketInput {
 export interface CreateTicketOutput {
   _id: string;
   title: string;
-  category: TicketCategory;
+  category: string;
   description: string;
   clientId: string;
   fileUrls: string[];
@@ -26,10 +25,20 @@ export interface CreateTicketOutput {
 
 @Injectable()
 export class CreateTicketUseCase {
-  constructor(private readonly repository: ITicketRepository) {}
+  constructor(
+    private readonly repository: ITicketRepository,
+    private readonly triageService: TriageService,
+  ) {}
 
   async execute(input: CreateTicketInput): Promise<CreateTicketOutput> {
-    const ticket = Ticket.create(input);
+    const triageResult = await this.triageService.classify(
+      input.description,
+    );
+
+    const ticket = Ticket.create({
+      ...input,
+      category: triageResult.category,
+    });
 
     const created = await this.repository.create(ticket);
     const primitives = created.toPrimitives();
