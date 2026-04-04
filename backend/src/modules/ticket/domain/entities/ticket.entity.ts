@@ -16,17 +16,6 @@ export enum TicketPriority {
   CRITICAL = 'CRITICAL',
 }
 
-<<<<<<< HEAD
-export enum TicketCategory {
-  WEB_APP = 'WEB_APP',
-  IA = 'ARTIFICIAL_INTELLIGENCE',
-  BI = 'BUSINESS_INTELLIGENCE',
-  IOT = 'INTERNET_OF_THINGS',
-  OTHER = 'OTHER',
-}
-
-=======
->>>>>>> f1adf82 (feat(ticket): Integrar triagem na criação de chamado)
 export enum TicketEvents {
   OPEN_NEW_TICKET = 'OPEN_NEW_TICKET',
   ESCALATE = 'ESCALATE',
