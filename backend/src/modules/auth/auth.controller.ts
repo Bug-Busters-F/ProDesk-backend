@@ -1,13 +1,30 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAdminDTO, CreateClientDTO, CreateSupportDTO} from '../user/dtos/createUserDTO';
+import {
+  CreateAdminDTO,
+  CreateClientDTO,
+  CreateSupportDTO,
+} from '../user/dtos/createUserDTO';
 import { UserDetails } from '../user/user.interface';
 import { ExistingUserDTO } from '../user/dtos/existingUserDTO';
 import { UserRole } from '../user/user.schema';
 import { Roles } from './guards/roles.decorator';
 import { JwtGuard } from './guards/jwt.guard';
 import { RolesGuard } from './guards/roles.guard';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -25,18 +42,16 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Cliente criado com sucesso' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN ou SUPPORT)'
+    description: 'Acesso negado (somente ADMIN ou SUPPORT)',
   })
-  registerClient(
-    @Body() user: CreateClientDTO
-  ): Promise<UserDetails | null> {
+  registerClient(@Body() user: CreateClientDTO): Promise<UserDetails | null> {
     return this.authService.register({
       ...user,
-      role: UserRole.CLIENT
+      role: UserRole.CLIENT,
     });
   }
 
@@ -49,18 +64,16 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Support criado com sucesso' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
-  registerSupport(
-    @Body() user: CreateSupportDTO
-  ): Promise<UserDetails | null> {
+  registerSupport(@Body() user: CreateSupportDTO): Promise<UserDetails | null> {
     return this.authService.register({
       ...user,
-      role: UserRole.SUPPORT
+      role: UserRole.SUPPORT,
     });
   }
 
@@ -73,16 +86,16 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Admin criado com sucesso' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   register(@Body() user: CreateAdminDTO): Promise<UserDetails> {
     return this.authService.register({
       ...user,
-      role: UserRole.ADMIN
+      role: UserRole.ADMIN,
     });
   }
 
@@ -95,17 +108,15 @@ export class AuthController {
     description: 'Login realizado com sucesso',
     schema: {
       example: {
-        token: 'jwt.token.aqui'
-      }
-    }
+        token: 'jwt.token.aqui',
+      },
+    },
   })
   @ApiResponse({
     status: 401,
-    description: 'Credenciais inválidas'
+    description: 'Credenciais inválidas',
   })
-  login(
-    @Body() user: ExistingUserDTO
-  ): Promise<{ token: string } | null> {
+  login(@Body() user: ExistingUserDTO): Promise<{ token: string } | null> {
     return this.authService.login(user);
   }
 }

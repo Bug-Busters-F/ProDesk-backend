@@ -17,9 +17,7 @@ describe('GroupService (Integration)', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(mongod.getUri()),
-        MongooseModule.forFeature([
-          { name: 'Group', schema: GroupSchema },
-        ]),
+        MongooseModule.forFeature([{ name: 'Group', schema: GroupSchema }]),
       ],
       providers: [GroupService],
     }).compile();
@@ -67,9 +65,9 @@ describe('GroupService (Integration)', () => {
   });
 
   it('should throw error when group not found', async () => {
-    await expect(
-      service.findById('507f1f77bcf86cd799439011')
-    ).rejects.toThrow('Group not found');
+    await expect(service.findById('507f1f77bcf86cd799439011')).rejects.toThrow(
+      'Group not found',
+    );
   });
 
   it('should update group', async () => {
@@ -86,7 +84,7 @@ describe('GroupService (Integration)', () => {
     await expect(
       service.updateGroup('507f1f77bcf86cd799439011', {
         name: 'Fail',
-      })
+      }),
     ).rejects.toThrow('Group not found');
   });
 
@@ -95,14 +93,12 @@ describe('GroupService (Integration)', () => {
 
     await service.deleteGroup(created.id.toString());
 
-    await expect(
-      service.findById(created.id.toString())
-    ).rejects.toThrow();
+    await expect(service.findById(created.id.toString())).rejects.toThrow();
   });
 
   it('should throw error when deleting non-existent group', async () => {
     await expect(
-      service.deleteGroup('507f1f77bcf86cd799439011')
+      service.deleteGroup('507f1f77bcf86cd799439011'),
     ).rejects.toThrow('Group not found');
   });
 });

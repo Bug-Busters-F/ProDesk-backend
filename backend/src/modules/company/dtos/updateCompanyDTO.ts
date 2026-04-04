@@ -7,7 +7,11 @@ export class UpdateCompanyDTO {
   @IsString()
   name?: string;
 
-  @ApiPropertyOptional({ example: '12345678000199', minLength: 14, maxLength: 14 })
+  @ApiPropertyOptional({
+    example: '12345678000199',
+    minLength: 14,
+    maxLength: 14,
+  })
   @IsOptional()
   @IsString()
   @Length(14, 14)

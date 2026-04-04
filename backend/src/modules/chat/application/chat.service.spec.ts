@@ -6,7 +6,6 @@ import { IChatRepository } from '../domain/chat.repository';
 import { IMessageRepository } from '../../Messages/domain/message.repository';
 import { UserRole } from '../../user/user.schema';
 
-
 const mockChatRepository: jest.Mocked<IChatRepository> = {
   create: jest.fn(),
   findById: jest.fn(),
@@ -20,9 +19,7 @@ const mockMessageRepository: jest.Mocked<IMessageRepository> = {
   findByChatId: jest.fn(),
 };
 
-
 // Dados de teste reutilizáveis
-
 
 const TICKET_ID = '507f1f77bcf86cd799439011';
 const CLIENT_ID = '507f1f77bcf86cd799439022';
@@ -41,9 +38,7 @@ const mockChat: ChatDetails = {
   createdAt: new Date('2026-01-01'),
 };
 
-
 // Suite de testes
-
 
 describe('ChatService', () => {
   let service: ChatService;
@@ -76,7 +71,6 @@ describe('ChatService', () => {
     expect(service).toBeDefined();
   });
 
-
   // createChat
 
   describe('createChat', () => {
@@ -85,7 +79,12 @@ describe('ChatService', () => {
       mockChatRepository.create.mockResolvedValue(mockChat);
 
       // Act: chama o método
-      const result = await service.createChat(TICKET_ID, CLIENT_ID, AGENT_ID, GROUP_ID);
+      const result = await service.createChat(
+        TICKET_ID,
+        CLIENT_ID,
+        AGENT_ID,
+        GROUP_ID,
+      );
 
       // Assert: verifica o resultado
       expect(result).toEqual(mockChat);
@@ -153,7 +152,6 @@ describe('ChatService', () => {
       expect(result).toBe(false);
     });
   });
-
 
   // sendMessage
 
@@ -226,15 +224,29 @@ describe('ChatService', () => {
   // getChatHistory
   describe('getChatHistory', () => {
     const mockMessages = [
-      { chatId: CHAT_ID, senderId: CLIENT_ID, content: 'Oi', createdAt: new Date() },
-      { chatId: CHAT_ID, senderId: AGENT_ID, content: 'Olá!', createdAt: new Date() },
+      {
+        chatId: CHAT_ID,
+        senderId: CLIENT_ID,
+        content: 'Oi',
+        createdAt: new Date(),
+      },
+      {
+        chatId: CHAT_ID,
+        senderId: AGENT_ID,
+        content: 'Olá!',
+        createdAt: new Date(),
+      },
     ];
 
     it('should return messages when user is a participant', async () => {
       mockChatRepository.findById.mockResolvedValue(mockChat);
       mockMessageRepository.findByChatId.mockResolvedValue(mockMessages as any);
 
-      const result = await service.getChatHistory(CHAT_ID, CLIENT_ID, UserRole.CLIENT);
+      const result = await service.getChatHistory(
+        CHAT_ID,
+        CLIENT_ID,
+        UserRole.CLIENT,
+      );
 
       expect(result).toEqual(mockMessages);
       expect(mockMessageRepository.findByChatId).toHaveBeenCalledWith(CHAT_ID);
@@ -244,7 +256,11 @@ describe('ChatService', () => {
       mockChatRepository.findById.mockResolvedValue(mockChat);
       mockMessageRepository.findByChatId.mockResolvedValue(mockMessages as any);
 
-      const result = await service.getChatHistory(CHAT_ID, OUTSIDER_ID, UserRole.ADMIN);
+      const result = await service.getChatHistory(
+        CHAT_ID,
+        OUTSIDER_ID,
+        UserRole.ADMIN,
+      );
 
       expect(result).toEqual(mockMessages);
     });
@@ -301,7 +317,9 @@ describe('ChatService', () => {
       const result = await service.getChatsByUser(CLIENT_ID);
 
       expect(result).toEqual(chats);
-      expect(mockChatRepository.findByParticipant).toHaveBeenCalledWith(CLIENT_ID);
+      expect(mockChatRepository.findByParticipant).toHaveBeenCalledWith(
+        CLIENT_ID,
+      );
     });
 
     it('should return empty array when user has no chats', async () => {

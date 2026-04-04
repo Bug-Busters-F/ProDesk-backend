@@ -6,7 +6,7 @@ import { TriageDTO } from '../dtos/triageDTO';
 @ApiTags('Triage')
 @Controller('triage')
 export class TriageController {
-  constructor(private readonly triageService: TriageService) { }
+  constructor(private readonly triageService: TriageService) {}
 
   @Post()
   @ApiBody({ type: TriageDTO })

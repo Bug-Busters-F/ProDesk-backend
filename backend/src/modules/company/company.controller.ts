@@ -1,4 +1,13 @@
-import {Body, Controller, Get, Param, Post, Patch, Delete, UseGuards} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 
 import { CompanyService } from './company.service';
 import { CreateCompanyDTO } from './dtos/createCompanyDTO';
@@ -8,7 +17,14 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/guards/roles.decorator';
 import { UserRole } from '../user/user.schema';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('Company')
 @ApiBearerAuth()
@@ -24,11 +40,11 @@ export class CompanyController {
   @ApiResponse({ status: 201, description: 'Empresa criada com sucesso' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   createCompany(@Body() data: CreateCompanyDTO): Promise<CompanyDetails> {
     return this.companyService.createCompany(data.name, data.cnpj);
@@ -41,11 +57,11 @@ export class CompanyController {
   @ApiResponse({ status: 200, description: 'Lista de empresas retornada' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (permissão insuficiente)'
+    description: 'Acesso negado (permissão insuficiente)',
   })
   getAllCompanies(): Promise<CompanyDetails[]> {
     return this.companyService.findAll();
@@ -60,11 +76,11 @@ export class CompanyController {
   @ApiResponse({ status: 404, description: 'Empresa não encontrada' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (permissão insuficiente)'
+    description: 'Acesso negado (permissão insuficiente)',
   })
   getCompany(@Param('id') id: string): Promise<CompanyDetails> {
     return this.companyService.findById(id);
@@ -79,11 +95,11 @@ export class CompanyController {
   @ApiResponse({ status: 404, description: 'Empresa não encontrada' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (permissão insuficiente)'
+    description: 'Acesso negado (permissão insuficiente)',
   })
   getCompanyByCNPJ(@Param('cnpj') cnpj: string): Promise<CompanyDetails> {
     return this.companyService.findByCnpj(cnpj);
@@ -99,15 +115,15 @@ export class CompanyController {
   @ApiResponse({ status: 404, description: 'Empresa não encontrada' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   updateCompany(
     @Param('id') id: string,
-    @Body() data: UpdateCompanyDTO
+    @Body() data: UpdateCompanyDTO,
   ): Promise<CompanyDetails> {
     return this.companyService.updateCompany(id, data);
   }
@@ -121,11 +137,11 @@ export class CompanyController {
   @ApiResponse({ status: 404, description: 'Empresa não encontrada' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   deleteCompany(@Param('id') id: string): Promise<void> {
     return this.companyService.deleteCompany(id);

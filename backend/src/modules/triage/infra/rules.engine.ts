@@ -1,4 +1,4 @@
-import { TicketCategory } from "../../shared/domain/ticket-category.enum";
+import { TicketCategory } from '../../shared/domain/ticket-category.enum';
 
 type Rule = {
   pattern: RegExp;
@@ -31,9 +31,9 @@ const RULES: Rule[] = [
 
 export class RulesEngine {
   static match(text: string) {
-    const matches = RULES
-      .filter(rule => rule.pattern.test(text))
-      .sort((a, b) => b.confidence - a.confidence);
+    const matches = RULES.filter((rule) => rule.pattern.test(text)).sort(
+      (a, b) => b.confidence - a.confidence,
+    );
 
     if (matches.length === 0) return null;
 

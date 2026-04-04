@@ -1,4 +1,10 @@
-import { IsEmail, IsString, IsOptional, IsEnum, Matches, IsStrongPassword } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsStrongPassword,
+} from 'class-validator';
 import { UserRole } from '../user.schema';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -13,7 +19,8 @@ export class CreateUserDTO {
 
   @ApiProperty({
     example: 'Senha@123',
-    description: 'Mínimo 8 caracteres com maiúscula, minúscula, número e símbolo'
+    description:
+      'Mínimo 8 caracteres com maiúscula, minúscula, número e símbolo',
   })
   @IsString()
   @IsStrongPassword(
@@ -27,7 +34,7 @@ export class CreateUserDTO {
     {
       message:
         'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.',
-    }
+    },
   )
   password: string;
 
@@ -68,7 +75,7 @@ export class CreateAdminDTO {
     {
       message:
         'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.',
-    }
+    },
   )
   password: string;
 
@@ -78,7 +85,7 @@ export class CreateAdminDTO {
   groupId?: string;
 }
 
-export class CreateSupportDTO{
+export class CreateSupportDTO {
   @ApiProperty({ example: 'Support User' })
   @IsString()
   name: string;
@@ -100,7 +107,7 @@ export class CreateSupportDTO{
     {
       message:
         'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.',
-    }
+    },
   )
   password: string;
 
@@ -110,7 +117,7 @@ export class CreateSupportDTO{
   groupId?: string;
 }
 
-export class CreateClientDTO{
+export class CreateClientDTO {
   @ApiProperty({ example: 'Client User' })
   @IsString()
   name: string;
@@ -132,11 +139,11 @@ export class CreateClientDTO{
     {
       message:
         'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.',
-    }
+    },
   )
   password: string;
 
-  role = UserRole.CLIENT
+  role = UserRole.CLIENT;
 
   @ApiProperty({ example: '65f1a2b3c9d123456789abcd' })
   @IsString()

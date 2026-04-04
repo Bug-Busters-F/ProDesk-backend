@@ -1,7 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsOptional } from 'class-validator';
 
-
 export class UpdateGroupDTO {
   @ApiPropertyOptional({ example: 'Support Team Updated' })
   @IsOptional()

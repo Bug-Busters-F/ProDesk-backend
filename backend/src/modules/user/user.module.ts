@@ -7,10 +7,13 @@ import { GroupModule } from '../group/group.module';
 import { CompanyModule } from '../company/company.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{name: "User", schema:
-    UserSchema}]), GroupModule, CompanyModule],
+  imports: [
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    GroupModule,
+    CompanyModule,
+  ],
   controllers: [UserController],
   providers: [UserService],
-  exports:[UserService]
+  exports: [UserService],
 })
 export class UserModule {}

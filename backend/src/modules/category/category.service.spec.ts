@@ -50,12 +50,30 @@ describe('CategoryService (Integration)', () => {
   });
 
   it('should create a category successfully', async () => {
-    const category = await service.createCategory('IoT', ['sensor', 'dispositivo', 'iot', 'equipamento', 'hardware'], ['dispositivo desconectado', 'erro no equipamento', 'falha na comunicação com dispositivo']);
+    const category = await service.createCategory(
+      'IoT',
+      ['sensor', 'dispositivo', 'iot', 'equipamento', 'hardware'],
+      [
+        'dispositivo desconectado',
+        'erro no equipamento',
+        'falha na comunicação com dispositivo',
+      ],
+    );
 
     expect(category).toBeDefined();
     expect(category.name).toBe('IoT');
-    expect(category.keywords).toStrictEqual(['sensor', 'dispositivo', 'iot', 'equipamento', 'hardware']);
-    expect(category.trainingPhrases).toStrictEqual(['dispositivo desconectado', 'erro no equipamento', 'falha na comunicação com dispositivo']);
+    expect(category.keywords).toStrictEqual([
+      'sensor',
+      'dispositivo',
+      'iot',
+      'equipamento',
+      'hardware',
+    ]);
+    expect(category.trainingPhrases).toStrictEqual([
+      'dispositivo desconectado',
+      'erro no equipamento',
+      'falha na comunicação com dispositivo',
+    ]);
   });
 
   it('should return all categories', async () => {
@@ -77,9 +95,9 @@ describe('CategoryService (Integration)', () => {
   });
 
   it('should throw error when category is not found', async () => {
-    await expect(
-      service.findById('507f1f77bcf86cd799439011')
-    ).rejects.toThrow('Category not found');
+    await expect(service.findById('507f1f77bcf86cd799439011')).rejects.toThrow(
+      'Category not found',
+    );
   });
 
   it('should update category', async () => {
@@ -96,7 +114,7 @@ describe('CategoryService (Integration)', () => {
     await expect(
       service.updateCategory('507f1f77bcf86cd799439011', {
         name: 'Fail',
-      })
+      }),
     ).rejects.toThrow('Category not found');
   });
 
@@ -105,14 +123,12 @@ describe('CategoryService (Integration)', () => {
 
     await service.deleteCategory(created.id.toString());
 
-    await expect(
-      service.findById(created.id.toString())
-    ).rejects.toThrow();
+    await expect(service.findById(created.id.toString())).rejects.toThrow();
   });
 
   it('should throw error when deleting non-existent category', async () => {
     await expect(
-      service.deleteCategory('507f1f77bcf86cd799439011')
+      service.deleteCategory('507f1f77bcf86cd799439011'),
     ).rejects.toThrow('Category not found');
   });
 });

@@ -1,4 +1,14 @@
-import {Body,Controller,Get,Param,Post,Patch,Delete, UseGuards, Req} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 
 import { GroupService } from './group.service';
 import { CreateGroupDTO } from './dtos/createGroupDTO';
@@ -8,8 +18,14 @@ import { Roles } from '../auth/guards/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from '../user/user.schema';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('Group')
 @ApiBearerAuth()
@@ -25,17 +41,14 @@ export class GroupController {
   @ApiResponse({ status: 201, description: 'Grupo criado com sucesso' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   createGroup(@Body() group: CreateGroupDTO): Promise<GroupDetails> {
-    return this.groupService.createGroup(
-      group.name,
-      group.description
-    );
+    return this.groupService.createGroup(group.name, group.description);
   }
 
   @Get()
@@ -45,11 +58,11 @@ export class GroupController {
   @ApiResponse({ status: 200, description: 'Lista de grupos retornada' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN ou SUPPORT)'
+    description: 'Acesso negado (somente ADMIN ou SUPPORT)',
   })
   getAllGroups(): Promise<GroupDetails[]> {
     return this.groupService.findAll();
@@ -64,11 +77,11 @@ export class GroupController {
   @ApiResponse({ status: 404, description: 'Grupo não encontrado' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN ou SUPPORT)'
+    description: 'Acesso negado (somente ADMIN ou SUPPORT)',
   })
   getGroup(@Param('id') id: string): Promise<GroupDetails> {
     return this.groupService.findById(id);
@@ -84,15 +97,15 @@ export class GroupController {
   @ApiResponse({ status: 404, description: 'Grupo não encontrado' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   updateGroup(
     @Param('id') id: string,
-    @Body() data: UpdateGroupDTO
+    @Body() data: UpdateGroupDTO,
   ): Promise<GroupDetails> {
     return this.groupService.updateGroup(id, data);
   }
@@ -106,11 +119,11 @@ export class GroupController {
   @ApiResponse({ status: 404, description: 'Grupo não encontrado' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   deleteGroup(@Param('id') id: string): Promise<void> {
     return this.groupService.deleteGroup(id);

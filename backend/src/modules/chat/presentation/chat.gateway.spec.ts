@@ -137,7 +137,6 @@ describe('ChatGateway', () => {
     });
   });
 
-
   // entrarChat
 
   describe('entrarChat', () => {
@@ -148,7 +147,10 @@ describe('ChatGateway', () => {
 
       await gateway.handleEntrarChat({ chatId: CHAT_ID }, client);
 
-      expect(mockChatService.isParticipant).toHaveBeenCalledWith(CHAT_ID, CLIENT_ID);
+      expect(mockChatService.isParticipant).toHaveBeenCalledWith(
+        CHAT_ID,
+        CLIENT_ID,
+      );
       expect(client.join).toHaveBeenCalledWith(CHAT_ID);
       expect(client.emit).toHaveBeenCalledWith('entrou', { chatId: CHAT_ID });
     });
@@ -252,12 +254,16 @@ describe('ChatGateway', () => {
     });
   });
 
-
   // buscarHistorico
- 
+
   describe('buscarHistorico', () => {
     const mockMessages = [
-      { chatId: CHAT_ID, senderId: CLIENT_ID, content: 'Oi', createdAt: new Date() },
+      {
+        chatId: CHAT_ID,
+        senderId: CLIENT_ID,
+        content: 'Oi',
+        createdAt: new Date(),
+      },
     ];
 
     it('should emit chat history to the client', async () => {
@@ -292,7 +298,6 @@ describe('ChatGateway', () => {
       });
     });
   });
-
 
   // sairChat
 

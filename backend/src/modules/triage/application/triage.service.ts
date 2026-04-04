@@ -13,11 +13,7 @@ export class TriageService {
   async classify(description: string): Promise<Category> {
     const ruleMatch = RulesEngine.match(description);
     if (ruleMatch) {
-      return new Category(
-        ruleMatch.category,
-        ruleMatch.confidence,
-        'rule',
-      );
+      return new Category(ruleMatch.category, ruleMatch.confidence, 'rule');
     }
 
     const nlpResult = await this.nlp.classify(description);
@@ -26,11 +22,7 @@ export class TriageService {
       nlpResult.category &&
       nlpResult.confidence >= this.CONFIDENCE_THRESHOLD
     ) {
-      return new Category(
-        nlpResult.category,
-        nlpResult.confidence,
-        'nlp',
-      );
+      return new Category(nlpResult.category, nlpResult.confidence, 'nlp');
     }
 
     return new Category(TicketCategory.OTHER, 0.5, 'fallback');

@@ -1,4 +1,4 @@
-import { TicketCategory } from "../../shared/domain/ticket-category.enum";
+import { TicketCategory } from '../../shared/domain/ticket-category.enum';
 
 export class Category {
   constructor(

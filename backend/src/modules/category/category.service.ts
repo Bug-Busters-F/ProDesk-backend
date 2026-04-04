@@ -8,13 +8,15 @@ import { GroupService } from '../group/group.service';
 @Injectable()
 export class CategoryService {
   constructor(
-    @InjectModel('Category') private readonly categoryModel: Model<CategoryDocument>, private groupService: GroupService,
-  ) { }
+    @InjectModel('Category')
+    private readonly categoryModel: Model<CategoryDocument>,
+    private groupService: GroupService,
+  ) {}
 
   async findAll(): Promise<CategoryDetails[]> {
     const categories = await this.categoryModel.find().exec();
 
-    return categories.map(category => this._getCategory(category));
+    return categories.map((category) => this._getCategory(category));
   }
 
   async findById(id: string): Promise<CategoryDetails> {
@@ -33,7 +35,6 @@ export class CategoryService {
     trainingPhrases?: string[],
     groupIds?: string[],
   ): Promise<CategoryDetails> {
-
     if (groupIds && groupIds.length > 0) {
       for (const groupId of groupIds) {
         const group = await this.groupService.findById(groupId);
@@ -60,7 +61,6 @@ export class CategoryService {
     id: string,
     data: Partial<CategoryDetails>,
   ): Promise<CategoryDetails> {
-
     if (data.groupIds && data.groupIds.length > 0) {
       for (const groupId of data.groupIds) {
         const group = await this.groupService.findById(groupId);
