@@ -1,6 +1,5 @@
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketCategory } from '../../domain/entities/ticket.entity';
 import { randomUUID } from 'crypto';
 
 export class EscalateTicketRequest {
@@ -9,8 +8,11 @@ export class EscalateTicketRequest {
   @IsNotEmpty()
   groupId!: string;
 
-  @ApiProperty({ enum: TicketCategory, description: 'Categoria do ticket' })
+  @ApiProperty({
+    example: 'web_app',
+    description: 'Categoria do ticket',
+  })
   @IsString()
   @IsNotEmpty()
-  category!: TicketCategory;
+  category!: string;
 }

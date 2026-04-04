@@ -1,6 +1,5 @@
 import {
   Ticket,
-  TicketCategory,
   TicketEventMessage,
   TicketEvents,
   TicketPriority,
@@ -14,7 +13,7 @@ export class TicketMapper {
     return Ticket.restore({
       _id: doc._id.toString(),
       title: doc.title,
-      category: doc.category as TicketCategory,
+      category: doc.category,
       priority: doc.priority as TicketPriority,
       status: doc.status as TicketStatus,
       description: doc.description,

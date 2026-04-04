@@ -1,87 +1,43 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { NlpManager } from 'node-nlp';
-import { TicketCategory } from '../../shared/domain/ticket-category.enum';
+import { CategoryService } from '../../category/category.service';
+import { normalizeIntent } from '../../shared/utils/intent-normalizer';
 
 @Injectable()
 export class NlpProvider implements OnModuleInit {
+  constructor(private readonly categoryService: CategoryService) {}
   private manager: NlpManager;
 
   async onModuleInit() {
     this.manager = new NlpManager({ languages: ['pt'] });
 
-    this.addTrainingData();
+    await this.addTrainingData();
 
     await this.manager.train();
   }
 
-  private addTrainingData() {
-    this.manager.addDocument('pt', 'site não abre', TicketCategory.WEB_APP);
-    this.manager.addDocument('pt', 'erro na página', TicketCategory.WEB_APP);
-    this.manager.addDocument(
-      'pt',
-      'aplicação web travando',
-      TicketCategory.WEB_APP,
-    );
-    this.manager.addDocument('pt', 'problema no login', TicketCategory.WEB_APP);
-    this.manager.addDocument(
-      'pt',
-      'não consigo acessar o sistema',
-      TicketCategory.WEB_APP,
-    );
+  private async addTrainingData() {
+    const categories = await this.categoryService.findAll();
 
-    this.manager.addDocument(
-      'pt',
-      'ia não está respondendo',
-      TicketCategory.IA,
-    );
-    this.manager.addDocument(
-      'pt',
-      'erro na classificação automática',
-      TicketCategory.IA,
-    );
-    this.manager.addDocument(
-      'pt',
-      'modelo não está funcionando',
-      TicketCategory.IA,
-    );
-    this.manager.addDocument('pt', 'problema com chatbot', TicketCategory.IA);
+    for (const category of categories) {
+      const intent = normalizeIntent(category.name);
 
-    this.manager.addDocument('pt', 'relatório não carrega', TicketCategory.BI);
-    this.manager.addDocument('pt', 'erro no dashboard', TicketCategory.BI);
-    this.manager.addDocument('pt', 'dados incorretos', TicketCategory.BI);
-    this.manager.addDocument('pt', 'problema com métricas', TicketCategory.BI);
-
-    this.manager.addDocument('pt', 'sensor não responde', TicketCategory.IOT);
-    this.manager.addDocument(
-      'pt',
-      'dispositivo desconectado',
-      TicketCategory.IOT,
-    );
-    this.manager.addDocument('pt', 'erro no equipamento', TicketCategory.IOT);
-    this.manager.addDocument(
-      'pt',
-      'falha na comunicação com dispositivo',
-      TicketCategory.IOT,
-    );
+      for (const phrase of category.trainingPhrases || []) {
+        this.manager.addDocument('pt', phrase, intent);
+      }
+    }
   }
 
   async classify(text: string) {
-    const normalized = this.normalize(text);
+  const normalized = this.normalize(text);
 
-    const result = await this.manager.process('pt', normalized);
+  const result = await this.manager.process('pt', normalized);
 
-    const isValidCategory = Object.values(TicketCategory).includes(
-      result.intent as TicketCategory,
-    );
-
-    return {
-      category:
-        result.intent === 'None' || !isValidCategory
-          ? null
-          : (result.intent as TicketCategory),
-      confidence: result.score,
-    };
-  }
+  return {
+    category: result.intent === 'None' ? null : result.intent,
+    confidence: result.score,
+  };
+}
 
   private normalize(text: string): string {
     return text.toLowerCase().replace(/\n/g, ' ').slice(0, 500);

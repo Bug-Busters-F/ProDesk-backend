@@ -14,12 +14,14 @@ import { GetHistoryTicketUseCase } from './application/useCases/getHistory/getHi
 import { EscalateTicketUseCase } from './application/useCases/escalate/escalate.usecase';
 import { DeleteTicketUseCase } from './application/useCases/delete/delete.usecase';
 import { NewAgentTicketUseCase } from './application/useCases/newAgent/newAgent.usecase';
+import { TriageModule } from '../triage/triage.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: TicketSchemaClass.name, schema: TicketSchema },
     ]),
+    TriageModule,
   ],
   controllers: [TicketController],
   providers: [

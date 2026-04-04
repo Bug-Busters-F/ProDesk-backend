@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
   Ticket,
-  TicketCategory,
   TicketPriority,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
@@ -10,7 +9,7 @@ import { ITicketRepository } from '../../../domain/repository/ticket.repository.
 export interface ReadAllTicketOutput {
   id: string;
   title: string;
-  category: TicketCategory;
+  category: string;
   priority: TicketPriority;
   description: string;
   clientId: string;

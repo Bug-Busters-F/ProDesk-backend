@@ -94,6 +94,15 @@ describe('CategoryService (Integration)', () => {
     expect(found.name).toBe('Test Category');
   });
 
+  it('should find category by name', async () => {
+    const created = await service.createCategory('Test Name');
+
+    const found = await service.findByName(created.name.toString());
+
+    expect(found).toBeDefined();
+    expect(found.name).toBe('Test Name');
+  });
+
   it('should throw error when category is not found', async () => {
     await expect(service.findById('507f1f77bcf86cd799439011')).rejects.toThrow(
       'Category not found',
