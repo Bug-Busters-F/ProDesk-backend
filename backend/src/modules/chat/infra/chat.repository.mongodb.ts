@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Chat, ChatDocument } from './chat.schema';
 import { IChatRepository } from '../domain/chat.repository';
 import { ChatDetails, ChatStatus } from '../domain/chat.entity';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ChatRepositoryMongodb implements IChatRepository {
@@ -22,21 +23,33 @@ export class ChatRepositoryMongodb implements IChatRepository {
     };
   }
 
-  async create(data: {
-    ticketId: string;
-    clientId: string;
-    agentId: string;
-    groupId: string;
-  }): Promise<ChatDetails> {
-    const createdChat = new this.chatModel(data);
-    const saved = await createdChat.save();
-    return this.toDetails(saved);
+  async create(chat: ChatDetails): Promise<ChatDetails> {
+    const newChat = new this.chatModel({
+      _id: randomUUID(),
+      ticketId: chat.ticketId,
+      clientId: chat.clientId,
+      agentId: chat.agentId,
+      groupId: chat.groupId,
+      status: chat.status,
+    });
+    
+    await newChat.save();
+    return this.toDetails(newChat);
   }
 
   async findById(id: string): Promise<ChatDetails | null> {
-    const doc = await this.chatModel.findById(id).exec();
-    if (!doc) return null;
-    return this.toDetails(doc);
+    const chatDoc = await this.chatModel.findById(id).exec();
+    
+    if (!chatDoc) return null;
+
+    return {
+      id: chatDoc._id as string,
+      ticketId: chatDoc.ticketId.toString(),
+      clientId: chatDoc.clientId.toString(),
+      agentId: chatDoc.agentId.toString(),
+      groupId: chatDoc.groupId.toString(),
+      status: chatDoc.status as any,
+    };
   }
 
   async findByParticipant(userId: string): Promise<ChatDetails[]> {
@@ -50,9 +63,18 @@ export class ChatRepositoryMongodb implements IChatRepository {
   }
 
   async findByTicketId(ticketId: string): Promise<ChatDetails | null> {
-    const doc = await this.chatModel.findOne({ ticketId }).exec();
-    if (!doc) return null;
-    return this.toDetails(doc);
+    const chatDoc = await this.chatModel.findOne({ ticketId }).exec();
+    
+    if (!chatDoc) return null;
+
+    return {
+      id: chatDoc._id as string,
+      ticketId: chatDoc.ticketId?.toString() || '',
+      clientId: chatDoc.clientId?.toString() || '',
+      agentId: chatDoc.agentId?.toString() || '',
+      groupId: chatDoc.groupId?.toString() || '',
+      status: chatDoc.status as any,
+    };
   }
 
   async updateStatus(
