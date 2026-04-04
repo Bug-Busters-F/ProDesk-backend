@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, UserRole } from './user.schema';
@@ -9,8 +13,10 @@ import { GroupService } from '../group/group.service';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel("User")
-    private readonly userModel: Model<UserDocument>, private companyService: CompanyService, private groupService: GroupService
+    @InjectModel('User')
+    private readonly userModel: Model<UserDocument>,
+    private companyService: CompanyService,
+    private groupService: GroupService,
   ) {}
 
   async findAll(
@@ -22,14 +28,13 @@ export class UserService {
       role?: UserRole;
       companyId?: string;
       groupId?: string;
-    }
+    },
   ): Promise<{
     data: UserDetails[];
     total: number;
     page: number;
     lastPage: number;
   }> {
-
     const query: any = {};
 
     if (filters?.name) {
@@ -57,8 +62,8 @@ export class UserService {
     const [users, total] = await Promise.all([
       this.userModel
         .find(query)
-        .populate("companyId")
-        .populate("groupId")
+        .populate('companyId')
+        .populate('groupId')
         .skip(skip)
         .limit(limit)
         .exec(),
@@ -67,7 +72,7 @@ export class UserService {
     ]);
 
     return {
-      data: users.map(user => this._getUser(user)),
+      data: users.map((user) => this._getUser(user)),
       total,
       page,
       lastPage: Math.ceil(total / limit),
@@ -77,12 +82,12 @@ export class UserService {
   async findById(id: string): Promise<UserDetails> {
     const user = await this.userModel
       .findById(id)
-      .populate("companyId")
-      .populate("groupId")
+      .populate('companyId')
+      .populate('groupId')
       .exec();
 
     if (!user) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
 
     return this._getUser(user);
@@ -91,8 +96,8 @@ export class UserService {
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel
       .findOne({ email })
-      .populate("companyId")
-      .populate("groupId")
+      .populate('companyId')
+      .populate('groupId')
       .exec();
   }
 
@@ -102,10 +107,8 @@ export class UserService {
     password: string,
     role: UserRole,
     companyId?: string,
-    groupId?: string
+    groupId?: string,
   ): Promise<UserDocument> {
-
-
     if (companyId) {
       const company = await this.companyService.findById(companyId);
 
@@ -113,7 +116,6 @@ export class UserService {
         throw new NotFoundException('Company not found');
       }
     }
-
 
     if (groupId) {
       const group = await this.groupService.findById(groupId);
@@ -134,8 +136,8 @@ export class UserService {
 
     const savedUser = await newUser.save();
 
-    await savedUser.populate("companyId");
-    await savedUser.populate("groupId");
+    await savedUser.populate('companyId');
+    await savedUser.populate('groupId');
 
     return savedUser;
   }
@@ -148,13 +150,12 @@ export class UserService {
       role: UserRole;
       companyId: string;
       groupId: string;
-    }>
+    }>,
   ): Promise<UserDetails> {
-
-    if (data.email){
+    if (data.email) {
       const existingUser = await this.findByEmail(data.email!);
-      
-      if (existingUser) throw new BadRequestException("Email taken!")
+
+      if (existingUser) throw new BadRequestException('Email taken!');
     }
 
     if (data.companyId) {
@@ -164,7 +165,6 @@ export class UserService {
         throw new NotFoundException('Company not found');
       }
     }
-
 
     if (data.groupId) {
       const group = await this.groupService.findById(data.groupId);
@@ -176,12 +176,12 @@ export class UserService {
 
     const updatedUser = await this.userModel
       .findByIdAndUpdate(id, data, { new: true })
-      .populate("companyId")
-      .populate("groupId")
+      .populate('companyId')
+      .populate('groupId')
       .exec();
 
     if (!updatedUser) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
 
     return this._getUser(updatedUser);
@@ -191,10 +191,9 @@ export class UserService {
     const result = await this.userModel.findByIdAndDelete(id);
 
     if (!result) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException('User not found');
     }
   }
-
 
   _getUser(user: any): UserDetails {
     return {
@@ -207,7 +206,7 @@ export class UserService {
         ? {
             id: user.companyId._id,
             name: user.companyId.name,
-            cnpj: user.companyId.cnpj
+            cnpj: user.companyId.cnpj,
           }
         : undefined,
 
@@ -215,9 +214,9 @@ export class UserService {
         ? {
             id: user.groupId._id,
             name: user.groupId.name,
-            description: user.groupId.description
+            description: user.groupId.description,
           }
-        : undefined
+        : undefined,
     };
   }
 }

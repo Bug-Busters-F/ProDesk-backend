@@ -3,5 +3,5 @@ export enum TicketCategory {
   IA = 'ARTIFICIAL_INTELLIGENCE',
   BI = 'BUSINESS_INTELLIGENCE',
   IOT = 'INTERNET_OF_THINGS',
-  OTHER = "OTHER"
+  OTHER = 'OTHER',
 }

@@ -32,47 +32,47 @@ describe('UserService (Integration)', () => {
     }),
   };
 
-beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
+  beforeAll(async () => {
+    mongod = await MongoMemoryServer.create();
 
-  const module: TestingModule = await Test.createTestingModule({
-    imports: [
-      MongooseModule.forRoot(mongod.getUri()),
-      MongooseModule.forFeature([
-        { name: "User", schema: UserSchema },
-        { name: "Company", schema: CompanySchema },
-        { name: "Group", schema: GroupSchema }, 
-      ]),
-    ],
-    providers: [
-      UserService,
-      {
-        provide: CompanyService,
-        useValue: {
-          findById: jest.fn().mockResolvedValue({
-            id: "company-id",
-            name: "Test Company",
-            cnpj: "123"
-          }),
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        MongooseModule.forRoot(mongod.getUri()),
+        MongooseModule.forFeature([
+          { name: 'User', schema: UserSchema },
+          { name: 'Company', schema: CompanySchema },
+          { name: 'Group', schema: GroupSchema },
+        ]),
+      ],
+      providers: [
+        UserService,
+        {
+          provide: CompanyService,
+          useValue: {
+            findById: jest.fn().mockResolvedValue({
+              id: 'company-id',
+              name: 'Test Company',
+              cnpj: '123',
+            }),
+          },
         },
-      },
 
-      {
-        provide: GroupService,
-        useValue: {
-          findById: jest.fn().mockResolvedValue({
-            id: "group-id",
-            name: "Test Group",
-            description: "desc"
-          }),
+        {
+          provide: GroupService,
+          useValue: {
+            findById: jest.fn().mockResolvedValue({
+              id: 'group-id',
+              name: 'Test Group',
+              description: 'desc',
+            }),
+          },
         },
-      },
-    ],
-  }).compile();
+      ],
+    }).compile();
 
-  service = module.get<UserService>(UserService);
-  connection = module.get<Connection>(getConnectionToken());
-});
+    service = module.get<UserService>(UserService);
+    connection = module.get<Connection>(getConnectionToken());
+  });
 
   afterEach(async () => {
     const collections = connection.collections;
@@ -86,41 +86,41 @@ beforeAll(async () => {
     await mongod.stop();
   });
 
-    it('should create user successfully', async () => {
+  it('should create user successfully', async () => {
     const companyId = new Types.ObjectId();
     const groupId = new Types.ObjectId();
 
     await connection.collection('companies').insertOne({
-        _id: companyId,
-        name: 'Test Company',
-        cnpj: '12345678901234',
+      _id: companyId,
+      name: 'Test Company',
+      cnpj: '12345678901234',
     });
 
     await connection.collection('groups').insertOne({
-        _id: groupId,
-        name: 'Test Group',
-        description: 'Test desc',
+      _id: groupId,
+      name: 'Test Group',
+      description: 'Test desc',
     });
 
     const user = await service.createUser(
-        'Gabriel',
-        'gabriel@email.com',
-        'Password123!',
-        UserRole.ADMIN,
-        companyId.toString(),
-        groupId.toString()
+      'Gabriel',
+      'gabriel@email.com',
+      'Password123!',
+      UserRole.ADMIN,
+      companyId.toString(),
+      groupId.toString(),
     );
 
     expect(user).toBeDefined();
     expect(user.email).toBe('gabriel@email.com');
-    });
+  });
 
   it('should find user by id', async () => {
     const created = await service.createUser(
       'Test',
       'test@email.com',
       'Password123!',
-      UserRole.CLIENT
+      UserRole.CLIENT,
     );
 
     const result = await service.findById(created._id.toString());
@@ -130,8 +130,18 @@ beforeAll(async () => {
   });
 
   it('should return paginated users', async () => {
-    await service.createUser('User1', 'u1@email.com', 'Password123!', UserRole.CLIENT);
-    await service.createUser('User2', 'u2@email.com', 'Password123!', UserRole.CLIENT);
+    await service.createUser(
+      'User1',
+      'u1@email.com',
+      'Password123!',
+      UserRole.CLIENT,
+    );
+    await service.createUser(
+      'User2',
+      'u2@email.com',
+      'Password123!',
+      UserRole.CLIENT,
+    );
 
     const result = await service.findAll(1, 1);
 
@@ -142,8 +152,18 @@ beforeAll(async () => {
   });
 
   it('should filter users by name', async () => {
-    await service.createUser('Gabriel', 'g@email.com', 'Password123!', UserRole.CLIENT);
-    await service.createUser('Maria', 'm@email.com', 'Password123!', UserRole.CLIENT);
+    await service.createUser(
+      'Gabriel',
+      'g@email.com',
+      'Password123!',
+      UserRole.CLIENT,
+    );
+    await service.createUser(
+      'Maria',
+      'm@email.com',
+      'Password123!',
+      UserRole.CLIENT,
+    );
 
     const result = await service.findAll(1, 10, { name: 'gab' });
 
@@ -156,7 +176,7 @@ beforeAll(async () => {
       'Old Name',
       'old@email.com',
       'Password123!',
-      UserRole.CLIENT
+      UserRole.CLIENT,
     );
 
     const updated = await service.updateUser(created._id.toString(), {
@@ -171,14 +191,12 @@ beforeAll(async () => {
       'To Delete',
       'delete@email.com',
       'Password123!',
-      UserRole.CLIENT
+      UserRole.CLIENT,
     );
 
     await service.deleteUser(created._id.toString());
 
-    await expect(
-      service.findById(created._id.toString())
-    ).rejects.toThrow();
+    await expect(service.findById(created._id.toString())).rejects.toThrow();
   });
 
   it('should throw error when email already exists on update', async () => {
@@ -186,20 +204,20 @@ beforeAll(async () => {
       'User1',
       'same@email.com',
       'Password123!',
-      UserRole.CLIENT
+      UserRole.CLIENT,
     );
 
     const user2 = await service.createUser(
       'User2',
       'other@email.com',
       'Password123!',
-      UserRole.CLIENT
+      UserRole.CLIENT,
     );
 
     await expect(
       service.updateUser(user2._id.toString(), {
         email: 'same@email.com',
-      })
+      }),
     ).rejects.toThrow();
   });
 });

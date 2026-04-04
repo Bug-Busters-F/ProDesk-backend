@@ -23,7 +23,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Conexão / Desconexão
 
-
   async handleConnection(client: Socket) {
     try {
       const token =
@@ -57,7 +56,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         role: payload.role,
       };
 
-      console.log(`Usuário autenticado conectado: ${client.id} (${payload.email})`);
+      console.log(
+        `Usuário autenticado conectado: ${client.id} (${payload.email})`,
+      );
     } catch {
       console.log(`Conexão recusada — token inválido: ${client.id}`);
       client.disconnect();
@@ -68,9 +69,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Usuário desconectado: ${client.id}`);
   }
 
-
   // Entrar / Sair do Chat
-
 
   @SubscribeMessage('entrarChat')
   async handleEntrarChat(
@@ -106,11 +105,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     client.leave(data.chatId);
-    console.log(`Usuário ${client.data?.user?.email} saiu do chat: ${data.chatId}`);
+    console.log(
+      `Usuário ${client.data?.user?.email} saiu do chat: ${data.chatId}`,
+    );
   }
 
   // Enviar Mensagem
-
 
   @SubscribeMessage('enviarMensagem')
   async handleEnviarMensagem(
@@ -141,9 +141,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-
   // Buscar Histórico
- 
 
   @SubscribeMessage('buscarHistorico')
   async handleBuscarHistorico(

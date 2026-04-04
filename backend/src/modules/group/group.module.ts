@@ -5,9 +5,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { GroupSchema } from './group.schema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{name: "Group", schema: GroupSchema}])],
+  imports: [
+    MongooseModule.forFeature([{ name: 'Group', schema: GroupSchema }]),
+  ],
   controllers: [GroupController],
   providers: [GroupService],
-  exports: [GroupService]
+  exports: [GroupService],
 })
 export class GroupModule {}

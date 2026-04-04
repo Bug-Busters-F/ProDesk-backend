@@ -17,13 +17,33 @@ export class NlpProvider implements OnModuleInit {
   private addTrainingData() {
     this.manager.addDocument('pt', 'site não abre', TicketCategory.WEB_APP);
     this.manager.addDocument('pt', 'erro na página', TicketCategory.WEB_APP);
-    this.manager.addDocument('pt', 'aplicação web travando', TicketCategory.WEB_APP);
+    this.manager.addDocument(
+      'pt',
+      'aplicação web travando',
+      TicketCategory.WEB_APP,
+    );
     this.manager.addDocument('pt', 'problema no login', TicketCategory.WEB_APP);
-    this.manager.addDocument('pt', 'não consigo acessar o sistema', TicketCategory.WEB_APP);
+    this.manager.addDocument(
+      'pt',
+      'não consigo acessar o sistema',
+      TicketCategory.WEB_APP,
+    );
 
-    this.manager.addDocument('pt', 'ia não está respondendo', TicketCategory.IA);
-    this.manager.addDocument('pt', 'erro na classificação automática', TicketCategory.IA);
-    this.manager.addDocument('pt', 'modelo não está funcionando', TicketCategory.IA);
+    this.manager.addDocument(
+      'pt',
+      'ia não está respondendo',
+      TicketCategory.IA,
+    );
+    this.manager.addDocument(
+      'pt',
+      'erro na classificação automática',
+      TicketCategory.IA,
+    );
+    this.manager.addDocument(
+      'pt',
+      'modelo não está funcionando',
+      TicketCategory.IA,
+    );
     this.manager.addDocument('pt', 'problema com chatbot', TicketCategory.IA);
 
     this.manager.addDocument('pt', 'relatório não carrega', TicketCategory.BI);
@@ -32,9 +52,17 @@ export class NlpProvider implements OnModuleInit {
     this.manager.addDocument('pt', 'problema com métricas', TicketCategory.BI);
 
     this.manager.addDocument('pt', 'sensor não responde', TicketCategory.IOT);
-    this.manager.addDocument('pt', 'dispositivo desconectado', TicketCategory.IOT);
+    this.manager.addDocument(
+      'pt',
+      'dispositivo desconectado',
+      TicketCategory.IOT,
+    );
     this.manager.addDocument('pt', 'erro no equipamento', TicketCategory.IOT);
-    this.manager.addDocument('pt', 'falha na comunicação com dispositivo', TicketCategory.IOT);
+    this.manager.addDocument(
+      'pt',
+      'falha na comunicação com dispositivo',
+      TicketCategory.IOT,
+    );
   }
 
   async classify(text: string) {
@@ -43,7 +71,7 @@ export class NlpProvider implements OnModuleInit {
     const result = await this.manager.process('pt', normalized);
 
     const isValidCategory = Object.values(TicketCategory).includes(
-      result.intent as TicketCategory
+      result.intent as TicketCategory,
     );
 
     return {
@@ -56,9 +84,6 @@ export class NlpProvider implements OnModuleInit {
   }
 
   private normalize(text: string): string {
-    return text
-      .toLowerCase()
-      .replace(/\n/g, ' ')
-      .slice(0, 500);
+    return text.toLowerCase().replace(/\n/g, ' ').slice(0, 500);
   }
 }

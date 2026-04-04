@@ -1,4 +1,9 @@
-import { Inject, Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import type { IChatRepository } from '../domain/chat.repository';
 import type { IMessageRepository } from '../../Messages/domain/message.repository';
 import type { ChatDetails } from '../domain/chat.entity';
@@ -14,7 +19,12 @@ export class ChatService {
     private readonly messageRepository: IMessageRepository,
   ) {}
 
-  async createChat(ticketId: string, clientId: string, agentId: string, groupId: string): Promise<ChatDetails> {
+  async createChat(
+    ticketId: string,
+    clientId: string,
+    agentId: string,
+    groupId: string,
+  ): Promise<ChatDetails> {
     return this.chatRepository.create({ ticketId, clientId, agentId, groupId });
   }
 
@@ -30,7 +40,12 @@ export class ChatService {
     return this.chatRepository.findByParticipant(userId);
   }
 
-  async sendMessage(chatId: string, senderId: string, senderRole: UserRole, content: string): Promise<any> {
+  async sendMessage(
+    chatId: string,
+    senderId: string,
+    senderRole: UserRole,
+    content: string,
+  ): Promise<any> {
     const chat = await this.chatRepository.findById(chatId);
     if (!chat) {
       throw new NotFoundException('Chat not found');
@@ -51,7 +66,11 @@ export class ChatService {
     });
   }
 
-  async getChatHistory(chatId: string, userId: string, userRole: UserRole): Promise<any[]> {
+  async getChatHistory(
+    chatId: string,
+    userId: string,
+    userRole: UserRole,
+  ): Promise<any[]> {
     const chat = await this.chatRepository.findById(chatId);
     if (!chat) {
       throw new NotFoundException('Chat not found');
@@ -68,7 +87,10 @@ export class ChatService {
   }
 
   async closeChat(chatId: string): Promise<ChatDetails> {
-    const result = await this.chatRepository.updateStatus(chatId, ChatStatus.CLOSED);
+    const result = await this.chatRepository.updateStatus(
+      chatId,
+      ChatStatus.CLOSED,
+    );
     if (!result) {
       throw new NotFoundException('Chat not found');
     }

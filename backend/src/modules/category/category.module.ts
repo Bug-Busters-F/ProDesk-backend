@@ -8,9 +8,9 @@ import { GroupModule } from '../group/group.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: 'Category', schema: CategorySchema },
-    ]), GroupModule],
+    MongooseModule.forFeature([{ name: 'Category', schema: CategorySchema }]),
+    GroupModule,
+  ],
   controllers: [CategoryController],
   providers: [CategoryService],
   exports: [CategoryService],

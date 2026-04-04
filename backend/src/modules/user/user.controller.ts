@@ -1,4 +1,14 @@
-import {Controller, Get, Param, Post, Patch, Delete, Body, Query, UseGuards} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 
 import { UserService } from './user.service';
 import { UserDetails } from './user.interface';
@@ -10,7 +20,15 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from './user.schema';
 import { ChangeRoleUserDTO } from './dtos/changeRoleUserDTO';
 import { ChangeGroupUserDTO } from './dtos/changeGroupUserDTO';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -32,11 +50,11 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Lista de usuários retornada' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (permissão insuficiente)'
+    description: 'Acesso negado (permissão insuficiente)',
   })
   getAllUsers(@Query() query: FilterUserDTO) {
     const page = Number(query.page) || 1;
@@ -54,11 +72,11 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (permissão insuficiente)'
+    description: 'Acesso negado (permissão insuficiente)',
   })
   getUser(@Param('id') id: string): Promise<UserDetails> {
     return this.userService.findById(id);
@@ -74,15 +92,15 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN ou SUPPORT)'
+    description: 'Acesso negado (somente ADMIN ou SUPPORT)',
   })
   updateUser(
     @Param('id') id: string,
-    @Body() data: UpdateUserDTO
+    @Body() data: UpdateUserDTO,
   ): Promise<UserDetails> {
     return this.userService.updateUser(id, data);
   }
@@ -97,15 +115,15 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   changeRoleUser(
     @Param('id') id: string,
-    @Body() data: ChangeRoleUserDTO
+    @Body() data: ChangeRoleUserDTO,
   ): Promise<UserDetails> {
     return this.userService.updateUser(id, data);
   }
@@ -120,15 +138,15 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   changeGroupUser(
     @Param('id') id: string,
-    @Body() data: ChangeGroupUserDTO
+    @Body() data: ChangeGroupUserDTO,
   ): Promise<UserDetails> {
     return this.userService.updateUser(id, data);
   }
@@ -142,11 +160,11 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   @ApiResponse({
     status: 401,
-    description: 'Não autenticado (token inválido ou ausente)'
+    description: 'Não autenticado (token inválido ou ausente)',
   })
   @ApiResponse({
     status: 403,
-    description: 'Acesso negado (somente ADMIN)'
+    description: 'Acesso negado (somente ADMIN)',
   })
   deleteUser(@Param('id') id: string): Promise<void> {
     return this.userService.deleteUser(id);

@@ -17,9 +17,7 @@ describe('CompanyService (Integration)', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(mongod.getUri()),
-        MongooseModule.forFeature([
-          { name: 'Company', schema: CompanySchema },
-        ]),
+        MongooseModule.forFeature([{ name: 'Company', schema: CompanySchema }]),
       ],
       providers: [CompanyService],
     }).compile();
@@ -41,10 +39,7 @@ describe('CompanyService (Integration)', () => {
   });
 
   it('should create a company successfully', async () => {
-    const company = await service.createCompany(
-      'Pro4Tech',
-      '12345678901234'
-    );
+    const company = await service.createCompany('Pro4Tech', '12345678901234');
 
     expect(company).toBeDefined();
     expect(company.name).toBe('Pro4Tech');
@@ -54,7 +49,7 @@ describe('CompanyService (Integration)', () => {
   it('should find company by id', async () => {
     const created = await service.createCompany(
       'Test Company',
-      '11111111111111'
+      '11111111111111',
     );
 
     const found = await service.findById(created.id);
@@ -64,16 +59,13 @@ describe('CompanyService (Integration)', () => {
   });
 
   it('should throw error when company not found by id', async () => {
-    await expect(
-      service.findById('507f1f77bcf86cd799439011')
-    ).rejects.toThrow('Company not found');
+    await expect(service.findById('507f1f77bcf86cd799439011')).rejects.toThrow(
+      'Company not found',
+    );
   });
 
   it('should find company by cnpj', async () => {
-    await service.createCompany(
-      'Company CNPJ',
-      '22222222222222'
-    );
+    await service.createCompany('Company CNPJ', '22222222222222');
 
     const found = await service.findByCnpj('22222222222222');
 
@@ -82,9 +74,9 @@ describe('CompanyService (Integration)', () => {
   });
 
   it('should throw error when company not found by cnpj', async () => {
-    await expect(
-      service.findByCnpj('00000000000000')
-    ).rejects.toThrow('Company not found');
+    await expect(service.findByCnpj('00000000000000')).rejects.toThrow(
+      'Company not found',
+    );
   });
 
   it('should return all companies', async () => {
@@ -97,10 +89,7 @@ describe('CompanyService (Integration)', () => {
   });
 
   it('should update company', async () => {
-    const created = await service.createCompany(
-      'Old Name',
-      '55555555555555'
-    );
+    const created = await service.createCompany('Old Name', '55555555555555');
 
     const updated = await service.updateCompany(created.id, {
       name: 'New Name',
@@ -113,26 +102,21 @@ describe('CompanyService (Integration)', () => {
     await expect(
       service.updateCompany('507f1f77bcf86cd799439011', {
         name: 'Fail',
-      })
+      }),
     ).rejects.toThrow('Company not found');
   });
 
   it('should delete company', async () => {
-    const created = await service.createCompany(
-      'To Delete',
-      '66666666666666'
-    );
+    const created = await service.createCompany('To Delete', '66666666666666');
 
     await service.deleteCompany(created.id);
 
-    await expect(
-      service.findById(created.id)
-    ).rejects.toThrow();
+    await expect(service.findById(created.id)).rejects.toThrow();
   });
 
   it('should throw error when deleting non-existent company', async () => {
     await expect(
-      service.deleteCompany('507f1f77bcf86cd799439011')
+      service.deleteCompany('507f1f77bcf86cd799439011'),
     ).rejects.toThrow('Company not found');
   });
 });

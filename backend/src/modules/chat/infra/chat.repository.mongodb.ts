@@ -8,9 +8,7 @@ import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ChatRepositoryMongodb implements IChatRepository {
-  constructor(
-    @InjectModel(Chat.name) private chatModel: Model<ChatDocument>,
-  ) {}
+  constructor(@InjectModel(Chat.name) private chatModel: Model<ChatDocument>) {}
 
   private toDetails(doc: ChatDocument): ChatDetails {
     return {
