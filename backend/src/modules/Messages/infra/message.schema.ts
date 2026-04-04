@@ -1,15 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
 export type MessageDocument = HydratedDocument<Message>;
 
 @Schema({ timestamps: true, collection: 'messages' })
 export class Message {
-  @Prop({ required: true, type: Types.ObjectId })
-  chatId: Types.ObjectId; // Referência ao chamado
+  @Prop({ required: true, type: String })
+  chatId: string;// Referência ao chamado
 
-  @Prop({ required: true, type: Types.ObjectId })
-  senderId: Types.ObjectId; // Id do cliente ou atendente que enviou a mensagem
+  @Prop({ required: true, type: String })
+  senderId: string; // Id do cliente ou atendente que enviou a mensagem
 
   @Prop({ required: true })
   content: string; // Conteúdo do chat
