@@ -52,7 +52,7 @@ export class ChatService {
     }
 
     // ADMINs podem enviar mensagem em qualquer chat
-    if (senderRole !== UserRole.ADMIN) {
+    if (senderRole !== UserRole.ADMIN && senderRole !== UserRole.SUPPORT) {
       if (chat.clientId !== senderId && chat.agentId !== senderId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }
@@ -77,7 +77,7 @@ export class ChatService {
     }
 
     // ADMINs podem ver histórico de qualquer chat
-    if (userRole !== UserRole.ADMIN) {
+    if (userRole !== UserRole.ADMIN && userRole !== UserRole.SUPPORT) {
       if (chat.clientId !== userId && chat.agentId !== userId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }

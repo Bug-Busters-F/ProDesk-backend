@@ -10,8 +10,7 @@ import { MessageGateway } from './presentation/message.gateway';
     MongooseModule.forFeature([{ name: Message.name, schema: MessageSchema }]),
   ],
   providers: [
-    MessageRepositoryMongodb, // Registra o repositório
-    MessageGateway,
+    MessageRepositoryMongodb,
   ],
   exports: [
     MessageRepositoryMongodb, // Exporta para que o AppController consiga usar para teste
