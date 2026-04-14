@@ -66,9 +66,6 @@ export class TicketSchemaClass {
   @Prop({ type: String, default: null })
   agentId: string | null;
 
-  @Prop({ type: String, default: null })
-  groupId: string | null;
-
   @Prop({ default: 1 })
   escalationLevel: number;
 

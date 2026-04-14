@@ -5,7 +5,6 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { CategoryService } from './category.service';
 import { CategorySchema } from './category.schema';
-import { GroupService } from '../group/group.service';
 
 describe('CategoryService (Integration)', () => {
   let service: CategoryService;
@@ -22,15 +21,7 @@ describe('CategoryService (Integration)', () => {
           { name: 'Category', schema: CategorySchema },
         ]),
       ],
-      providers: [
-        CategoryService,
-        {
-          provide: GroupService,
-          useValue: {
-            findById: jest.fn().mockResolvedValue({ id: 'mock-group' }),
-          },
-        },
-      ],
+      providers: [CategoryService],
     }).compile();
 
     service = module.get<CategoryService>(CategoryService);
@@ -97,7 +88,7 @@ describe('CategoryService (Integration)', () => {
   it('should find category by name', async () => {
     const created = await service.createCategory('Test Name');
 
-    const found = await service.findByName(created.name.toString());
+    const found = await service.findByName(created.name);
 
     expect(found).toBeDefined();
     expect(found.name).toBe('Test Name');

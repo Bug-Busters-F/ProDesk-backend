@@ -3,5 +3,4 @@ export interface CategoryDetails {
   name: string;
   keywords: string[];
   trainingPhrases: string[];
-  groupIds: string[];
 }

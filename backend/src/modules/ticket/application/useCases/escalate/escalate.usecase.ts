@@ -20,7 +20,6 @@ export interface EscalateTicketOutput {
   clientId: string;
   status: TicketStatus;
   agentId: string | null;
-  groupId: string | null;
   escalationLevel: number;
   createdAt: Date;
   updatedAt: Date | null;
@@ -56,7 +55,6 @@ export class EscalateTicketUseCase {
       clientId: primitive.clientId,
       status: primitive.status,
       agentId: primitive.agentId,
-      groupId: primitive.groupId,
       escalationLevel: primitive.escalationLevel,
       createdAt: primitive.createdAt,
       updatedAt: primitive.updatedAt,
