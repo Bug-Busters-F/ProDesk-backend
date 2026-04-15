@@ -145,6 +145,7 @@ export class UserService {
     data: Partial<{
       name: string;
       email: string;
+      password: string;
       role: UserRole;
       companyId: string;
       categories: string[];

@@ -101,4 +101,49 @@ export class AuthService {
       await this.register(admin);
     }
   }
+
+    async forgotPassword(email: string): Promise<void> {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) return;
+
+    const payload = {
+      sub: user._id,
+      email: user.email,
+      type: 'reset-password',
+    };
+
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: '15m',
+    });
+
+    console.log(`Reset token: ${token}`);
+
+    // substituir por envio real de email
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+
+      if (payload.type !== 'reset-password') {
+        throw new BadRequestException('Token inválido');
+      }
+
+      const user = await this.userService.findById(payload.sub);
+
+      if (!user) {
+        throw new BadRequestException('Usuário não encontrado');
+      }
+
+      const hashedPassword = await this.hashPassword(newPassword);
+
+      await this.userService.updateUser(payload.sub, {
+        password: hashedPassword,
+      });
+
+    } catch (error) {
+      throw new BadRequestException('Token inválido ou expirado');
+    }
+  }
 }
