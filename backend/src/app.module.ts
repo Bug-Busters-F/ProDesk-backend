@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './modules/database/database.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { GroupModule } from './modules/group/group.module';
 import { CompanyModule } from './modules/company/company.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MessageModule } from './modules/Messages/message.module';
@@ -20,7 +19,6 @@ import { TicketModule } from './modules/ticket/ticket.module';
     DatabaseModule,
     UserModule,
     AuthModule,
-    GroupModule,
     CompanyModule,
     MongooseModule.forRoot(process.env.MONGO_URI!),
     MessageModule,

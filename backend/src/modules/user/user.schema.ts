@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Company } from '../company/company.schema';
-import { Group } from '../group/group.schema';
+import { Category } from '../category/category.schema';
 
 export type UserDocument = User & Document;
 
@@ -37,11 +37,11 @@ export class User {
   companyId: Types.ObjectId | Company;
 
   @Prop({
-    type: Types.ObjectId,
-    ref: 'Group',
+    type: [{ type: Types.ObjectId, ref: 'Category' }],
     required: false,
+    default: [],
   })
-  groupId: Types.ObjectId | Group;
+  categories: (Types.ObjectId | Category)[];
 
   createdAt?: Date;
 }

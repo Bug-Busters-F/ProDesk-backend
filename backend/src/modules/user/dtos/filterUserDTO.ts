@@ -23,10 +23,10 @@ export class FilterUserDTO {
   @IsString()
   companyId?: string;
 
-  @ApiPropertyOptional({ example: 'groupId' })
+  @ApiPropertyOptional({ example: 'categoryId' })
   @IsOptional()
   @IsString()
-  groupId?: string;
+  categoryId?: string;
 
   @ApiPropertyOptional({ example: '1' })
   @IsOptional()

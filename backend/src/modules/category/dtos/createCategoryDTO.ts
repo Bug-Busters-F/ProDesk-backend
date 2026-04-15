@@ -17,10 +17,4 @@ export class CreateCategoryDTO {
   @IsArray()
   @IsString({ each: true })
   trainingPhrases?: string[];
-
-  @ApiPropertyOptional({ example: ['65f1a2b3c9d123456789abcd'] })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  groupIds?: string[];
 }

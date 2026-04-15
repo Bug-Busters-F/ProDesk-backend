@@ -45,7 +45,6 @@ export class CategoryController {
       category.name,
       category.keywords,
       category.trainingPhrases,
-      category.groupIds,
     );
   }
 

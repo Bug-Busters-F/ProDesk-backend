@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  Post,
   Patch,
   Delete,
   Body,
@@ -19,7 +18,7 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from './user.schema';
 import { ChangeRoleUserDTO } from './dtos/changeRoleUserDTO';
-import { ChangeGroupUserDTO } from './dtos/changeGroupUserDTO';
+import { ChangeCategoriesUserDTO } from './dtos/changeCategoriesUserDTO';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -46,7 +45,7 @@ export class UserController {
   @ApiQuery({ name: 'email', required: false })
   @ApiQuery({ name: 'role', required: false, enum: UserRole })
   @ApiQuery({ name: 'companyId', required: false })
-  @ApiQuery({ name: 'groupId', required: false })
+  @ApiQuery({ name: 'categoryId', required: false })
   @ApiResponse({ status: 200, description: 'Lista de usuários retornada' })
   @ApiResponse({
     status: 401,
@@ -128,13 +127,13 @@ export class UserController {
     return this.userService.updateUser(id, data);
   }
 
-  @Patch('changeGroup/:id')
+  @Patch('changeCategories/:id')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Alterar grupo do usuário' })
+  @ApiOperation({ summary: 'Alterar categorias do usuário' })
   @ApiParam({ name: 'id', example: '65f1a2b3c9d123456789abcd' })
-  @ApiBody({ type: ChangeGroupUserDTO })
-  @ApiResponse({ status: 200, description: 'Grupo atualizado' })
+  @ApiBody({ type: ChangeCategoriesUserDTO })
+  @ApiResponse({ status: 200, description: 'Categorias atualizadas' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   @ApiResponse({
     status: 401,
@@ -144,9 +143,9 @@ export class UserController {
     status: 403,
     description: 'Acesso negado (somente ADMIN)',
   })
-  changeGroupUser(
+  changeCategoriesUser(
     @Param('id') id: string,
-    @Body() data: ChangeGroupUserDTO,
+    @Body() data: ChangeCategoriesUserDTO,
   ): Promise<UserDetails> {
     return this.userService.updateUser(id, data);
   }
