@@ -10,6 +10,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { TriageModule } from './modules/triage/triage.module';
 import { CategoryModule } from './modules/category/category.module';
 import { TicketModule } from './modules/ticket/ticket.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TicketModule } from './modules/ticket/ticket.module';
     TriageModule,
     CategoryModule,
     TicketModule,
+    EmailModule,
   ],
   controllers: [],
   providers: [],

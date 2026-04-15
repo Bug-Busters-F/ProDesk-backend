@@ -11,12 +11,14 @@ import { UserDetails } from '../user/user.interface';
 import { ExistingUserDTO } from '../user/dtos/existingUserDTO';
 import { JwtService } from '@nestjs/jwt';
 import { UserRole } from '../user/user.schema';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -117,9 +119,10 @@ export class AuthService {
       expiresIn: '15m',
     });
 
-    console.log(`Reset token: ${token}`);
-
-    // substituir por envio real de email
+    await this.emailService.sendResetPasswordEmail(
+      user.email,
+      token,
+    );
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
