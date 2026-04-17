@@ -30,6 +30,12 @@ export class User {
   role: UserRole;
 
   @Prop({
+    required: false,
+    default: 1
+  })
+  level: number;
+
+  @Prop({
     type: Types.ObjectId,
     ref: 'Company',
     required: false,
