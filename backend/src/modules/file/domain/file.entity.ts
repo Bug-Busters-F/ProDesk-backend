@@ -1,8 +1,10 @@
 export class FileEntity {
+  id?: string;
   filename: string;
   originalname: string;
   mimetype: string;
   size: number;
   path: string;
-  uploadedAt: Date;
+  uploadedBy?: string;
+  createdAt?: Date;
 }

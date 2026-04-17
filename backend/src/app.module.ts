@@ -11,6 +11,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { TriageModule } from './modules/triage/triage.module';
 import { CategoryModule } from './modules/category/category.module';
 import { TicketModule } from './modules/ticket/ticket.module';
+import { FileModule } from './modules/file/file.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { TicketModule } from './modules/ticket/ticket.module';
     TriageModule,
     CategoryModule,
     TicketModule,
+    FileModule,
   ],
   controllers: [],
   providers: [],

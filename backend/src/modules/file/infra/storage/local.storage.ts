@@ -4,14 +4,19 @@ import { FileEntity } from '../../domain/file.entity';
 @Injectable()
 export class LocalStorage {
 
-  save(file: Express.Multer.File): FileEntity {
+  save(
+    file: Express.Multer.File,
+    uploadedBy?: string
+  ): FileEntity {
     return {
+      id: undefined,
       filename: file.filename,
       originalname: file.originalname,
       mimetype: file.mimetype,
       size: file.size,
       path: file.path,
-      uploadedAt: new Date()
+      uploadedBy,
+      createdAt: new Date()
     };
   }
 }
