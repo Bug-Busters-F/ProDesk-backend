@@ -6,11 +6,15 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CreateTicketUseCase } from '../../application/useCases/create/create.usecase';
 import { DeleteTicketUseCase } from '../../application/useCases/delete/delete.usecase';
 import { EscalateTicketUseCase } from '../../application/useCases/escalate/escalate.usecase';
-import { GetHistoryTicketUseCase } from '../../application/useCases/getHistory/getHistory.usecase';
+import {
+  GetHistoryTicketOutput,
+  GetHistoryTicketUseCase,
+} from '../../application/useCases/getHistory/getHistory.usecase';
 import { NewAgentTicketUseCase } from '../../application/useCases/newAgent/newAgent.usecase';
 import { ReadAllTicketUseCase } from '../../application/useCases/readAll/readAll.usecase';
 import { ReadByIdTicketUseCase } from '../../application/useCases/readById/readById.usecase';
@@ -25,6 +29,11 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  TicketEvents,
+  TicketStatus,
+} from '../../domain/entities/ticket.entity';
+import { GetHistoryFilteredUseCase } from '../../application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
 
 @ApiTags('Ticket')
 @Controller('tickets')
@@ -34,6 +43,7 @@ export class TicketController {
     private readonly readAllUseCase: ReadAllTicketUseCase,
     private readonly readByIdUseCase: ReadByIdTicketUseCase,
     private readonly getHistoryUseCase: GetHistoryTicketUseCase,
+    private readonly getHistoryFilteredUseCase: GetHistoryFilteredUseCase,
     private readonly escalateUseCase: EscalateTicketUseCase,
     private readonly newAgentUseCase: NewAgentTicketUseCase,
     private readonly deleteUseCase: DeleteTicketUseCase,
@@ -77,8 +87,27 @@ export class TicketController {
   @ApiOperation({ summary: 'Retorna o histórico de um ticket pelo ID' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
   @ApiResponse({ status: 200, description: 'Histórico retornado com sucesso.' })
-  async getHistoryById(@Param('id') id: string) {
-    const response = await this.getHistoryUseCase.execute(id);
+  async getHistoryById(
+    @Param('id') id: string,
+    @Query('status') status?: TicketStatus,
+    @Query('responsibleAgent') responsibleAgent?: string,
+    @Query('event') event?: TicketEvents,
+    @Query('fromDate') fromDate?: Date,
+  ) {
+    let response: GetHistoryTicketOutput;
+
+    const hasFilters = status || responsibleAgent || event || fromDate;
+
+    if (hasFilters) {
+      response = await this.getHistoryFilteredUseCase.execute(id, {
+        status,
+        responsibleAgent,
+        event,
+        fromDate,
+      });
+    } else {
+      response = await this.getHistoryUseCase.execute(id);
+    }
 
     return response;
   }

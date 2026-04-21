@@ -25,7 +25,6 @@ export class GetHistoryFilteredUseCase {
 
   async execute(
     id: string,
-    event: TicketEvents,
     filters: {
       status?: TicketStatus;
       responsibleAgent?: string;
@@ -56,7 +55,8 @@ export class GetHistoryFilteredUseCase {
     }
 
     if (filters.fromDate) {
-      history = history.filter((entry) => entry.occurredAt >= filters.fromDate);
+      const fromDate = filters.fromDate;
+      history = history.filter((entry) => entry.occurredAt >= fromDate);
     }
 
     return {

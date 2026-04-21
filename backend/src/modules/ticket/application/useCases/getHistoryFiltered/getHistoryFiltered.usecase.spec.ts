@@ -5,9 +5,7 @@ import {
   TicketEvents,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
-import {
-  GetHistoryFilteredUseCase,
-} from './getHistoryFiltered.usecase';
+import { GetHistoryFilteredUseCase } from './getHistoryFiltered.usecase';
 
 describe('GetHistoryFilteredUseCase', () => {
   let repository: jest.Mocked<ITicketRepository>;
@@ -32,7 +30,11 @@ describe('GetHistoryFilteredUseCase', () => {
   it('should return full history when no filters are provided', async () => {
     repository.readById.mockResolvedValue(ticket);
 
-    const output = await useCase.execute(ticket.id, TicketEvents.OPEN_NEW_TICKET, {});
+    const output = await useCase.execute(
+      ticket.id,
+      TicketEvents.OPEN_NEW_TICKET,
+      {},
+    );
 
     expect(output).toBeDefined();
     expect(output.id).toBe(ticket.id);
@@ -48,11 +50,13 @@ describe('GetHistoryFilteredUseCase', () => {
     ticket.assignToAgent(randomUUID());
     repository.readById.mockResolvedValue(ticket);
 
-    const output = await useCase.execute(ticket.id, TicketEvents.NEW_AGENT, {
+    const output = await useCase.execute(ticket.id, {
       status: TicketStatus.IN_PROGRESS,
     });
 
-    expect(output.history.every((e) => e.status === TicketStatus.IN_PROGRESS)).toBe(true);
+    expect(
+      output.history.every((e) => e.status === TicketStatus.IN_PROGRESS),
+    ).toBe(true);
     expect(output.history).toHaveLength(1);
   });
 
@@ -61,11 +65,13 @@ describe('GetHistoryFilteredUseCase', () => {
     ticket.assignToAgent(agentId);
     repository.readById.mockResolvedValue(ticket);
 
-    const output = await useCase.execute(ticket.id, TicketEvents.NEW_AGENT, {
+    const output = await useCase.execute(ticket.id, {
       responsibleAgent: agentId,
     });
 
-    expect(output.history.every((e) => e.responsibleAgent === agentId)).toBe(true);
+    expect(output.history.every((e) => e.responsibleAgent === agentId)).toBe(
+      true,
+    );
     expect(output.history).toHaveLength(1);
   });
 
@@ -73,11 +79,13 @@ describe('GetHistoryFilteredUseCase', () => {
     ticket.assignToAgent(randomUUID());
     repository.readById.mockResolvedValue(ticket);
 
-    const output = await useCase.execute(ticket.id, TicketEvents.NEW_AGENT, {
+    const output = await useCase.execute(ticket.id, {
       event: TicketEvents.NEW_AGENT,
     });
 
-    expect(output.history.every((e) => e.event === TicketEvents.NEW_AGENT)).toBe(true);
+    expect(
+      output.history.every((e) => e.event === TicketEvents.NEW_AGENT),
+    ).toBe(true);
     expect(output.history).toHaveLength(1);
   });
 
@@ -86,7 +94,7 @@ describe('GetHistoryFilteredUseCase', () => {
     ticket.assignToAgent(randomUUID());
     repository.readById.mockResolvedValue(ticket);
 
-    const output = await useCase.execute(ticket.id, TicketEvents.NEW_AGENT, {
+    const output = await useCase.execute(ticket.id, {
       fromDate: before,
     });
 
@@ -98,7 +106,7 @@ describe('GetHistoryFilteredUseCase', () => {
     const future = new Date(Date.now() + 99999999);
     repository.readById.mockResolvedValue(ticket);
 
-    const output = await useCase.execute(ticket.id, TicketEvents.OPEN_NEW_TICKET, {
+    const output = await useCase.execute(ticket.id, {
       fromDate: future,
     });
 
@@ -111,7 +119,7 @@ describe('GetHistoryFilteredUseCase', () => {
     ticket.assignToAgent(agentId);
     repository.readById.mockResolvedValue(ticket);
 
-    const output = await useCase.execute(ticket.id, TicketEvents.NEW_AGENT, {
+    const output = await useCase.execute(ticket.id, {
       status: TicketStatus.IN_PROGRESS,
       responsibleAgent: agentId,
       event: TicketEvents.NEW_AGENT,
@@ -127,7 +135,7 @@ describe('GetHistoryFilteredUseCase', () => {
   it('should return empty history when no entries match filters', async () => {
     repository.readById.mockResolvedValue(ticket);
 
-    const output = await useCase.execute(ticket.id, TicketEvents.OPEN_NEW_TICKET, {
+    const output = await useCase.execute(ticket.id, {
       status: TicketStatus.CLOSED,
     });
 
@@ -137,9 +145,9 @@ describe('GetHistoryFilteredUseCase', () => {
   it('should throw when ticket is not found', async () => {
     repository.readById.mockResolvedValue(null);
 
-    await expect(
-      useCase.execute('non-existent-id', TicketEvents.OPEN_NEW_TICKET, {}),
-    ).rejects.toThrow('Ticket not found');
+    await expect(useCase.execute('non-existent-id', {})).rejects.toThrow(
+      'Ticket not found',
+    );
 
     expect(repository.readById).toHaveBeenCalledWith('non-existent-id');
   });
@@ -147,7 +155,7 @@ describe('GetHistoryFilteredUseCase', () => {
   it('should not expose domain methods in output', async () => {
     repository.readById.mockResolvedValue(ticket);
 
-    const output = await useCase.execute(ticket.id, TicketEvents.OPEN_NEW_TICKET, {});
+    const output = await useCase.execute(ticket.id, {});
 
     expect(output).not.toHaveProperty('toPrimitives');
     expect(output).not.toHaveProperty('escalate');
