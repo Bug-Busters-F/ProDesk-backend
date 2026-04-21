@@ -26,14 +26,13 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  TicketEvents,
-  TicketStatus,
-} from '../../domain/entities/ticket.entity';
 import { GetHistoryFilteredUseCase } from '../../application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
+import { GetHistoryFiltersRequest } from '../dtos/getHistory.dto';
+import { TicketEvents, TicketStatus } from '../../domain/entities/ticket.entity';
 
 @ApiTags('Ticket')
 @Controller('tickets')
@@ -86,24 +85,34 @@ export class TicketController {
   @Get(':id/history')
   @ApiOperation({ summary: 'Retorna o histórico de um ticket pelo ID' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiQuery({ name: 'status', enum: TicketStatus, required: false })
+  @ApiQuery({ name: 'event', enum: TicketEvents, required: false })
+  @ApiQuery({ name: 'responsibleAgent', type: String, required: false })
+  @ApiQuery({
+    name: 'fromDate',
+    type: String,
+    required: false,
+    example: '2024-01-01T00:00:00.000Z',
+  })
   @ApiResponse({ status: 200, description: 'Histórico retornado com sucesso.' })
   async getHistoryById(
     @Param('id') id: string,
-    @Query('status') status?: TicketStatus,
-    @Query('responsibleAgent') responsibleAgent?: string,
-    @Query('event') event?: TicketEvents,
-    @Query('fromDate') fromDate?: Date,
+    @Query() filters: GetHistoryFiltersRequest,
   ) {
     let response: GetHistoryTicketOutput;
 
-    const hasFilters = status || responsibleAgent || event || fromDate;
+    const hasFilters =
+      filters.status ||
+      filters.responsibleAgent ||
+      filters.event ||
+      filters.fromDate;
 
     if (hasFilters) {
       response = await this.getHistoryFilteredUseCase.execute(id, {
-        status,
-        responsibleAgent,
-        event,
-        fromDate,
+        status: filters.status,
+        responsibleAgent: filters.responsibleAgent,
+        event: filters.event,
+        fromDate: filters.fromDate ? new Date(filters.fromDate) : undefined,
       });
     } else {
       response = await this.getHistoryUseCase.execute(id);
