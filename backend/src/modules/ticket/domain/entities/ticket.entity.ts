@@ -100,6 +100,7 @@ export class Ticket {
     category: string;
     description: string;
     clientId: string;
+    level?: number;
   }): Ticket {
     const ticket = new Ticket(
       props.title,
@@ -110,6 +111,7 @@ export class Ticket {
 
     ticket._id = randomUUID();
     ticket.createdAt = new Date();
+    ticket.escalationLevel = props.level ?? 1;
 
     ticket.addHistory({
       event: TicketEvents.OPEN_NEW_TICKET,

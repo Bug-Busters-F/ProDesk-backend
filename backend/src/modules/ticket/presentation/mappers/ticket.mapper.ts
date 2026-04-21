@@ -11,6 +11,7 @@ export class TicketMapper {
       title: req.title,
       description: req.description,
       clientId: req.clientId,
+      level: req.level
     };
   }
 
