@@ -110,6 +110,7 @@ export class Ticket {
 
     ticket._id = randomUUID();
     ticket.createdAt = new Date();
+    ticket.priority = TicketPriority.LOW;
 
     ticket.addHistory({
       event: TicketEvents.OPEN_NEW_TICKET,
@@ -148,8 +149,6 @@ export class Ticket {
 
     ticket._id = props._id;
 
-    ticket.priority = TicketPriority.LOW;
-
     ticket._agentId = props.agentId ?? null;
     ticket._groupId = props.groupId ?? null;
     ticket.attachmentsUrls = props.fileUrls ?? [];
@@ -183,6 +182,7 @@ export class Ticket {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       closedAt: this.closedAt,
+      history: this.history,
     };
   }
 

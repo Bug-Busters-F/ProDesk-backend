@@ -22,11 +22,9 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { randomUUID } from 'crypto';
 
 @ApiTags('Ticket')
 @Controller('tickets')
