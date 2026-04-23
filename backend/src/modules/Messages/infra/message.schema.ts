@@ -19,6 +19,9 @@ export class Message {
 
   @Prop({ required: false })
   readAt?: Date; // Controle pra saber se a mensagem foi lida
+
+  @Prop({ type: [String], default: [] })
+  fileIds?: string[]; // Arquivos anexados a mensagem
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

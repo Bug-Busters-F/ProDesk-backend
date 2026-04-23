@@ -18,11 +18,13 @@ export class FileService {
 
   async createFile(
     file: Express.Multer.File,
+    subFolder: string,
     uploadedBy?: string
   ): Promise<FileEntity> {
     const fileData =
       this.storage.save(
         file,
+        subFolder,
         uploadedBy
       );
 

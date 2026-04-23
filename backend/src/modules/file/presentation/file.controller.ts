@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors, UseGuards, Body, Req } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, UseGuards, Body, Req, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
@@ -9,6 +9,7 @@ import { FileService } from '../application/file.service';
 import { UploadFileDTO } from './dtos/uploadFileDTO';
 import { multerConfig } from '../config/multer.config';
 import type { Express, Request } from 'express';
+import { UploadChatFileParamsDTO } from './dtos/uploadChatFileParamsDTO';
 
 @ApiTags('Files')
 @ApiBearerAuth()
@@ -16,13 +17,13 @@ import type { Express, Request } from 'express';
 export class FileController {
   constructor(
     private fileService: FileService
-  ) {}
+  ) { }
 
   @Post()
-  @UseGuards( JwtGuard, RolesGuard )
-  @Roles( UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT )
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
   @ApiOperation({ summary: 'Upload de arquivo' })
-  @ApiConsumes( 'multipart/form-data' )
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
@@ -35,10 +36,7 @@ export class FileController {
     }
   })
   @UseInterceptors(
-    FileInterceptor(
-      'file',
-      multerConfig
-    )
+    FileInterceptor('file', multerConfig)
   )
   async uploadFile(
     @UploadedFile()
@@ -46,15 +44,46 @@ export class FileController {
     @Body()
     dto: UploadFileDTO,
     @Req()
-    req: Request & {
-      user: { id: string }
-    }
+    req: Request & { user: { id: string } }
   ) {
-    const userId =
-      req.user.id;
-    return this.fileService.createFile(
-      file,
-      userId
-    );
+    const userId = req.user.id;
+    return this.fileService.createFile(file, userId);
+  }
+
+  @Post('chat/:chatId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
+  @UseInterceptors(
+    FileInterceptor(
+      'file',
+      multerConfig
+    )
+  )
+  @ApiOperation({
+    summary: 'Upload de arquivo para chat'
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary'
+        }
+      }
+    }
+  })
+  async uploadChatFile(
+    @UploadedFile()
+    file: Express.Multer.File,
+    @Req()
+    req: Request & { user: { id: string } },
+    @Param()
+    params: UploadChatFileParamsDTO
+  ) {
+    const userId = req.user.id;
+    const subFolder = `chat/${params.chatId}`;
+    return this.fileService.createFile(file, subFolder, userId);
   }
 }

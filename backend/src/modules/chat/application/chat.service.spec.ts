@@ -182,6 +182,7 @@ describe('ChatService', () => {
         senderId: CLIENT_ID,
         content: 'Olá, preciso de ajuda!',
         isSystemMessage: false,
+        fileIds: [],
       });
     });
 
