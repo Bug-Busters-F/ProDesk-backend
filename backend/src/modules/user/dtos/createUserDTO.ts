@@ -7,8 +7,8 @@ import {
   IsArray,
   IsMongoId,
 } from 'class-validator';
-import { UserRole } from '../user.schema';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { UserRole } from '../../shared/enums/user.enum';
 
 export class CreateUserDTO {
   @ApiProperty({ example: 'Gabriel' })

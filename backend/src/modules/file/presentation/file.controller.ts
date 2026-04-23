@@ -4,12 +4,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/guards/roles.decorator';
-import { UserRole } from '../../user/user.schema';
 import { FileService } from '../application/file.service';
 import { UploadFileDTO } from './dtos/uploadFileDTO';
 import { multerConfig } from '../config/multer.config';
 import type { Express, Request } from 'express';
 import { UploadChatFileParamsDTO } from './dtos/uploadChatFileParamsDTO';
+import { UserRole } from '../../shared/enums/user.enum';
 
 @ApiTags('Files')
 @ApiBearerAuth()

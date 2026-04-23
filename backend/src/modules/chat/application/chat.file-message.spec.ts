@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChatService } from './chat.service';
-import { UserRole } from '../../user/user.schema';
 import { NotFoundException } from '@nestjs/common';
 
 import type { IChatRepository } from '../domain/chat.repository';
 import type { IMessageRepository } from '../../Messages/domain/message.repository';
+import { UserRole } from '../../shared/enums/user.enum';
 
 /* ===========================
    MOCKS

@@ -4,11 +4,12 @@ import { Connection, Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { UserService } from './user.service';
-import { UserSchema, UserRole } from './user.schema';
+import { UserSchema } from './user.schema';
 import { CompanyService } from '../company/company.service';
 import { CategoryService } from '../category/category.service';
 import { CompanySchema } from '../company/company.schema';
 import { CategorySchema } from '../category/category.schema';
+import { UserRole } from '../shared/enums/user.enum';
 
 describe('UserService (Integration)', () => {
   let service: UserService;

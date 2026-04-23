@@ -16,7 +16,6 @@ import { FilterUserDTO } from './dtos/filterUserDTO';
 import { Roles } from '../auth/guards/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { UserRole } from './user.schema';
 import { ChangeRoleUserDTO } from './dtos/changeRoleUserDTO';
 import { ChangeCategoriesUserDTO } from './dtos/changeCategoriesUserDTO';
 import {
@@ -28,6 +27,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { UserRole } from '../shared/enums/user.enum';
 
 @ApiTags('User')
 @ApiBearerAuth()

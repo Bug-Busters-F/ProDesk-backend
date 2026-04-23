@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTicketRequest {
@@ -16,5 +16,6 @@ export class CreateTicketRequest {
   @ApiProperty({ example: 'uuid-do-cliente', description: 'ID do cliente' })
   @IsString()
   @IsNotEmpty()
+  @IsUUID()
   clientId!: string;
 }

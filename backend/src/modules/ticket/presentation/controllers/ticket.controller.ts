@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateTicketUseCase } from '../../application/useCases/create/create.usecase';
 import { DeleteTicketUseCase } from '../../application/useCases/delete/delete.usecase';
@@ -22,11 +23,13 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { randomUUID } from 'crypto';
+import { JwtGuard } from '../../../auth/guards/jwt.guard';
+import { RolesGuard } from '../../../auth/guards/roles.guard';
+import { Roles } from '../../../auth/guards/roles.decorator';
+import { UserRole } from '../../../shared/enums/user.enum';
 
 @ApiTags('Ticket')
 @Controller('tickets')
@@ -44,6 +47,8 @@ export class TicketController {
   @Post()
   @ApiOperation({ summary: 'Cria um ticket' })
   @ApiBody({ type: CreateTicketRequest })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
   @ApiResponse({ status: 201, description: 'Ticket criado com sucesso.' })
   async create(@Body() body: CreateTicketRequest) {
     const data = TicketMapper.toCreateInput(body);

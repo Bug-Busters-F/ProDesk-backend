@@ -4,7 +4,7 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { ChatDetails, ChatStatus } from '../domain/chat.entity';
 import { IChatRepository } from '../domain/chat.repository';
 import { IMessageRepository } from '../../Messages/domain/message.repository';
-import { UserRole } from '../../user/user.schema';
+import { UserRole } from '../../shared/enums/user.enum';
 
 const mockChatRepository: jest.Mocked<IChatRepository> = {
   create: jest.fn(),

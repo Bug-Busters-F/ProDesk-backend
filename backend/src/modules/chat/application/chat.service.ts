@@ -8,7 +8,7 @@ import type { IChatRepository } from '../domain/chat.repository';
 import type { IMessageRepository } from '../../Messages/domain/message.repository';
 import type { ChatDetails } from '../domain/chat.entity';
 import { ChatStatus } from '../domain/chat.entity';
-import { UserRole } from '../../user/user.schema';
+import { UserRole } from '../../shared/enums/user.enum';
 
 @Injectable()
 export class ChatService {

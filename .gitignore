@@ -55,3 +55,8 @@ temp/
 # Files local storage
 # ======================
 uploads/
+
+# ======================
+# AI fast generated models
+# ======================
+backend/model.nlp

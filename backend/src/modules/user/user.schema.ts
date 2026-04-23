@@ -2,14 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Company } from '../company/company.schema';
 import { Category } from '../category/category.schema';
+import { UserRole } from '../shared/enums/user.enum';
 
 export type UserDocument = User & Document;
-
-export enum UserRole {
-  CLIENT = 'client',
-  SUPPORT = 'support',
-  ADMIN = 'admin',
-}
 
 @Schema({ timestamps: { createdAt: true, updatedAt: false } })
 export class User {

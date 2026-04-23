@@ -5,10 +5,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDocument, UserRole } from './user.schema';
+import { UserDocument } from './user.schema';
 import { UserDetails } from './user.interface';
 import { CompanyService } from '../company/company.service';
 import { CategoryService } from '../category/category.service';
+import { UserRole } from '../shared/enums/user.enum';
 
 @Injectable()
 export class UserService {
