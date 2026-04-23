@@ -18,6 +18,7 @@ export class User {
   password: string;
 
   @Prop({
+    type: String,
     required: true,
     enum: UserRole,
     default: UserRole.CLIENT,

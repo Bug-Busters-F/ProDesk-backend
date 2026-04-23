@@ -60,6 +60,8 @@ export class TicketController {
 
   @Get()
   @ApiOperation({ summary: 'Retorna todos os tickets' })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @ApiResponse({
     status: 200,
     description: 'Todos os tickets retornados com sucesso.',
@@ -73,6 +75,8 @@ export class TicketController {
   @Get(':id')
   @ApiOperation({ summary: 'Retorna um ticket pelo ID' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
   @ApiResponse({ status: 200, description: 'Ticket encontrado com sucesso.' })
   async getById(@Param('id') id: string) {
     const response = await this.readByIdUseCase.execute(id);
@@ -83,6 +87,8 @@ export class TicketController {
   @Get(':id/history')
   @ApiOperation({ summary: 'Retorna o histórico de um ticket pelo ID' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
   @ApiResponse({ status: 200, description: 'Histórico retornado com sucesso.' })
   async getHistoryById(@Param('id') id: string) {
     const response = await this.getHistoryUseCase.execute(id);
@@ -94,6 +100,8 @@ export class TicketController {
   @ApiOperation({ summary: 'Escalona um ticket' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
   @ApiBody({ type: EscalateTicketRequest })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT)
   @ApiResponse({ status: 200, description: 'Ticket escalonado com sucesso.' })
   async escalateTicket(
     @Param('id') id: string,
@@ -110,6 +118,8 @@ export class TicketController {
   @ApiOperation({ summary: 'Atribui um agente ao ticket' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
   @ApiBody({ type: AssignAgentRequest })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT)
   @ApiResponse({ status: 200, description: 'Agente atribuído com sucesso.' })
   async assignAgent(@Param('id') id: string, @Body() body: AssignAgentRequest) {
     const data = TicketMapper.toNewAgentInput(id, body);
@@ -122,6 +132,8 @@ export class TicketController {
   @Delete(':id')
   @ApiOperation({ summary: 'Remove um ticket' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @ApiResponse({ status: 200, description: 'Ticket removido com sucesso.' })
   async delete(@Param() id: string) {
     const response = await this.deleteUseCase.execute(id);

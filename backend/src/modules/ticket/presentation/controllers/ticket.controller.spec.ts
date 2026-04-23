@@ -10,12 +10,11 @@ import { ReadByIdTicketUseCase } from '../../application/useCases/readById/readB
 import { TicketController } from './ticket.controller';
 import { DeleteTicketUseCase } from '../../application/useCases/delete/delete.usecase';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import {
-  Ticket,
-  TicketStatus,
-} from '../../domain/entities/ticket.entity';
+import { Ticket, TicketStatus } from '../../domain/entities/ticket.entity';
 import { randomUUID } from 'crypto';
 import request from 'supertest';
+import { JwtGuard } from '../../../auth/guards/jwt.guard';
+import { RolesGuard } from '../../../auth/guards/roles.guard';
 
 describe('TicketController', () => {
   let app: INestApplication;
@@ -70,7 +69,12 @@ describe('TicketController', () => {
           useValue: { execute: jest.fn() },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     app = modulesFixture.createNestApplication();
     await app.init();
