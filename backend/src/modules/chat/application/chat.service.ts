@@ -45,6 +45,7 @@ export class ChatService {
     senderId: string,
     senderRole: UserRole,
     content: string,
+    fileIds?: string[],
   ): Promise<any> {
     const chat = await this.chatRepository.findById(chatId);
     if (!chat) {
@@ -63,6 +64,7 @@ export class ChatService {
       senderId,
       content,
       isSystemMessage: false,
+      fileIds: fileIds || [],
     });
   }
 
