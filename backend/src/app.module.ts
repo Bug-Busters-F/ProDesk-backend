@@ -11,6 +11,7 @@ import { TriageModule } from './modules/triage/triage.module';
 import { CategoryModule } from './modules/category/category.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { EmailModule } from './modules/email/email.module';
+import { FileModule } from './modules/file/file.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { EmailModule } from './modules/email/email.module';
     CategoryModule,
     TicketModule,
     EmailModule,
+    FileModule,
   ],
   controllers: [],
   providers: [],
