@@ -191,4 +191,36 @@ describe('ITicketRepository', () => {
     const deleteResult = await repository.delete(randomUUID());    
     expect(deleteResult).toBe(false);
   });
+
+  it('Should read all tickets by clientId successfully', async () => {
+    const clientId = randomUUID();
+
+    const ticket1 = Ticket.create({
+      title: 'chamado 6',
+      category: 'bi',
+      description: 'descricao do chamado 6',
+      clientId,
+    });
+
+    const ticket2 = Ticket.create({
+      title: 'chamado 7',
+      category: 'bi',
+      description: 'descricao do chamado 7',
+      clientId,
+    });
+
+    await repository.create(ticket1);
+    await repository.create(ticket2);
+
+    const resultReadAll = await repository.readAll({ clientId });
+    expect(resultReadAll).toBeDefined();
+    expect(Array.isArray(resultReadAll)).toBe(true);
+    expect(resultReadAll.length).toBe(2);
+    resultReadAll.map((t) => expect(t).toBeInstanceOf(Ticket));
+
+    const resultReadAllWithAnotherClientId = await repository.readAll({ clientId: randomUUID() });
+    expect(resultReadAllWithAnotherClientId).toBeDefined();
+    expect(Array.isArray(resultReadAllWithAnotherClientId)).toBe(true);
+    expect(resultReadAllWithAnotherClientId.length).toBe(0);
+  });
 });

@@ -38,9 +38,8 @@ export class TicketMongoRepository extends ITicketRepository {
     return TicketMapper.toDomain(updated);
   }
 
-  async readAll(): Promise<Ticket[]> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const tickets = await this.ticketModel.find();
+  async readAll(filters?: { clientId: string }): Promise<Ticket[]> {
+    const tickets = await this.ticketModel.find(filters).exec();
     const mappedTickets = tickets.map((t) => TicketMapper.toDomain(t));
     return mappedTickets;
   }

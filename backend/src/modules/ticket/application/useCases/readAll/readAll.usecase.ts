@@ -5,6 +5,7 @@ import {
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
+import { UserRole } from '../../../../shared/enums/user.enum';
 
 export interface ReadAllTicketOutput {
   id: string;
@@ -26,8 +27,14 @@ export interface ReadAllTicketOutput {
 export class ReadAllTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 
-  async execute(): Promise<ReadAllTicketOutput[]> {
-    const foundedTickets = await this.repository.readAll();
+  async execute(input: {
+    userId: string;
+    role: UserRole;
+  }): Promise<ReadAllTicketOutput[]> {
+    const filters =
+      input.role === UserRole.CLIENT ? { clientId: input.userId } : undefined;
+
+    const foundedTickets = await this.repository.readAll({ ...filters });
 
     const convertedTickets = foundedTickets.map((t: Ticket) => {
       const primitive = t.toPrimitives();
