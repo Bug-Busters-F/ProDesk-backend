@@ -199,6 +199,7 @@ export class UserService {
       name: user.name,
       email: user.email,
       role: user.role,
+      profileImage: user.profileImage,
 
       company: user.companyId
         ? {

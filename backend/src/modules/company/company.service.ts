@@ -89,6 +89,7 @@ export class CompanyService {
       id: company._id.toString(),
       name: company.name,
       cnpj: company.cnpj,
+      logo: company.logo,
     };
   }
 }
