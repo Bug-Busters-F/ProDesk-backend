@@ -9,4 +9,5 @@ export interface UserDetails {
   role: UserRole;
   company?: CompanyDetails;
   categories?: CategoryDetails[];
+  profileImage?: string;
 }
