@@ -5,6 +5,7 @@ import { FileService } from './application/file.service';
 import { FileSchema } from './infra/schemas/file.schema';
 import { LocalStorage } from './infra/storage/local.storage';
 import { UserSchema } from '../user/user.schema';
+import { CompanySchema } from '../company/company.schema';
 
 @Module({
   imports: [
@@ -15,6 +16,10 @@ import { UserSchema } from '../user/user.schema';
       },
       { name: 'User', 
         schema: UserSchema 
+      },
+      { 
+        name: 'Company', 
+        schema: CompanySchema
       },
     ])
   ],

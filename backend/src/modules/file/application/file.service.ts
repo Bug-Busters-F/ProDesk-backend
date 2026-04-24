@@ -5,6 +5,8 @@ import { FileDocument } from '../infra/schemas/file.schema';
 import { FileEntity } from '../domain/file.entity';
 import { LocalStorage } from '../infra/storage/local.storage';
 import { UserDocument } from '../../user/user.schema';
+import * as fs from 'fs';
+import { CompanyDocument } from '../../company/company.schema';
 
 @Injectable()
 export class FileService {
@@ -15,6 +17,9 @@ export class FileService {
 
     @InjectModel('User')
     private readonly userModel: Model<UserDocument>,
+
+    @InjectModel('Company')
+    private readonly companyModel: Model<CompanyDocument>,
 
     private readonly storage:
     LocalStorage
@@ -108,13 +113,70 @@ async uploadProfileImage(
     };
   }
 
-  async getProfileImage(userId: string): Promise<string> {
-  const user = await this.userModel.findById(userId);
+  async getProfileImage(userId: string): Promise<string | null> {
+    const user = await this.userModel.findById(userId);
 
-  if (!user || !user.profileImage) {
-    throw new NotFoundException('Profile image not found');
+    if (!user || !user.profileImage) {
+      return null;
+    }
+
+    if (!fs.existsSync(user.profileImage)) {
+      return null;
+    }
+
+    return user.profileImage;
   }
 
-  return user.profileImage;
-}
+  async uploadCompanyLogo(
+    file: Express.Multer.File,
+    companyId: string
+  ): Promise<FileEntity> {
+
+    const fileData = this.storage.save(
+      file,
+      `company/${companyId}`,
+      companyId
+    );
+
+    const newFile = new this.fileModel({
+      filename: fileData.filename,
+      originalname: fileData.originalname,
+      mimetype: fileData.mimetype,
+      size: fileData.size,
+      path: fileData.path,
+      uploadedBy: companyId
+    });
+
+    const savedFile = await newFile.save();
+
+    const company = await this.companyModel.findById(companyId);
+
+
+    if (company?.logo) {
+      this.storage.delete(company.logo);
+    }
+
+    await this.companyModel.findByIdAndUpdate(companyId, {
+      logo: fileData.path
+    });
+
+    return this._mapToEntity(savedFile);
+  }
+
+  async getCompanyLogo(companyId: string): Promise<string | null> {
+    const company = await this.companyModel.findById(companyId);
+
+    if (!company || !company.logo) {
+      return null;
+    }
+
+    if (!fs.existsSync(company.logo)) {
+      await this.companyModel.findByIdAndUpdate(companyId, {
+        logo: null
+      });
+      return null;
+    }
+
+    return company.logo;
+  }
 }

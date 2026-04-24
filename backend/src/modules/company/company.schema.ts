@@ -10,6 +10,9 @@ export class Company {
 
   @Prop({ required: true, unique: true })
   cnpj: string;
+
+  @Prop({ required: false })
+  logo?: string;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);

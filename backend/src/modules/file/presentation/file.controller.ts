@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors, UseGuards, Body, Req, Param, Get, Res } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, UseGuards, Body, Req, Param, Get, Res, BadRequestException } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
@@ -110,18 +110,73 @@ export class FileController {
       @UploadedFile() file: Express.Multer.File,
       @Req() req: Request & { user: { id: string } },
     ) {
+      if (!file) {
+        throw new BadRequestException('File is required');
+      }
+
       const userId = req.user.id;
 
       return this.fileService.uploadProfileImage(file, userId);
     }
 
-    @Get('profile/:id')
-    async getProfileImage(
-      @Param('id') userId: string,
-      @Res() res: Response
-    ) {
-      const filePath = await this.fileService.getProfileImage(userId);
+  @Get('profile/:id')
+  async getProfileImage(
+    @Param('id') userId: string,
+    @Res() res: Response
+  ) {
+    const filePath = await this.fileService.getProfileImage(userId);
 
-      return res.sendFile(filePath, { root: './' });
-}
+    if (!filePath) {
+      return res.status(200).json({
+        message: 'User has no profile image',
+        profileImage: null
+      });
+    }
+
+    return res.sendFile(filePath, { root: './' });
+  }
+
+  @Post('company/:companyId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @UseInterceptors(FileInterceptor('file', profileMulterConfig))
+  @ApiOperation({ summary: 'Upload de logo da empresa' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadCompanyLogo(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('companyId') companyId: string,
+  ) {
+      if (!file) {
+        throw new BadRequestException('File is required');
+      }
+      return this.fileService.uploadCompanyLogo(file, companyId);
+  }
+
+  @Get('company/:companyId')
+  async getCompanyLogo(
+    @Param('companyId') companyId: string,
+    @Res() res: Response
+  ) {
+    const filePath = await this.fileService.getCompanyLogo(companyId);
+
+    if (!filePath) {
+      return res.status(200).json({
+        message: 'Company has no logo',
+        logo: null
+      });
+    }
+
+    return res.sendFile(filePath, { root: './' });
+  }
 }
