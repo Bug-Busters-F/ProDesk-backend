@@ -34,6 +34,7 @@ export enum TicketValidationErrors {
   ECALATE_WITH_NO_AGENT_ERROR = 'The ticket must be assigned to an agent before being escalated.',
   CLOSE_WITH_WRONG_STATUS_ERROR = 'A ticket can only be closed when in progress status.',
   CLOSE_WITH_NO_SOLUTION_ERROR = 'The solution cannot be empty.',
+  ESCALATION_LEVEL_MAX_ERROR = 'The ticket has reached the maximum escalation level.'
 }
 
 export type TicketHistoryEntry = {
@@ -100,6 +101,7 @@ export class Ticket {
     category: string;
     description: string;
     clientId: string;
+    level?: number;
   }): Ticket {
     const ticket = new Ticket(
       props.title,
@@ -110,6 +112,7 @@ export class Ticket {
 
     ticket._id = randomUUID();
     ticket.createdAt = new Date();
+    ticket.escalationLevel = props.level ?? 1;
 
     ticket.addHistory({
       event: TicketEvents.OPEN_NEW_TICKET,
@@ -180,6 +183,7 @@ export class Ticket {
       agentId: this._agentId,
       groupId: this._groupId,
       escalationLevel: this.escalationLevel,
+      history: this.history,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       closedAt: this.closedAt,
@@ -221,9 +225,13 @@ export class Ticket {
   }
 
   // Escalates the ticket to a new responsible group and optionally changes the category
-  escalate(groupId: string, category?: string): void {
+  escalate(groupId: string, category?: string, whatWasDone?: string): void {
     if (!this._agentId) {
       throw new Error(TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR);
+    }
+
+    if (this.escalationLevel >= 3) {
+      throw new Error(TicketValidationErrors.ESCALATION_LEVEL_MAX_ERROR);
     }
 
     this.touch();
@@ -238,6 +246,7 @@ export class Ticket {
       responsibleAgent: this._agentId,
       status: TicketStatus.ESCALATED,
       message: TicketEventMessage.ESCALATE_MSG,
+      solution: whatWasDone ?? null
     });
   }
 
