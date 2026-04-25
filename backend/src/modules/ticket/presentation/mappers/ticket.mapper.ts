@@ -33,6 +33,7 @@ export class TicketMapper {
       id: id,
       groupId: req.groupId,
       category: req.category,
+      whatWasDone: req.whatWasDone
     };
   }
 }
