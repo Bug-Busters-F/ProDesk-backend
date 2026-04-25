@@ -109,6 +109,7 @@ export class UserService {
     role: UserRole,
     companyId?: string,
     categories?: string[],
+    level?: number
   ): Promise<UserDocument> {
     if (companyId) {
       const company = await this.companyService.findById(companyId);
@@ -131,6 +132,7 @@ export class UserService {
       role,
       companyId,
       categories,
+      level
     });
 
     const savedUser = await newUser.save();
@@ -146,6 +148,7 @@ export class UserService {
     data: Partial<{
       name: string;
       email: string;
+      password: string;
       role: UserRole;
       companyId: string;
       categories: string[];
@@ -199,6 +202,8 @@ export class UserService {
       name: user.name,
       email: user.email,
       role: user.role,
+      level: user.level,
+      profileImage: user.profileImage,
 
       company: user.companyId
         ? {

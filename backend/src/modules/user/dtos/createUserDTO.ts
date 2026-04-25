@@ -6,6 +6,9 @@ import {
   IsStrongPassword,
   IsArray,
   IsMongoId,
+  IsNumber,
+  Min,
+  Max,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserRole } from '../../shared/enums/user.enum';
@@ -57,6 +60,16 @@ export class CreateUserDTO {
   @IsArray()
   @IsMongoId({ each: true })
   categories?: string[];
+
+  @ApiPropertyOptional({
+    example: 1,
+    description: 'Nível do atendente (1 a 3)'
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(3)
+  level?: number;
 }
 
 export class CreateAdminDTO {
@@ -127,6 +140,16 @@ export class CreateSupportDTO {
   @IsArray()
   @IsMongoId({ each: true })
   categories?: string[];
+
+  @ApiPropertyOptional({
+    example: 1,
+    description: 'Nível do atendente (1 a 3)'
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(3)
+  level?: number;
 }
 
 export class CreateClientDTO {
@@ -160,12 +183,4 @@ export class CreateClientDTO {
   @ApiProperty({ example: '65f1a2b3c9d123456789abcd' })
   @IsString()
   companyId: string;
-
-  @ApiPropertyOptional({
-    example: ['65f1a2b3c9d123456789abcd'],
-  })
-  @IsOptional()
-  @IsArray()
-  @IsMongoId({ each: true })
-  categories?: string[];
 }

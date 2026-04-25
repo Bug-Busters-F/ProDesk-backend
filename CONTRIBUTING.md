@@ -1,71 +1,135 @@
 # Como Contribuir - Seu Passaporte de Entrada
 
-Estamos felizes em receber você aqui e saber que está interessado em contribuir para o nosso projeto. Como um projeto de código aberto, cada contribuição é valorizada e ajuda a impulsionar o crescimento e a qualidade do nosso trabalho. Este guia foi criado para orientá-lo sobre como você pode participar e fazer parte da nossa comunidade de desenvolvimento. Estamos ansiosos para ver suas contribuições e trabalhar juntos para tornar nosso projeto ainda melhor!
+Estamos felizes em receber você aqui e saber que está interessado em contribuir para o nosso projeto. Como um projeto de código aberto, cada contribuição é valorizada e ajuda a impulsionar o crescimento e a qualidade do nosso trabalho. Este guia foi criado para orientá-lo sobre como você pode participar e fazer parte da nossa comunidade de desenvolvimento.
+
+---
 
 ## Código de Conduta
 
 Para garantir um ambiente respeitável e inclusivo, leia e siga nosso [Código de Conduta](./CODE_OF_CONDUCT.md).
 
+---
+
 ## Começando a Contribuir
 
-Contribuir para o nosso projeto é fácil e estamos ansiosos para receber suas contribuições! Antes de entrarmos nos passos para instalação da aplicação, você precisará configurar algumas ferramentas e preparar seu ambiente de desenvolvimento.
+Antes de iniciar, você precisará configurar seu ambiente de desenvolvimento.
 
-Aqui está o que você precisa:
+### Requisitos
 
--   Uma conta no [GitHub](https://github.com/).
--   O *version control system* [Git](https://git-scm.com/) instalado.
--   Um IDE para o desenvolvimento. Recomendamos o [Visual Studio Code](https://code.visualstudio.com).
--   O [Node.js v22.11.0](https://nodejs.org/en) ou superior.
--   [MongoDB Community Server](https://www.mongodb.com/try/download/community).
+- Uma conta no GitHub
+- Git instalado
+- IDE (recomendado: VS Code)
+- Node.js v22.11.0 ou superior
+- MongoDB Community Server
+
+---
 
 ## Instalação
 
 ### 1. Clonar o Repositório
 
-O primeiro passo é clonar o repositório do projeto para o seu ambiente local.
+```bash
+git clone https://github.com/Bug-Busters-F/ProDesk-backend
+cd ProDesk-backend/backend
+```
 
-1.  Abra um terminal.
-
-2.  Execute o seguinte comando para clonar o repositório:
-    ```bash
-    git clone https://github.com/Bug-Busters-F/ProDesk-backend
-    ```
-
-3.  Navegue até o diretório do projeto:
-    ```bash
-    cd ProDesk-backend\\backend
-    ```
+---
 
 ### 2. Instalar Dependências e Variáveis de Ambiente
 
-Com o ambiente configurado, basta instalar as dependências do Node.js e iniciar o servidor de desenvolvimento.
+```bash
+npm install
+```
 
-1.  Instale as dependências do projeto:
-    ```sh
-    npm install
-    ```
+Copie o arquivo de variáveis:
 
-2. Configure as variáveis de ambiente
+```bash
+cp .env.example .env
+```
 
-    ```sh
-    cp .env.example .env
-    ```
+Edite o `.env`:
 
-3. Abra o arquivo `.env` e edite a conexão com o banco de dados.
+```env
+# DATABASE
+MONGO_URI=mongodb://localhost:27017/prodesk
 
-    ```sh
-    # DATABASE
-    MONGO_URI=mongodb://localhost:27017/prodesk
+# APP
+PORT=3000
+NODE_ENV=development
 
-    # APP
-    PORT=3000
-    NODE_ENV=development
-    ``` 
+# EMAIL (Gmail)
+EMAIL_USER=seuemail@gmail.com
+EMAIL_PASS=sua_senha_de_app
+```
 
-### 3. Rodar o Projeto
+---
 
-Execute a aplicação em modo de desenvolvimento:
+## Como configurar EMAIL_USER e EMAIL_PASS
 
-```sh
+Para que o envio de emails funcione (ex: recuperação de senha), é necessário configurar uma conta do Gmail com senha de aplicativo.
+
+### Importante
+
+- Não utilize sua senha normal do Gmail  
+- É obrigatório ter a verificação em duas etapas ativada  
+
+---
+
+### Passo a passo
+
+1. Acesse:  
+https://myaccount.google.com/apppasswords  
+
+2. Faça login na sua conta Google  
+
+3. Ative a verificação em duas etapas  
+
+4. Em Selecionar app, escolha: Mail  
+
+5. Em Selecionar dispositivo, escolha: Outro (Personalizado)  
+
+6. Informe um nome, por exemplo: NestJS  
+
+7. Clique em Gerar  
+
+---
+
+### Resultado
+
+O Google irá gerar um código semelhante a:
+
+```
+abcd efgh ijkl mnop
+```
+
+Copie esse código e utilize no `.env` sem espaços:
+
+```env
+EMAIL_PASS=abcdefghijklmnop
+```
+
+---
+
+## 3. Rodar o Projeto
+
+```bash
 npm run start:dev
 ```
+
+---
+
+## Resultado esperado
+
+- Aplicação rodando em http://localhost:3000  
+- Swagger disponível em http://localhost:3000/api  
+- Envio de email funcionando corretamente
+
+## Primeiro acesso (usuário admin padrão)
+
+Ao iniciar a aplicação pela primeira vez, um usuário administrador é criado automaticamente com as seguintes credenciais:
+
+```json
+{
+  "email": "admin@pro4tech.com",
+  "password": "Pro4Tech"
+}

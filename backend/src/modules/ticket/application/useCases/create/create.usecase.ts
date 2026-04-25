@@ -10,6 +10,7 @@ export interface CreateTicketInput {
   title: string;
   description: string;
   clientId: string;
+  level?: number;
 }
 
 export interface CreateTicketOutput {
@@ -20,6 +21,7 @@ export interface CreateTicketOutput {
   clientId: string;
   fileUrls: string[];
   status: TicketStatus;
+  level: number;
   createdAt: Date;
 }
 
@@ -51,6 +53,7 @@ export class CreateTicketUseCase {
       clientId: primitives.clientId,
       fileUrls: primitives.fileUrls,
       status: primitives.status,
+      level: primitives.escalationLevel,
       createdAt: primitives.createdAt,
     };
   }

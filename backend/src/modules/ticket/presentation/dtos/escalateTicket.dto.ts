@@ -8,11 +8,15 @@ export class EscalateTicketRequest {
   @IsNotEmpty()
   groupId!: string;
 
-  @ApiProperty({
-    example: 'web_app',
-    description: 'Categoria do ticket',
-  })
+  @ApiProperty({ example: 'web_app', description: 'Categoria do ticket' })
   @IsString()
   @IsNotEmpty()
   category!: string;
+
+  @ApiProperty({ 
+    example: 'Reiniciei o servidor e o problema persistiu.',
+    description: 'O que foi feito antes de escalonar' })
+  @IsString()
+  @IsNotEmpty()
+  whatWasDone!: string;
 }

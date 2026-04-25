@@ -10,6 +10,7 @@ import { ChatModule } from './modules/chat/chat.module';
 import { TriageModule } from './modules/triage/triage.module';
 import { CategoryModule } from './modules/category/category.module';
 import { TicketModule } from './modules/ticket/ticket.module';
+import { EmailModule } from './modules/email/email.module';
 import { FileModule } from './modules/file/file.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { FileModule } from './modules/file/file.module';
     TriageModule,
     CategoryModule,
     TicketModule,
+    EmailModule,
     FileModule,
   ],
   controllers: [],

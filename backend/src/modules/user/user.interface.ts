@@ -7,6 +7,8 @@ export interface UserDetails {
   name: string;
   email: string;
   role: UserRole;
+  level?: number;
   company?: CompanyDetails;
   categories?: CategoryDetails[];
+  profileImage?: string;
 }

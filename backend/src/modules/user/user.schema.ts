@@ -26,6 +26,12 @@ export class User {
   role: UserRole;
 
   @Prop({
+    required: false,
+    default: 1
+  })
+  level: number;
+
+  @Prop({
     type: Types.ObjectId,
     ref: 'Company',
     required: false,
@@ -40,6 +46,9 @@ export class User {
   categories: (Types.ObjectId | Category)[];
 
   createdAt?: Date;
+
+  @Prop({ required: false })
+  profileImage?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
