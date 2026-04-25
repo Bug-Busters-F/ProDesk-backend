@@ -202,6 +202,16 @@ describe('ChatService', () => {
       expect(mockMessageRepository.create).toHaveBeenCalledTimes(1);
     });
 
+    it('should throw ForbiddenException when SUPPORT tries to send message and is not a participant', async () => {
+      mockChatRepository.findById.mockResolvedValue(mockChat);
+
+      await expect(
+        service.sendMessage(CHAT_ID, OUTSIDER_ID, UserRole.SUPPORT, 'Intruso suporte!'),
+      ).rejects.toThrow(ForbiddenException);
+
+      expect(mockMessageRepository.create).not.toHaveBeenCalled();
+    });
+
     it('should throw ForbiddenException when sender is not a participant', async () => {
       mockChatRepository.findById.mockResolvedValue(mockChat);
 
@@ -264,6 +274,16 @@ describe('ChatService', () => {
       );
 
       expect(result).toEqual(mockMessages);
+    });
+
+    it('should throw ForbiddenException when SUPPORT tries to view history and is not a participant', async () => {
+      mockChatRepository.findById.mockResolvedValue(mockChat);
+
+      await expect(
+        service.getChatHistory(CHAT_ID, OUTSIDER_ID, UserRole.SUPPORT),
+      ).rejects.toThrow(ForbiddenException);
+
+      expect(mockMessageRepository.findByChatId).not.toHaveBeenCalled();
     });
 
     it('should throw ForbiddenException when user is not a participant', async () => {

@@ -178,6 +178,19 @@ describe('ChatGateway', () => {
       });
     });
 
+    it('should emit error when non-participant support tries to join', async () => {
+      const client = createMockSocket();
+      client.data.user = { id: OUTSIDER_ID, email: 'suporte@e.com', role: 'support' };
+      mockChatService.isParticipant.mockResolvedValue(false);
+
+      await gateway.handleEntrarChat({ chatId: CHAT_ID }, client);
+
+      expect(client.join).not.toHaveBeenCalled();
+      expect(client.emit).toHaveBeenCalledWith('erro', {
+        mensagem: 'Você não é participante deste chat',
+      });
+    });
+
     it('should emit error when user is not authenticated', async () => {
       const client = createMockSocket();
       // client.data.user is undefined

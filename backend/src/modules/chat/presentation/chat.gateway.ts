@@ -87,7 +87,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       user.id,
     );
 
-    if (!isParticipant && user.role !== 'admin' && user.role !== 'support') {
+    if (!isParticipant && user.role !== 'admin') {
       client.emit('erro', {
         mensagem: 'Você não é participante deste chat',
       });
