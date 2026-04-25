@@ -50,6 +50,9 @@ export class User {
   categories: (Types.ObjectId | Category)[];
 
   createdAt?: Date;
+
+  @Prop({ required: false })
+  profileImage?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

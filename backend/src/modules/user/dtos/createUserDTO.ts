@@ -183,12 +183,4 @@ export class CreateClientDTO {
   @ApiProperty({ example: '65f1a2b3c9d123456789abcd' })
   @IsString()
   companyId: string;
-
-  @ApiPropertyOptional({
-    example: ['65f1a2b3c9d123456789abcd'],
-  })
-  @IsOptional()
-  @IsArray()
-  @IsMongoId({ each: true })
-  categories?: string[];
 }

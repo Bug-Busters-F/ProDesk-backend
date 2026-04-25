@@ -10,4 +10,5 @@ export interface UserDetails {
   level?: number;
   company?: CompanyDetails;
   categories?: CategoryDetails[];
+  profileImage?: string;
 }
