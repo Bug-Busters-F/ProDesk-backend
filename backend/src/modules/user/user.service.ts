@@ -145,6 +145,7 @@ export class UserService {
     data: Partial<{
       name: string;
       email: string;
+      password: string;
       role: UserRole;
       companyId: string;
       categories: string[];
@@ -198,6 +199,7 @@ export class UserService {
       name: user.name,
       email: user.email,
       role: user.role,
+      profileImage: user.profileImage,
 
       company: user.companyId
         ? {

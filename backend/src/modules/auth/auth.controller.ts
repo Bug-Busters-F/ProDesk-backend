@@ -119,4 +119,51 @@ export class AuthController {
   login(@Body() user: ExistingUserDTO): Promise<{ token: string } | null> {
     return this.authService.login(user);
   }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Solicitar recuperação de senha' })
+  @ApiBody({
+    schema: {
+      example: {
+        email: 'usuario@email.com',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Se o email existir, um link de recuperação será enviado',
+  })
+  forgotPassword(@Body() body: { email: string }): Promise<void> {
+    return this.authService.forgotPassword(body.email);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Redefinir senha do usuário' })
+  @ApiBody({
+    schema: {
+      example: {
+        token: 'jwt.token.aqui',
+        newPassword: 'NovaSenha@123',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Senha redefinida com sucesso',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Token inválido ou expirado',
+  })
+  resetPassword(
+    @Body() body: { token: string; newPassword: string },
+  ): Promise<void> {
+    return this.authService.resetPassword(
+      body.token,
+      body.newPassword,
+    );
+  }
 }

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { FileEntity } from '../../domain/file.entity';
 import { existsSync, mkdirSync, renameSync } from 'fs';
 import { join } from 'path';
+import * as fs from 'fs';
+
 
 @Injectable()
 export class LocalStorage {
@@ -16,11 +18,11 @@ export class LocalStorage {
     if (!existsSync(uploadPath)) {
       mkdirSync(uploadPath, { recursive: true });
     }
-    
     const newPath = join(uploadPath, file.filename);
     renameSync(file.path, newPath);
     
     const webPath = newPath.replace(/\\/g, '/');
+
 
     return {
       id: undefined,
@@ -32,5 +34,17 @@ export class LocalStorage {
       uploadedBy,
       createdAt: new Date()
     };
+  }
+
+delete(filePath: string): void {
+    try {
+      const normalizedPath = filePath.replace(/^https?:\/\/.*?\//, '');
+
+      if (fs.existsSync(normalizedPath)) {
+        fs.unlinkSync(normalizedPath);
+      }
+    } catch (error) {
+      console.error('Error deleting file:', error);
+    }
   }
 }

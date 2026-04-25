@@ -11,12 +11,14 @@ import { UserDetails } from '../user/user.interface';
 import { ExistingUserDTO } from '../user/dtos/existingUserDTO';
 import { JwtService } from '@nestjs/jwt';
 import { UserRole } from '../user/user.schema';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -99,6 +101,52 @@ export class AuthService {
 
     if (!doesUserExist) {
       await this.register(admin);
+    }
+  }
+
+    async forgotPassword(email: string): Promise<void> {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) return;
+
+    const payload = {
+      sub: user._id,
+      email: user.email,
+      type: 'reset-password',
+    };
+
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: '15m',
+    });
+
+    await this.emailService.sendResetPasswordEmail(
+      user.email,
+      token,
+    );
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+
+      if (payload.type !== 'reset-password') {
+        throw new BadRequestException('Token inválido');
+      }
+
+      const user = await this.userService.findById(payload.sub);
+
+      if (!user) {
+        throw new BadRequestException('Usuário não encontrado');
+      }
+
+      const hashedPassword = await this.hashPassword(newPassword);
+
+      await this.userService.updateUser(payload.sub, {
+        password: hashedPassword,
+      });
+
+    } catch (error) {
+      throw new BadRequestException('Token inválido ou expirado');
     }
   }
 }
