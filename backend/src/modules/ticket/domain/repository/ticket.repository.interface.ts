@@ -8,7 +8,7 @@ export abstract class ITicketRepository {
   abstract readAll(filters?: {
     clientId?: string;
     agentId?: string;
-    categoryId?: string;
+    categories?: string[];
   }): Promise<Ticket[]>;
   abstract readById(id: string): Promise<Ticket | null>;
   abstract delete(id: string): Promise<boolean>;

@@ -267,7 +267,10 @@ describe('ITicketRepository', () => {
     await repository.create(ticket2);
     await repository.create(ticket3);
 
-    const result = await repository.readAll({ agentId, categoryId });
+    const result = await repository.readAll({
+      agentId,
+      categories: [categoryId],
+    });
 
     expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);
