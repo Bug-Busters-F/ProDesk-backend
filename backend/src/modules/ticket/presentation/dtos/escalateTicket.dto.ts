@@ -13,9 +13,10 @@ export class EscalateTicketRequest {
   @IsNotEmpty()
   category!: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     example: 'Reiniciei o servidor e o problema persistiu.',
-    description: 'O que foi feito antes de escalonar' })
+    description: 'O que foi feito antes de escalonar',
+  })
   @IsString()
   @IsNotEmpty()
   whatWasDone!: string;

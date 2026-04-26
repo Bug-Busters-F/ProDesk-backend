@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
@@ -21,7 +22,6 @@ import { ReadByIdTicketUseCase } from '../../application/useCases/readById/readB
 import { CreateTicketRequest } from '../dtos/create.dto';
 import { EscalateTicketRequest } from '../dtos/escalateTicket.dto';
 import { TicketMapper } from '../mappers/ticket.mapper';
-import { AssignAgentRequest } from '../dtos/assignAgent.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -55,12 +55,10 @@ export class TicketController {
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.CLIENT)
   @ApiResponse({ status: 201, description: 'Ticket criado com sucesso.' })
-  async create(@Body() body: CreateTicketRequest) {
-    // TODO: Enviar id automatica do cliente pelo token, não deixar o cliente enviar o id no body+
-
+  async create(@Request() req: any, @Body() body: CreateTicketRequest) {
     const data = TicketMapper.toCreateInput(body);
 
-    const response = await this.createUseCase.execute(data);
+    const response = await this.createUseCase.execute(data, req.user.id);
 
     return response;
   }
@@ -128,12 +126,11 @@ export class TicketController {
   @Put(':id/assignAgent')
   @ApiOperation({ summary: 'Atribui um agente ao ticket' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
-  @ApiBody({ type: AssignAgentRequest })
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPPORT)
   @ApiResponse({ status: 200, description: 'Agente atribuído com sucesso.' })
-  async assignAgent(@Param('id') id: string, @Body() body: AssignAgentRequest) {
-    const data = TicketMapper.toNewAgentInput(id, body);
+  async assignAgent(@Request() req: any, @Param('id') id: string) {
+    const data = TicketMapper.toNewAgentInput(id, req.user.id);
 
     const response = await this.newAgentUseCase.execute(data);
 
