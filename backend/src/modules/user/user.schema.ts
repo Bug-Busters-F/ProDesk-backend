@@ -27,7 +27,7 @@ export class User {
 
   @Prop({
     required: false,
-    default: 1
+    default: 1,
   })
   level: number;
 

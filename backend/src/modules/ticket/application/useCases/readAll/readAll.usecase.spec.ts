@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import { describe, expect, it, beforeEach, jest } from '@jest/globals';
 import { randomUUID } from 'crypto';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 import { Ticket } from '../../../domain/entities/ticket.entity';
@@ -60,5 +61,59 @@ describe('ReadAllTicketUseCase', () => {
     expect(output).not.toHaveProperty('toPrimitives');
     expect(output).not.toHaveProperty('escalate');
     expect(output).not.toHaveProperty('assignToAgent');
+  });
+
+  it('should read all tickets associated to the support agent or unassigned in their group', async () => {
+    const supId = randomUUID();
+    const groupId = randomUUID();
+    const categoryId = randomUUID();
+
+    const ticketAssignedToAgent = Ticket.create({
+      title: 'ticket atribuído ao agente',
+      category: categoryId,
+      description: 'descricao',
+      clientId: randomUUID(),
+    });
+    ticketAssignedToAgent.assignToAgent(supId);
+
+    const ticketUnassignedInGroup = Ticket.create({
+      title: 'ticket sem agente no grupo',
+      category: categoryId,
+      description: 'descricao',
+      clientId: randomUUID(),
+    });
+
+    const ticketOtherAgent = Ticket.create({
+      title: 'ticket de outro agente',
+      category: categoryId,
+      description: 'descricao',
+      clientId: randomUUID(),
+    });
+    ticketOtherAgent.assignToAgent(randomUUID());
+
+    repository.readAll.mockResolvedValue([
+      ticketAssignedToAgent,
+      ticketUnassignedInGroup,
+    ]);
+
+    const output = await useCase.execute({
+      userId: supId,
+      groupId: groupId,
+      role: UserRole.SUPPORT,
+    });
+
+    expect(output).toBeDefined();
+    expect(Array.isArray(output)).toBe(true);
+    expect(output).toHaveLength(2);
+
+    expect(repository.readAll).toHaveBeenCalledWith({
+      agentId: supId,
+      groupId: groupId,
+    });
+
+    // Garante que retornou primitivos, não instâncias do domínio
+    expect(output[0]).not.toHaveProperty('toPrimitives');
+    expect(output[0]).not.toHaveProperty('escalate');
+    expect(output[0]).not.toHaveProperty('assignToAgent');
   });
 });

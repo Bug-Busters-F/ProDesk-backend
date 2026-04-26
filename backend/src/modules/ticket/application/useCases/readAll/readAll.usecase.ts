@@ -29,10 +29,15 @@ export class ReadAllTicketUseCase {
 
   async execute(input: {
     userId: string;
+    groupId?: string;
     role: UserRole;
   }): Promise<ReadAllTicketOutput[]> {
     const filters =
-      input.role === UserRole.CLIENT ? { clientId: input.userId } : undefined;
+      input.role === UserRole.CLIENT
+        ? { clientId: input.userId }
+        : input.role === UserRole.SUPPORT
+          ? { agentId: input.userId, groupId: input.groupId }
+          : undefined;
 
     const foundedTickets = await this.repository.readAll({ ...filters });
 

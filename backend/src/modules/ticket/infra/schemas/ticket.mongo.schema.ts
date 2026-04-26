@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Document } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
 import {
   TicketEventMessage,
@@ -7,6 +7,7 @@ import {
   TicketPriority,
   TicketStatus,
 } from '../../domain/entities/ticket.entity';
+import { Category } from '../../../category/category.schema';
 
 @Schema({ _id: false })
 export class TicketHistoryEntrySchema {
@@ -44,7 +45,7 @@ export class TicketSchemaClass {
   @Prop({ required: true })
   description: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   category: string;
 
   @Prop({ required: true, enum: Object.values(TicketPriority) })

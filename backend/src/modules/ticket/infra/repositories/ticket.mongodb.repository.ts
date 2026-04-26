@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, QueryFilter } from 'mongoose';
 import { Ticket } from '../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../domain/repository/ticket.repository.interface';
 import { TicketLean, TicketSchemaClass } from '../schemas/ticket.mongo.schema';
@@ -38,10 +38,26 @@ export class TicketMongoRepository extends ITicketRepository {
     return TicketMapper.toDomain(updated);
   }
 
-  async readAll(filters?: { clientId: string }): Promise<Ticket[]> {
-    const tickets = await this.ticketModel.find(filters).exec();
-    const mappedTickets = tickets.map((t) => TicketMapper.toDomain(t));
-    return mappedTickets;
+  async readAll(filters?: {
+    clientId?: string;
+    agentId?: string;
+    categoryId?: string;
+  }): Promise<Ticket[]> {
+    let query: QueryFilter<TicketSchemaClass> = {};
+
+    if (filters?.agentId) {
+      query = {
+        $or: [
+          { agentId: filters.agentId },
+          { category: filters.categoryId, agentId: null },
+        ],
+      };
+    } else if (filters?.clientId) {
+      query = { clientId: filters.clientId };
+    }
+
+    const tickets = await this.ticketModel.find(query).exec();
+    return tickets.map((t) => TicketMapper.toDomain(t));
   }
 
   async readById(id: string): Promise<Ticket | null> {

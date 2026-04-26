@@ -56,6 +56,8 @@ export class TicketController {
   @Roles(UserRole.CLIENT)
   @ApiResponse({ status: 201, description: 'Ticket criado com sucesso.' })
   async create(@Body() body: CreateTicketRequest) {
+    // TODO: Enviar id automatica do cliente pelo token, não deixar o cliente enviar o id no body+
+
     const data = TicketMapper.toCreateInput(body);
 
     const response = await this.createUseCase.execute(data);
