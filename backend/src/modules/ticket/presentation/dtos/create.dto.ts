@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min, IsUUID } from 'class-validator';
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTicketRequest {
@@ -16,7 +24,7 @@ export class CreateTicketRequest {
   @ApiProperty({ example: 'uuid-do-cliente', description: 'ID do cliente' })
   @IsString()
   @IsNotEmpty()
-  @IsUUID()
+  @IsMongoId()
   clientId!: string;
 
   @ApiProperty({ example: 1, description: 'Nível do chamado (1 a 3)' })

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Body,
   Controller,
@@ -6,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { CreateTicketUseCase } from '../../application/useCases/create/create.usecase';
@@ -20,6 +23,7 @@ import { EscalateTicketRequest } from '../dtos/escalateTicket.dto';
 import { TicketMapper } from '../mappers/ticket.mapper';
 import { AssignAgentRequest } from '../dtos/assignAgent.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
@@ -33,6 +37,7 @@ import { UserRole } from '../../../shared/enums/user.enum';
 
 @ApiTags('Ticket')
 @Controller('tickets')
+@ApiBearerAuth()
 export class TicketController {
   constructor(
     private readonly createUseCase: CreateTicketUseCase,
@@ -61,13 +66,16 @@ export class TicketController {
   @Get()
   @ApiOperation({ summary: 'Retorna todos os tickets' })
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
   @ApiResponse({
     status: 200,
     description: 'Todos os tickets retornados com sucesso.',
   })
-  async getAll() {
-    const response = await this.readAllUseCase.execute();
+  async getAll(@Request() req: any) {
+    const response = await this.readAllUseCase.execute({
+      userId: req.user.id,
+      role: req.user.role,
+    });
 
     return response;
   }
