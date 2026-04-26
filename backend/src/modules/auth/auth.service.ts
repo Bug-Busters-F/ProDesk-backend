@@ -85,6 +85,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role,
+      categories: user.categories ?? undefined,
     });
     return { token: jwt };
   }

@@ -9,12 +9,17 @@ import { ReadAllTicketUseCase } from '../../application/useCases/readAll/readAll
 import { ReadByIdTicketUseCase } from '../../application/useCases/readById/readById.usecase';
 import { TicketController } from './ticket.controller';
 import { DeleteTicketUseCase } from '../../application/useCases/delete/delete.usecase';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  ExecutionContext,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Ticket, TicketStatus } from '../../domain/entities/ticket.entity';
 import { randomUUID } from 'crypto';
 import request from 'supertest';
 import { JwtGuard } from '../../../auth/guards/jwt.guard';
 import { RolesGuard } from '../../../auth/guards/roles.guard';
+import { UserRole } from '../../../shared/enums/user.enum';
 
 describe('TicketController', () => {
   let app: INestApplication;
@@ -30,7 +35,7 @@ describe('TicketController', () => {
 
   const ticketData = {
     title: 'chamado 1',
-    category: 'bi',
+    category: randomUUID(),
     description: 'descricao do chamado 1',
     clientId: randomUUID(),
   };
@@ -71,7 +76,17 @@ describe('TicketController', () => {
       ],
     })
       .overrideGuard(JwtGuard)
-      .useValue({ canActivate: () => true })
+      .useValue({
+        canActivate: (context: ExecutionContext) => {
+          const req = context.switchToHttp().getRequest();
+          req.user = {
+            id: randomUUID(),
+            role: UserRole.ADMIN,
+            groupId: randomUUID(),
+          };
+          return true;
+        },
+      })
       .overrideGuard(RolesGuard)
       .useValue({ canActivate: () => true })
       .compile();
@@ -348,5 +363,78 @@ describe('TicketController', () => {
     expect(response.body.deleted).toBe(true);
 
     expect(deleteUseCase.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('GET /tickets should return tickets filtered by agentId when role is SUPPORT', async () => {
+    const agentId = randomUUID();
+    const categories = [randomUUID()];
+    const primitives = ticket.toPrimitives();
+
+    const moduleFixture = await Test.createTestingModule({
+      controllers: [TicketController],
+      providers: [
+        { provide: CreateTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: ReadAllTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: ReadByIdTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: GetHistoryTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: EscalateTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: NewAgentTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: DeleteTicketUseCase, useValue: { execute: jest.fn() } },
+      ],
+    })
+      .overrideGuard(JwtGuard)
+      .useValue({
+        canActivate: (context: ExecutionContext) => {
+          const req = context.switchToHttp().getRequest();
+          req.user = {
+            id: agentId,
+            role: UserRole.SUPPORT,
+            categories: categories, // consistente com o JwtStrategy
+          };
+          return true;
+        },
+      })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
+
+    const isolatedApp = moduleFixture.createNestApplication();
+    await isolatedApp.init();
+
+    const localReadAllUseCase = moduleFixture.get(ReadAllTicketUseCase);
+
+    jest.spyOn(localReadAllUseCase, 'execute').mockResolvedValue([
+      {
+        id: primitives._id,
+        title: primitives.title,
+        category: categories[0],
+        priority: primitives.priority,
+        description: primitives.description,
+        clientId: primitives.clientId,
+        status: primitives.status,
+        createdAt: primitives.createdAt,
+        agentId: agentId,
+        escalationLevel: 1,
+        updatedAt: null,
+        closedAt: null,
+      },
+    ]);
+
+    const response = await request(isolatedApp.getHttpServer())
+      .get('/tickets')
+      .expect(200);
+
+    expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body[0]).toEqual(
+      expect.objectContaining({ agentId, category: categories[0] }),
+    );
+
+    expect(localReadAllUseCase.execute).toHaveBeenCalledWith({
+      userId: agentId,
+      categories: categories,
+      role: UserRole.SUPPORT,
+    });
+
+    await isolatedApp.close();
   });
 });

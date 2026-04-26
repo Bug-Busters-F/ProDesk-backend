@@ -76,6 +76,7 @@ export class TicketController {
   async getAll(@Request() req: any) {
     const response = await this.readAllUseCase.execute({
       userId: req.user.id,
+      categories: req.user.categories ?? undefined,
       role: req.user.role,
     });
 

@@ -16,7 +16,6 @@ export interface ReadAllTicketOutput {
   clientId: string;
   status: TicketStatus;
   agentId: string | null;
-  groupId: string | null;
   escalationLevel: number;
   createdAt: Date;
   updatedAt: Date | null;
@@ -29,14 +28,14 @@ export class ReadAllTicketUseCase {
 
   async execute(input: {
     userId: string;
-    groupId?: string;
+    categories?: string[];
     role: UserRole;
   }): Promise<ReadAllTicketOutput[]> {
     const filters =
       input.role === UserRole.CLIENT
         ? { clientId: input.userId }
         : input.role === UserRole.SUPPORT
-          ? { agentId: input.userId, groupId: input.groupId }
+          ? { agentId: input.userId, categories: input.categories }
           : undefined;
 
     const foundedTickets = await this.repository.readAll({ ...filters });
@@ -53,7 +52,6 @@ export class ReadAllTicketUseCase {
         clientId: primitive.clientId,
         status: primitive.status,
         agentId: primitive.agentId,
-        groupId: primitive.groupId,
         escalationLevel: primitive.escalationLevel,
         createdAt: primitive.createdAt,
         updatedAt: primitive.updatedAt,

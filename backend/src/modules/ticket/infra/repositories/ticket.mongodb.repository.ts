@@ -41,7 +41,7 @@ export class TicketMongoRepository extends ITicketRepository {
   async readAll(filters?: {
     clientId?: string;
     agentId?: string;
-    categoryId?: string;
+    categories?: string[];
   }): Promise<Ticket[]> {
     let query: QueryFilter<TicketSchemaClass> = {};
 
@@ -49,7 +49,7 @@ export class TicketMongoRepository extends ITicketRepository {
       query = {
         $or: [
           { agentId: filters.agentId },
-          { category: filters.categoryId, agentId: null },
+          { category: { $in: filters.categories ?? [] }, agentId: null },
         ],
       };
     } else if (filters?.clientId) {

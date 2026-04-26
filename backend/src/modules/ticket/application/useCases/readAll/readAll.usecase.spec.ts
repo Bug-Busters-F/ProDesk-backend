@@ -65,12 +65,11 @@ describe('ReadAllTicketUseCase', () => {
 
   it('should read all tickets associated to the support agent or unassigned in their group', async () => {
     const supId = randomUUID();
-    const groupId = randomUUID();
-    const categoryId = randomUUID();
+    const categories = [randomUUID()];
 
     const ticketAssignedToAgent = Ticket.create({
       title: 'ticket atribuído ao agente',
-      category: categoryId,
+      category: categories[0],
       description: 'descricao',
       clientId: randomUUID(),
     });
@@ -78,14 +77,14 @@ describe('ReadAllTicketUseCase', () => {
 
     const ticketUnassignedInGroup = Ticket.create({
       title: 'ticket sem agente no grupo',
-      category: categoryId,
+      category: randomUUID(),
       description: 'descricao',
       clientId: randomUUID(),
     });
 
     const ticketOtherAgent = Ticket.create({
       title: 'ticket de outro agente',
-      category: categoryId,
+      category: categories[0],
       description: 'descricao',
       clientId: randomUUID(),
     });
@@ -98,7 +97,7 @@ describe('ReadAllTicketUseCase', () => {
 
     const output = await useCase.execute({
       userId: supId,
-      groupId: groupId,
+      categories: categories,
       role: UserRole.SUPPORT,
     });
 
@@ -108,7 +107,7 @@ describe('ReadAllTicketUseCase', () => {
 
     expect(repository.readAll).toHaveBeenCalledWith({
       agentId: supId,
-      groupId: groupId,
+      categories: categories,
     });
 
     // Garante que retornou primitivos, não instâncias do domínio
