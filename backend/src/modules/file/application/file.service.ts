@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FileDocument } from '../infra/schemas/file.schema';
@@ -127,6 +127,24 @@ async uploadProfileImage(
     return user.profileImage;
   }
 
+  async deleteUserProfileImage(userId: string): Promise<void> {
+  const user = await this.userModel.findById(userId);
+
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  if (!user.profileImage) {
+    throw new BadRequestException('User does not have a profile image');
+  }
+
+  this.storage.delete(user.profileImage);
+
+  await this.userModel.findByIdAndUpdate(userId, {
+    profileImage: null,
+  });
+}
+
   async uploadCompanyLogo(
     file: Express.Multer.File,
     companyId: string
@@ -179,4 +197,22 @@ async uploadProfileImage(
 
     return company.logo;
   }
+
+  async deleteCompanyImage(companyId: string): Promise<void> {
+  const company = await this.companyModel.findById(companyId);
+
+  if (!company) {
+    throw new NotFoundException('Company not found');
+  }
+
+  if (!company.logo) {
+    throw new BadRequestException('Company does not have an image');
+  }
+
+  this.storage.delete(company.logo);
+
+  await this.companyModel.findByIdAndUpdate(companyId, {
+    image: null,
+  });
+}
 }
