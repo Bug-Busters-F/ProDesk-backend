@@ -40,12 +40,15 @@ export class ChatService {
     return this.chatRepository.findByParticipant(userId);
   }
 
+  // ADICIONADOS attachmentUrl E type NA ASSINATURA DO MÉTODO
   async sendMessage(
     chatId: string,
     senderId: string,
     senderRole: UserRole,
     content: string,
     fileIds?: string[],
+    attachmentUrl?: string, 
+    type?: string           
   ): Promise<any> {
     const chat = await this.chatRepository.findById(chatId);
     if (!chat) {
@@ -59,12 +62,15 @@ export class ChatService {
       }
     }
 
+    // PASSANDO OS NOVOS CAMPOS PARA O REPOSITÓRIO
     return this.messageRepository.create({
       chatId,
       senderId,
       content,
       isSystemMessage: false,
       fileIds: fileIds || [],
+      attachmentUrl: attachmentUrl, 
+      type: type || 'TEXT',         
     });
   }
 

@@ -12,7 +12,7 @@ export class EmailService {
   });
 
     async sendResetPasswordEmail(email: string, token: string) {
-    const resetLink = `myapp://reset-password?token=${token}`;
+    const resetLink = `frontend://resetPassword?token=${token}`;
 
     await this.transporter.sendMail({
         to: email,

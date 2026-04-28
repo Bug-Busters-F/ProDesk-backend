@@ -11,6 +11,7 @@ export class TicketMapper {
       title: req.title,
       description: req.description,
       clientId: req.clientId,
+      level: req.level
     };
   }
 
@@ -32,6 +33,7 @@ export class TicketMapper {
       id: id,
       groupId: req.groupId,
       category: req.category,
+      whatWasDone: req.whatWasDone
     };
   }
 }

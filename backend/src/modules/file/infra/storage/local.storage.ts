@@ -13,20 +13,16 @@ export class LocalStorage {
     subFolder: string,
     uploadedBy?: string
   ): FileEntity {
-    const uploadPath =
-      join(
-        'uploads',
-        subFolder
-      );
+    const uploadPath = join('uploads', subFolder);
+    
     if (!existsSync(uploadPath)) {
-      mkdirSync(
-        uploadPath,
-        { recursive: true }
-      );
+      mkdirSync(uploadPath, { recursive: true });
     }
     const newPath = join(uploadPath, file.filename);
-
     renameSync(file.path, newPath);
+    
+    const webPath = newPath.replace(/\\/g, '/');
+
 
     return {
       id: undefined,
@@ -34,7 +30,7 @@ export class LocalStorage {
       originalname: file.originalname,
       mimetype: file.mimetype,
       size: file.size,
-      path: newPath,
+      path: webPath, 
       uploadedBy,
       createdAt: new Date()
     };

@@ -9,6 +9,7 @@ export interface EscalateTicketInput {
   id: string;
   groupId: string;
   category: string;
+  whatWasDone: string;
 }
 
 export interface EscalateTicketOutput {
@@ -36,7 +37,7 @@ export class EscalateTicketUseCase {
       throw new Error('Ticket not found');
     }
 
-    foundedTicket.escalate(input.groupId, input.category);
+    foundedTicket.escalate(input.groupId, input.category, input.whatWasDone);
 
     const escalatedTicket = await this.repository.save(foundedTicket);
 
