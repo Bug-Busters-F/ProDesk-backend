@@ -16,6 +16,7 @@ import {
 } from '../../domain/entities/ticket.entity';
 import { randomUUID } from 'crypto';
 import request from 'supertest';
+import { CloseTicketUseCase } from '../../application/useCases/close/close.usecase';
 
 describe('TicketController', () => {
   let app: INestApplication;
@@ -27,6 +28,7 @@ describe('TicketController', () => {
   let getHistoryUseCase: GetHistoryTicketUseCase;
   let newAgentUseCase: NewAgentTicketUseCase;
   let escalateTicketUseCase: EscalateTicketUseCase;
+  let closeTicketUseCase: CloseTicketUseCase;
   let deleteUseCase: DeleteTicketUseCase;
 
   const ticketData = {
@@ -66,6 +68,10 @@ describe('TicketController', () => {
           useValue: { execute: jest.fn() },
         },
         {
+          provide: CloseTicketUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
           provide: DeleteTicketUseCase,
           useValue: { execute: jest.fn() },
         },
@@ -90,6 +96,7 @@ describe('TicketController', () => {
     getHistoryUseCase = modulesFixture.get(GetHistoryTicketUseCase);
     newAgentUseCase = modulesFixture.get(NewAgentTicketUseCase);
     escalateTicketUseCase = modulesFixture.get(EscalateTicketUseCase);
+    closeTicketUseCase = modulesFixture.get(CloseTicketUseCase);
     deleteUseCase = modulesFixture.get(DeleteTicketUseCase);
   });
 
@@ -332,6 +339,53 @@ describe('TicketController', () => {
     );
 
     expect(escalateTicketUseCase.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('PUT /tickets/:id/close should close a ticket and return updated', async () => {
+    const agentId = randomUUID();
+
+    // precisa estar IN_PROGRESS antes de fechar
+    ticket.assignToAgent(agentId);
+
+    const primitives = ticket.toPrimitives();
+
+    // simula fechamento
+    ticket.close('Servidor reiniciado');
+
+    jest.spyOn(closeTicketUseCase, 'execute').mockResolvedValue({
+      id: primitives._id,
+      title: primitives.title,
+      category: primitives.category,
+      priority: primitives.priority,
+      description: primitives.description,
+      clientId: primitives.clientId,
+      status: TicketStatus.CLOSED,
+      agentId: agentId,
+      escalationLevel: primitives.escalationLevel,
+      createdAt: primitives.createdAt,
+      updatedAt: primitives.updatedAt,
+    });
+
+    const payload = {
+      solution: 'Servidor reiniciado',
+    };
+
+    const response = await request(httpServer)
+      .put(`/tickets/${ticket.id}/close`)
+      .send(payload)
+      .expect(200);
+
+    expect(response.body).toBeInstanceOf(Object);
+
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        id: primitives._id,
+        status: TicketStatus.CLOSED,
+        agentId: agentId,
+      }),
+    );
+
+    expect(closeTicketUseCase.execute).toHaveBeenCalledTimes(1);
   });
 
   it('DELETE /tickets/:id/ should delete a ticket and return a boolean', async () => {
