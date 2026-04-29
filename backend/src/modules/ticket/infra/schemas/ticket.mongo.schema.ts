@@ -24,6 +24,9 @@ export class TicketHistoryEntrySchema {
 
   @Prop({ type: String, default: null })
   solution: string | null;
+  
+  @Prop({ type: String, required: false })
+  attachmentUrl?: string;
 
   @Prop({ required: true })
   occurredAt: Date;

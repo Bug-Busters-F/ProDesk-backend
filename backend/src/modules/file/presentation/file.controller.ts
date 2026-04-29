@@ -1,5 +1,5 @@
-import { Controller, Post, UploadedFile, UseInterceptors, UseGuards, Body, Req, Param, Get, Res, BadRequestException } from '@nestjs/common';
-import { ApiBearerAuth, ApiConsumes, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Post, UploadedFile, UseInterceptors, UseGuards, Body, Req, Param, Get, Res, BadRequestException, Delete } from '@nestjs/common';
+import { ApiBearerAuth, ApiConsumes, ApiBody, ApiOperation, ApiTags, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
@@ -163,6 +163,23 @@ export class FileController {
       return this.fileService.uploadCompanyLogo(file, companyId);
   }
 
+  @Delete('profile')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
+  @ApiOperation({ summary: 'Remover foto de perfil do usuário' })
+  @ApiResponse({ status: 200, description: 'Imagem removida com sucesso' })
+  @ApiResponse({ status: 400, description: 'Usuário não possui imagem' })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
+  async deleteProfileImage(
+    @Req() req: Request & { user: { id: string } },
+  ) {
+    const userId = req.user.id;
+
+    await this.fileService.deleteUserProfileImage(userId);
+
+    return { message: 'Image removed successfully' };
+  }
+
   @Get('company/:companyId')
   async getCompanyLogo(
     @Param('companyId') companyId: string,
@@ -178,5 +195,21 @@ export class FileController {
     }
 
     return res.sendFile(filePath, { root: './' });
+  }
+
+  @Delete('company/:companyId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Remover imagem da empresa' })
+  @ApiParam({ name: 'companyId' })
+  @ApiResponse({ status: 200, description: 'Imagem removida com sucesso' })
+  @ApiResponse({ status: 400, description: 'Empresa não possui imagem' })
+  @ApiResponse({ status: 404, description: 'Empresa não encontrada' })
+  async deleteCompanyImage(
+    @Param('companyId') companyId: string,
+  ) {
+    await this.fileService.deleteCompanyImage(companyId);
+
+    return { message: 'Image removed successfully' };
   }
 }

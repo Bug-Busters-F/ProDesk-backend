@@ -13,9 +13,15 @@ import { TicketModule } from './modules/ticket/ticket.module';
 import { EmailModule } from './modules/email/email.module';
 import { FileModule } from './modules/file/file.module';
 import { FaqModule } from './modules/faq/faq.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'), 
+      serveRoot: '/uploads', 
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
