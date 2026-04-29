@@ -12,6 +12,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { EmailModule } from './modules/email/email.module';
 import { FileModule } from './modules/file/file.module';
+import { FaqModule } from './modules/faq/faq.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
@@ -36,6 +37,7 @@ import { join } from 'path';
     TicketModule,
     EmailModule,
     FileModule,
+    FaqModule
   ],
   controllers: [],
   providers: [],
