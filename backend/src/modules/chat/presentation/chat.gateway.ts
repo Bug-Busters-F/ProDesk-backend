@@ -74,8 +74,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const isParticipant = await this.chatService.isParticipant(data.chatId, user.id);
 
-    if (!isParticipant && user.role !== 'admin' && user.role !== 'support') {
-      client.emit('erro', { mensagem: 'Você não é participante deste chat' });
+    if (!isParticipant && user.role !== 'admin') {
+      client.emit('erro', {
+        mensagem: 'Você não é participante deste chat',
+      });
       return;
     }
 

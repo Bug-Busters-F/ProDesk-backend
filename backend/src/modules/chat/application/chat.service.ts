@@ -55,7 +55,8 @@ export class ChatService {
       throw new NotFoundException('Chat not found');
     }
 
-    if (senderRole !== UserRole.ADMIN && senderRole !== UserRole.SUPPORT) {
+    // ADMINs podem enviar mensagem em qualquer chat
+    if (senderRole !== UserRole.ADMIN) {
       if (chat.clientId !== senderId && chat.agentId !== senderId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }
@@ -83,7 +84,8 @@ export class ChatService {
       throw new NotFoundException('Chat not found');
     }
 
-    if (userRole !== UserRole.ADMIN && userRole !== UserRole.SUPPORT) {
+    // ADMINs podem ver histórico de qualquer chat
+    if (userRole !== UserRole.ADMIN) {
       if (chat.clientId !== userId && chat.agentId !== userId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }
