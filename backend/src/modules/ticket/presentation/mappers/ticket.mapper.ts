@@ -2,6 +2,7 @@ import { CreateTicketInput } from '../../application/useCases/create/create.usec
 import { EscalateTicketInput } from '../../application/useCases/escalate/escalate.usecase';
 import { NewAgentTicketInput } from '../../application/useCases/newAgent/newAgent.usecase';
 import { AssignAgentRequest } from '../dtos/assignAgent.dto';
+import { CloseTicketRequest } from '../dtos/closeTicket.dto';
 import { CreateTicketRequest } from '../dtos/create.dto';
 import { EscalateTicketRequest } from '../dtos/escalateTicket.dto';
 
@@ -34,6 +35,16 @@ export class TicketMapper {
       groupId: req.groupId,
       category: req.category,
       whatWasDone: req.whatWasDone
+    };
+  }
+
+  static toCloseTicketInput(
+    id: string,
+    body: CloseTicketRequest,
+  ) {
+    return {
+      id,
+      solution: body.solution,
     };
   }
 }

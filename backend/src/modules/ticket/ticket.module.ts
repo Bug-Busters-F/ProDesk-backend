@@ -15,6 +15,7 @@ import { EscalateTicketUseCase } from './application/useCases/escalate/escalate.
 import { DeleteTicketUseCase } from './application/useCases/delete/delete.usecase';
 import { NewAgentTicketUseCase } from './application/useCases/newAgent/newAgent.usecase';
 import { TriageModule } from '../triage/triage.module';
+import { CloseTicketUseCase } from './application/useCases/close/close.usecase';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { TriageModule } from '../triage/triage.module';
     EscalateTicketUseCase,
     DeleteTicketUseCase,
     NewAgentTicketUseCase,
+    CloseTicketUseCase,
   ],
 })
 export class TicketModule {}
