@@ -19,7 +19,7 @@ export class ReadAllFaqUseCase {
             const primitives = faq.toPrimitives();
             return {
                 id: primitives._id,
-                question: primitives.questions,
+                question: primitives.question,
                 answer: primitives.answer,
                 createdAt: primitives.createdAt
             };

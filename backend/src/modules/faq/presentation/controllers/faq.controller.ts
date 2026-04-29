@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateFaqUseCase } from "../../application/create/create.usecase";
 import { UpdateFaqUseCase } from "../../application/update/update.usecase";
@@ -69,5 +69,16 @@ export class FaqController {
         return this.updateUseCase.execute(data);
     }
 
-    // Falta o delete
+    @Delete(':id')
+    @UseGuards(JwtGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiOperation({ summary: 'Excluir FAQ' })
+    @ApiParam({ name: 'id', example: 'uuid-do-faq' })
+    @ApiResponse({ status: 200, description: 'FAQ excluído com sucesso' })
+    @ApiResponse({ status: 404, description: 'FAQ não encontrado' })
+    @ApiResponse({ status: 403, description: 'Acesso negado (somente ADMIN)' })
+    async delete(@Param('id') id: string) {
+        await this.deleteUseCase.execute(id);
+        return { deleted: true };
+    }
 }

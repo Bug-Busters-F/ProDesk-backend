@@ -1,4 +1,5 @@
-import { Faq } from "./entities/faq.entity";
+import { Faq } from "../entities/faq.entity";
+
 
 export abstract class IFaqRepository {
     abstract create(faq: Faq): Promise<Faq>;

@@ -26,6 +26,7 @@ export class UpdateFaqUseCase {
         faq.update({ question: input.question, answer: input.answer });
 
         const updated = await this.repository.update(faq);
+        if (!updated) throw new NotFoundException('FAQ not found');
         const primitives = updated.toPrimitives();
 
         return {
