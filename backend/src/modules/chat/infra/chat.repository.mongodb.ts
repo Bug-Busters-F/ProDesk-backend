@@ -87,4 +87,12 @@ export class ChatRepositoryMongodb implements IChatRepository {
     if (!doc) return null;
     return this.toDetails(doc);
   }
+
+  async updateAgent(ticketId: string, agentId: string | null): Promise<ChatDetails | null> {
+    const doc = await this.chatModel
+      .findOneAndUpdate({ ticketId }, { agentId }, { new: true })
+      .exec();
+    if (!doc) return null;
+    return this.toDetails(doc);
+  }
 }

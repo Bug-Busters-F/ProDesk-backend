@@ -6,9 +6,11 @@ import {
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { NewAgentTicketUseCase } from './newAgent.usecase';
+import { ChatService } from '../../../../chat/application/chat.service';
 
 describe('NewAgentTicketUseCase', () => {
   let repository: jest.Mocked<ITicketRepository>;
+  let chatService: jest.Mocked<ChatService>;
   let useCase: NewAgentTicketUseCase;
   let ticket: Ticket;
 
@@ -25,7 +27,11 @@ describe('NewAgentTicketUseCase', () => {
       save: jest.fn(),
     } as unknown as jest.Mocked<ITicketRepository>;
 
-    useCase = new NewAgentTicketUseCase(repository);
+    chatService = {
+      updateAgentByTicketId: jest.fn(),
+    } as unknown as jest.Mocked<ChatService>;
+
+    useCase = new NewAgentTicketUseCase(repository, chatService);
   });
 
   it('should assing a new agent to a ticket successfully', async () => {

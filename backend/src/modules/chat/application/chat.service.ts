@@ -8,7 +8,10 @@ import type { IChatRepository } from '../domain/chat.repository';
 import type { IMessageRepository } from '../../Messages/domain/message.repository';
 import type { ChatDetails } from '../domain/chat.entity';
 import { ChatStatus } from '../domain/chat.entity';
-import { UserRole } from '../../user/user.schema';
+import { User, UserDocument, UserRole } from '../../user/user.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { TicketSchemaClass, TicketDocument } from '../../ticket/infra/schemas/ticket.mongo.schema';
 
 @Injectable()
 export class ChatService {
@@ -17,6 +20,8 @@ export class ChatService {
     private readonly chatRepository: IChatRepository,
     @Inject('IMessageRepository')
     private readonly messageRepository: IMessageRepository,
+    @InjectModel(TicketSchemaClass.name) private ticketModel: Model<TicketDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async createChat(
@@ -105,11 +110,42 @@ export class ChatService {
     return result;
   }
 
+  async updateAgentByTicketId(ticketId: string, agentId: string | null): Promise<ChatDetails | null> {
+    return this.chatRepository.updateAgent(ticketId, agentId);
+  }
+
   async isParticipant(chatId: string, userId: string): Promise<boolean> {
     const chat = await this.chatRepository.findById(chatId);
     if (!chat) {
       return false;
     }
-    return chat.clientId === userId || chat.agentId === userId;
+    
+    if (chat.clientId === userId || chat.agentId === userId) {
+      return true;
+    }
+
+    // Se o chat está na "Fila Aberta" (Sem dono)
+    if (!chat.agentId) {
+      const user = await this.userModel.findById(userId).exec();
+      const ticket = await this.ticketModel.findById(chat.ticketId).exec();
+
+      if (user && ticket) {
+        if (user.role === UserRole.ADMIN) {
+          return true;
+        }
+
+        if (user.role === UserRole.SUPPORT) {
+          const hasCategory = user.categories.some(
+            (cat) => cat.toString() === ticket.category.toString()
+          );
+
+          if (hasCategory && (user.level || 1) >= ticket.escalationLevel) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 }

@@ -4,6 +4,7 @@ import {
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
+import { ChatService } from '../../../../chat/application/chat.service';
 
 export interface EscalateTicketInput {
   id: string;
@@ -28,7 +29,10 @@ export interface EscalateTicketOutput {
 
 @Injectable()
 export class EscalateTicketUseCase {
-  constructor(private readonly repository: ITicketRepository) {}
+  constructor(
+    private readonly repository: ITicketRepository,
+    private readonly chatService: ChatService,
+  ) {}
 
   async execute(input: EscalateTicketInput): Promise<EscalateTicketOutput> {
     const foundedTicket = await this.repository.readById(input.id);
@@ -43,6 +47,12 @@ export class EscalateTicketUseCase {
 
     if (!escalatedTicket) {
       throw new Error('Ticket not escalated');
+    }
+
+    try {
+      await this.chatService.updateAgentByTicketId(escalatedTicket.id, escalatedTicket.agentId);
+    } catch (e) {
+      console.warn('Chat não pôde ser atualizado ou não existe:', e);
     }
 
     const primitive = escalatedTicket.toPrimitives();

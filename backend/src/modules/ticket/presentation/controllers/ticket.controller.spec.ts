@@ -115,6 +115,7 @@ describe('TicketController', () => {
       clientId: primitives.clientId,
       fileUrls: primitives.fileUrls,
       status: primitives.status,
+      level: primitives.escalationLevel,
       createdAt: primitives.createdAt,
     });
 
@@ -133,6 +134,7 @@ describe('TicketController', () => {
         clientId: primitives.clientId,
         fileUrls: primitives.fileUrls,
         status: primitives.status,
+        level: primitives.escalationLevel,
       }),
     );
 
@@ -304,9 +306,8 @@ describe('TicketController', () => {
       description: primitives.category,
       clientId: ticket.clientId,
       status: primitives.status,
-      agentId: agentId,
-      groupId: groupId,
-      escalationLevel: primitives.escalationLevel,
+      agentId: null,
+      escalationLevel: 1,
       createdAt: primitives.createdAt,
       updatedAt: primitives.updatedAt,
     });
@@ -331,9 +332,8 @@ describe('TicketController', () => {
         description: primitives.category,
         clientId: ticket.clientId,
         status: primitives.status,
-        agentId: agentId,
-        groupId: groupId,
-        escalationLevel: 2,
+        agentId: null,
+        escalationLevel: 1,
         updatedAt: primitives.updatedAt?.toISOString(),
       }),
     );
