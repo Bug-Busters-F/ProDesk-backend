@@ -11,19 +11,20 @@ export class EmailService {
     },
   });
 
-    async sendResetPasswordEmail(email: string, token: string) {
-    const resetLink = `frontend://resetPassword?token=${token}`;
+  async sendResetPasswordEmail(email: string, token: string) {
+    const apiUrl = process.env.API_URL || 'http://localhost:3000';
+    const resetLink = `${apiUrl}/ProDeskApi/auth/redirect-app?token=${token}`;
 
     await this.transporter.sendMail({
-        to: email,
-        subject: 'Recuperação de senha',
-        html: `
+      to: email,
+      subject: 'Recuperação de senha',
+      html: `
         <h2>Recuperação de senha</h2>
         <p>Clique no link abaixo:</p>
         <a href="${resetLink}">Redefinir senha</a>
         <p>Se não abrir, copie o link:</p>
         <p>${resetLink}</p>
-        `,
+      `,
     });
-    }
+  }
 }
