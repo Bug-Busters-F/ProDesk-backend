@@ -26,6 +26,6 @@ import { ChatController } from './presentation/chat.controller';
     { provide: 'IChatRepository', useExisting: ChatRepositoryMongodb },
     { provide: 'IMessageRepository', useExisting: MessageRepositoryMongodb },
   ],
-  exports: [ChatService],
+  exports: [ChatService, 'IChatRepository'],
 })
 export class ChatModule {}
