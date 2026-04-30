@@ -40,11 +40,15 @@ export class ChatService {
     return this.chatRepository.findByParticipant(userId);
   }
 
+  // ADICIONADOS attachmentUrl E type NA ASSINATURA DO MÉTODO
   async sendMessage(
     chatId: string,
     senderId: string,
     senderRole: UserRole,
     content: string,
+    fileIds?: string[],
+    attachmentUrl?: string, 
+    type?: string           
   ): Promise<any> {
     const chat = await this.chatRepository.findById(chatId);
     if (!chat) {
@@ -52,17 +56,21 @@ export class ChatService {
     }
 
     // ADMINs podem enviar mensagem em qualquer chat
-    if (senderRole !== UserRole.ADMIN && senderRole !== UserRole.SUPPORT) {
+    if (senderRole !== UserRole.ADMIN) {
       if (chat.clientId !== senderId && chat.agentId !== senderId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }
     }
 
+    // PASSANDO OS NOVOS CAMPOS PARA O REPOSITÓRIO
     return this.messageRepository.create({
       chatId,
       senderId,
       content,
       isSystemMessage: false,
+      fileIds: fileIds || [],
+      attachmentUrl: attachmentUrl, 
+      type: type || 'TEXT',         
     });
   }
 
@@ -77,7 +85,7 @@ export class ChatService {
     }
 
     // ADMINs podem ver histórico de qualquer chat
-    if (userRole !== UserRole.ADMIN && userRole !== UserRole.SUPPORT) {
+    if (userRole !== UserRole.ADMIN) {
       if (chat.clientId !== userId && chat.agentId !== userId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }

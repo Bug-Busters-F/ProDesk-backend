@@ -16,6 +16,7 @@ import { DeleteTicketUseCase } from './application/useCases/delete/delete.usecas
 import { NewAgentTicketUseCase } from './application/useCases/newAgent/newAgent.usecase';
 import { TriageModule } from '../triage/triage.module';
 import { GetHistoryFilteredUseCase } from './application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
+import { CloseTicketUseCase } from './application/useCases/close/close.usecase';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { GetHistoryFilteredUseCase } from './application/useCases/getHistoryFilt
     EscalateTicketUseCase,
     DeleteTicketUseCase,
     NewAgentTicketUseCase,
+    CloseTicketUseCase,
   ],
 })
 export class TicketModule {}

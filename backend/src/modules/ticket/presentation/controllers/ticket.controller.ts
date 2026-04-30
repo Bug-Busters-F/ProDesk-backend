@@ -18,10 +18,12 @@ import {
 import { NewAgentTicketUseCase } from '../../application/useCases/newAgent/newAgent.usecase';
 import { ReadAllTicketUseCase } from '../../application/useCases/readAll/readAll.usecase';
 import { ReadByIdTicketUseCase } from '../../application/useCases/readById/readById.usecase';
+import { CloseTicketUseCase } from '../../application/useCases/close/close.usecase';
 import { CreateTicketRequest } from '../dtos/create.dto';
 import { EscalateTicketRequest } from '../dtos/escalateTicket.dto';
 import { TicketMapper } from '../mappers/ticket.mapper';
 import { AssignAgentRequest } from '../dtos/assignAgent.dto';
+import { CloseTicketRequest } from '../dtos/closeTicket.dto';
 import {
   ApiBody,
   ApiOperation,
@@ -46,7 +48,8 @@ export class TicketController {
     private readonly escalateUseCase: EscalateTicketUseCase,
     private readonly newAgentUseCase: NewAgentTicketUseCase,
     private readonly deleteUseCase: DeleteTicketUseCase,
-  ) {}
+    private readonly closeUseCase: CloseTicketUseCase,
+  ) { }
 
   @Post()
   @ApiOperation({ summary: 'Cria um ticket' })
@@ -158,5 +161,21 @@ export class TicketController {
     const response = await this.deleteUseCase.execute(id);
 
     return { deleted: response };
+  }
+
+  @Put(':id/close')
+  @ApiOperation({ summary: 'Fecha um ticket' })
+  @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiBody({ type: CloseTicketRequest })
+  @ApiResponse({ status: 200, description: 'Ticket fechado com sucesso.' })
+  async closeTicket(
+    @Param('id') id: string,
+    @Body() body: CloseTicketRequest,
+  ) {
+    const data = TicketMapper.toCloseTicketInput(id, body);
+
+    const response = await this.closeUseCase.execute(data);
+
+    return response;
   }
 }
