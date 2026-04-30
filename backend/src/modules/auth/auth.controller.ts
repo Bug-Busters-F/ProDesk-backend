@@ -5,7 +5,11 @@ import {
   HttpStatus,
   Post,
   UseGuards,
+  Get,
+  Query,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import {
   CreateAdminDTO,
@@ -165,5 +169,14 @@ export class AuthController {
       body.token,
       body.newPassword,
     );
+  }
+
+  @Get('redirect-app')
+  @ApiOperation({ summary: 'Redirecionar usuário para o App Mobile' })
+  redirectApp(@Query('token') token: string, @Res() res: Response) {
+    const expoUrl = process.env.EXPO_URL || 'exp://192.168.0.217:8081';
+    const appLink = `${expoUrl}/--/resetPassword?token=${token}`;
+    
+    return res.redirect(appLink);
   }
 }
