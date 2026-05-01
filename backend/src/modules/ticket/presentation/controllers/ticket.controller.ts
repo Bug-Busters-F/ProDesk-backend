@@ -184,7 +184,7 @@ export class TicketController {
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiResponse({ status: 200, description: 'Ticket removido com sucesso.' })
-  async delete(@Param() id: string) {
+  async delete(@Param('id') id: string) {
     const response = await this.deleteUseCase.execute(id);
 
     return { deleted: response };
