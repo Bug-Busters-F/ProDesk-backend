@@ -1,15 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import {
-  Ticket,
-  TicketStatus,
-} from '../../../domain/entities/ticket.entity';
+import { Ticket, TicketStatus } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 import { TriageService } from '../../../../triage/application/triage.service';
 
 export interface CreateTicketInput {
   title: string;
   description: string;
-  clientId: string;
   level?: number;
 }
 
@@ -32,14 +28,16 @@ export class CreateTicketUseCase {
     private readonly triageService: TriageService,
   ) {}
 
-  async execute(input: CreateTicketInput): Promise<CreateTicketOutput> {
-    const triageResult = await this.triageService.classify(
-      input.description,
-    );
+  async execute(
+    input: CreateTicketInput,
+    clientId: string,
+  ): Promise<CreateTicketOutput> {
+    const triageResult = await this.triageService.classify(input.description);
 
     const ticket = Ticket.create({
       ...input,
       category: triageResult.category,
+      clientId: clientId,
     });
 
     const created = await this.repository.create(ticket);

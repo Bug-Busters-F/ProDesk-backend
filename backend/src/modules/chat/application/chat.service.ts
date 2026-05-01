@@ -8,10 +8,12 @@ import type { IChatRepository } from '../domain/chat.repository';
 import type { IMessageRepository } from '../../Messages/domain/message.repository';
 import type { ChatDetails } from '../domain/chat.entity';
 import { ChatStatus } from '../domain/chat.entity';
-import { User, UserDocument, UserRole } from '../../user/user.schema';
+import { UserRole } from '../../shared/enums/user.enum';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TicketSchemaClass, TicketDocument } from '../../ticket/infra/schemas/ticket.mongo.schema';
+import { from } from 'rxjs';
+import { User, UserDocument } from '../../user/user.schema';
 
 @Injectable()
 export class ChatService {

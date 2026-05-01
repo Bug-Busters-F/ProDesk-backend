@@ -13,7 +13,6 @@ import { CategoryDetails } from './category.interface';
 import { Roles } from '../auth/guards/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { UserRole } from '../user/user.schema';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -24,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { CreateCategoryDTO } from './dtos/createCategoryDTO';
 import { UpdateCategoryDTO } from './dtos/updateCategoryDTO';
+import { UserRole } from '../shared/enums/user.enum';
 
 @ApiTags('Category')
 @ApiBearerAuth()
