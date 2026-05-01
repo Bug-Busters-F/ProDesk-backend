@@ -18,7 +18,7 @@ import {
 } from '../user/dtos/createUserDTO';
 import { UserDetails } from '../user/user.interface';
 import { ExistingUserDTO } from '../user/dtos/existingUserDTO';
-import { UserRole } from '../user/user.schema';
+import { UserRole } from '../shared/enums/user.enum';
 import { Roles } from './guards/roles.decorator';
 import { JwtGuard } from './guards/jwt.guard';
 import { RolesGuard } from './guards/roles.guard';

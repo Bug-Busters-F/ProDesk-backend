@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { ChatService } from './chat.service';
 import { TicketSchemaClass } from '../../ticket/infra/schemas/ticket.mongo.schema';
-import { UserRole } from '../../user/user.schema';
 import { NotFoundException } from '@nestjs/common';
 
 import type { IChatRepository } from '../domain/chat.repository';
 import type { IMessageRepository } from '../../Messages/domain/message.repository';
+import { UserRole } from '../../shared/enums/user.enum';
 
 const mockChatRepository: jest.Mocked<IChatRepository> = {
   create: jest.fn(),

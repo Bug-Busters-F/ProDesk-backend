@@ -10,7 +10,7 @@ import { CreateUserDTO } from '../user/dtos/createUserDTO';
 import { UserDetails } from '../user/user.interface';
 import { ExistingUserDTO } from '../user/dtos/existingUserDTO';
 import { JwtService } from '@nestjs/jwt';
-import { UserRole } from '../user/user.schema';
+import { UserRole } from '../shared/enums/user.enum';
 import { EmailService } from '../email/email.service';
 
 @Injectable()
@@ -85,6 +85,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role,
+      categories: user.categories ?? undefined,
     });
     return { token: jwt };
   }

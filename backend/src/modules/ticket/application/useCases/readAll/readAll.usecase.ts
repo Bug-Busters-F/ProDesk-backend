@@ -5,6 +5,7 @@ import {
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
+import { UserRole } from '../../../../shared/enums/user.enum';
 
 export interface ReadAllTicketOutput {
   id: string;
@@ -15,7 +16,6 @@ export interface ReadAllTicketOutput {
   clientId: string;
   status: TicketStatus;
   agentId: string | null;
-  groupId: string | null;
   escalationLevel: number;
   createdAt: Date;
   updatedAt: Date | null;
@@ -26,8 +26,19 @@ export interface ReadAllTicketOutput {
 export class ReadAllTicketUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 
-  async execute(): Promise<ReadAllTicketOutput[]> {
-    const foundedTickets = await this.repository.readAll();
+  async execute(input: {
+    userId: string;
+    categories?: string[];
+    role: UserRole;
+  }): Promise<ReadAllTicketOutput[]> {
+    const filters =
+      input.role === UserRole.CLIENT
+        ? { clientId: input.userId }
+        : input.role === UserRole.SUPPORT
+          ? { agentId: input.userId, categories: input.categories }
+          : undefined;
+
+    const foundedTickets = await this.repository.readAll({ ...filters });
 
     const convertedTickets = foundedTickets.map((t: Ticket) => {
       const primitive = t.toPrimitives();
@@ -41,7 +52,6 @@ export class ReadAllTicketUseCase {
         clientId: primitive.clientId,
         status: primitive.status,
         agentId: primitive.agentId,
-        groupId: primitive.groupId,
         escalationLevel: primitive.escalationLevel,
         createdAt: primitive.createdAt,
         updatedAt: primitive.updatedAt,

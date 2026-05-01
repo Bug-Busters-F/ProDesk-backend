@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNumberString, IsOptional, IsString } from 'class-validator';
-import { UserRole } from '../user.schema';
+import { UserRole } from '../../shared/enums/user.enum';
 
 export class FilterUserDTO {
   @ApiPropertyOptional({ example: 'Gabriel' })

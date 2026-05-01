@@ -7,11 +7,11 @@ import { ReadAllFaqUseCase } from "../../application/readAll/readAll.usecase";
 import { ReadByIdFaqUseCase } from "../../application/readById/readById.usecase";
 import { JwtGuard } from "../../../auth/guards/jwt.guard";
 import { RolesGuard } from "../../../auth/guards/roles.guard";
-import { UserRole } from "../../../user/user.schema";
 import { CreateFaqRequest } from "../dtos/create.dto";
 import { FaqMapper } from "../mappers/faq.mapper";
 import { Roles } from "../../../auth/guards/roles.decorator";
 import { UpdateFaqRequest } from "../dtos/update.dto";
+import { UserRole } from "../../../shared/enums/user.enum";
 
 @ApiTags('FAQ')
 @ApiBearerAuth()
