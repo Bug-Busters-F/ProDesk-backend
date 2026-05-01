@@ -230,23 +230,31 @@ export class Ticket {
       throw new Error(TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR);
     }
 
-    if (this.escalationLevel >= 3) {
-      throw new Error(TicketValidationErrors.ESCALATION_LEVEL_MAX_ERROR);
-    }
-
     this.touch();
 
     this._groupId = groupId;
-    this.category = category ?? this.category;
-    this.escalationLevel++;
+
+    if (category && category !== this.category) {
+      this.category = category;
+      this.escalationLevel = 1;
+    } else {
+      if (this.escalationLevel >= 3) {
+        throw new Error(TicketValidationErrors.ESCALATION_LEVEL_MAX_ERROR);
+      }
+      this.escalationLevel++;
+    }
+
+    const previousAgentId = this._agentId;
+    this._agentId = null;
+
     this._status = TicketStatus.ESCALATED;
 
     this.addHistory({
       event: TicketEvents.ESCALATE,
-      responsibleAgent: this._agentId,
+      responsibleAgent: previousAgentId,
       status: TicketStatus.ESCALATED,
       message: TicketEventMessage.ESCALATE_MSG,
-      solution: whatWasDone ?? null
+      solution: whatWasDone ?? null,
     });
   }
 

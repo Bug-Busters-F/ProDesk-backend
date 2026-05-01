@@ -39,15 +39,28 @@ export class ChatRepositoryMongodb implements IChatRepository {
 
   async findById(id: string): Promise<ChatDetails | null> {
     const chatDoc = await this.chatModel.findById(id).exec();
-    
+          
     if (!chatDoc) return null;
-
     return {
       id: chatDoc._id as string,
-      ticketId: chatDoc.ticketId.toString(),
-      clientId: chatDoc.clientId.toString(),
-      agentId: chatDoc.agentId.toString(),
-      groupId: chatDoc.groupId.toString(),
+      ticketId: chatDoc.ticketId?.toString() || '',
+      clientId: chatDoc.clientId?.toString() || '',
+      agentId: chatDoc.agentId?.toString() || '', 
+      groupId: chatDoc.groupId?.toString() || '',
+      status: chatDoc.status as any,
+    };
+  }
+
+  async findByTicketId(ticketId: string): Promise<ChatDetails | null> {
+    const chatDoc = await this.chatModel.findOne({ ticketId }).exec();
+          
+    if (!chatDoc) return null;
+    return {
+      id: chatDoc._id as string,
+      ticketId: chatDoc.ticketId?.toString() || '',
+      clientId: chatDoc.clientId?.toString() || '',
+      agentId: chatDoc.agentId?.toString() || '', 
+      groupId: chatDoc.groupId?.toString() || '',
       status: chatDoc.status as any,
     };
   }
@@ -62,21 +75,6 @@ export class ChatRepositoryMongodb implements IChatRepository {
     return docs.map((doc) => this.toDetails(doc));
   }
 
-  async findByTicketId(ticketId: string): Promise<ChatDetails | null> {
-    const chatDoc = await this.chatModel.findOne({ ticketId }).exec();
-    
-    if (!chatDoc) return null;
-
-    return {
-      id: chatDoc._id as string,
-      ticketId: chatDoc.ticketId?.toString() || '',
-      clientId: chatDoc.clientId?.toString() || '',
-      agentId: chatDoc.agentId?.toString() || '',
-      groupId: chatDoc.groupId?.toString() || '',
-      status: chatDoc.status as any,
-    };
-  }
-
   async updateStatus(
     id: string,
     status: ChatStatus,
@@ -88,10 +86,11 @@ export class ChatRepositoryMongodb implements IChatRepository {
     return this.toDetails(doc);
   }
 
-  async addAgentToChat(ticketId: string, agentId: string): Promise<void> {
-    await this.chatModel.updateOne(
-      { ticketId },
-      { $set: { agentId: agentId } }
-    );
+  async updateAgent(ticketId: string, agentId: string | null): Promise<ChatDetails | null> {
+    const doc = await this.chatModel
+      .findOneAndUpdate({ ticketId }, { agentId }, { new: true })
+      .exec();
+    if (!doc) return null;
+    return this.toDetails(doc);
   }
 }
