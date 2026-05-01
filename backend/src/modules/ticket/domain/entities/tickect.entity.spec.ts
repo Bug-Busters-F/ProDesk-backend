@@ -84,7 +84,8 @@ describe('Ticket entity', () => {
 
     expect(primitiveTicket.groupId).toBe(newGroupId);
     expect(primitiveTicket.category).toBe('ia');
-    expect(primitiveTicket.escalationLevel).toBe(2);
+    expect(primitiveTicket.escalationLevel).toBe(1);
+    expect(primitiveTicket.agentId).toBeNull();
     expect(primitiveTicket.updatedAt).toBeInstanceOf(Date);
     expect(primitiveTicket.updatedAt).not.toBeNull();
   });

@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from '@nestjs/mongoose';
 import { ChatService } from './chat.service';
+import { TicketSchemaClass } from '../../ticket/infra/schemas/ticket.mongo.schema';
 import { UserRole } from '../../user/user.schema';
 import { NotFoundException } from '@nestjs/common';
 
@@ -12,6 +14,7 @@ const mockChatRepository: jest.Mocked<IChatRepository> = {
   findByParticipant: jest.fn(),
   findByTicketId: jest.fn(),
   updateStatus: jest.fn(),
+  updateAgent: jest.fn(),
 };
 
 const mockMessageRepository: jest.Mocked<IMessageRepository> = {
@@ -41,6 +44,8 @@ describe('ChatService — envio de mensagem com arquivo', () => {
         ChatService,
         { provide: 'IChatRepository', useValue: mockChatRepository },
         { provide: 'IMessageRepository', useValue: mockMessageRepository },
+        { provide: getModelToken(TicketSchemaClass.name), useValue: {} },
+        { provide: getModelToken(UserRole.ADMIN ? 'User' : 'User'), useValue: {} },
       ],
     }).compile();
 

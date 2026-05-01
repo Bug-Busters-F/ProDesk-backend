@@ -16,6 +16,7 @@ import { DeleteTicketUseCase } from './application/useCases/delete/delete.usecas
 import { NewAgentTicketUseCase } from './application/useCases/newAgent/newAgent.usecase';
 import { TriageModule } from '../triage/triage.module';
 import { CloseTicketUseCase } from './application/useCases/close/close.usecase';
+import { ChatModule } from '../chat/chat.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CloseTicketUseCase } from './application/useCases/close/close.usecase';
       { name: TicketSchemaClass.name, schema: TicketSchema },
     ]),
     TriageModule,
+    ChatModule,
   ],
   controllers: [TicketController],
   providers: [

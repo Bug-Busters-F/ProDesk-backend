@@ -6,9 +6,11 @@ import {
   Ticket,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
+import { ChatService } from '../../../../chat/application/chat.service';
 
 describe('EscalateTicketUseCase', () => {
   let repository: jest.Mocked<ITicketRepository>;
+  let chatService: jest.Mocked<ChatService>;
   let useCase: EscalateTicketUseCase;
   let ticket: Ticket;
 
@@ -25,7 +27,11 @@ describe('EscalateTicketUseCase', () => {
       save: jest.fn(),
     } as unknown as jest.Mocked<ITicketRepository>;
 
-    useCase = new EscalateTicketUseCase(repository);
+    chatService = {
+      updateAgentByTicketId: jest.fn(),
+    } as unknown as jest.Mocked<ChatService>;
+
+    useCase = new EscalateTicketUseCase(repository, chatService);
   });
 
   it('should escalate ticket successfully', async () => {
@@ -33,6 +39,7 @@ describe('EscalateTicketUseCase', () => {
       id: ticket.id,
       groupId: randomUUID(),
       category: 'iot',
+      whatWasDone: 'Feito algo',
     };
 
     ticket.assignToAgent(randomUUID());
@@ -47,7 +54,7 @@ describe('EscalateTicketUseCase', () => {
     expect(output).toBeDefined();
     expect(output.id).toBe(ticket.id);
     expect(output.status).toBe(TicketStatus.ESCALATED);
-    expect(output.escalationLevel).toBe(2);
+    expect(output.escalationLevel).toBe(1);
     expect(output.updatedAt).toBeInstanceOf(Date);
 
     expect(repository.readById).toHaveBeenCalledWith(input.id);

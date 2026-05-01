@@ -15,4 +15,6 @@ export interface IChatRepository {
   findByTicketId(ticketId: string): Promise<ChatDetails | null>;
 
   updateStatus(id: string, status: ChatStatus): Promise<ChatDetails | null>;
+
+  updateAgent(ticketId: string, agentId: string | null): Promise<ChatDetails | null>;
 }
