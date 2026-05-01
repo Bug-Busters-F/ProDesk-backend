@@ -9,6 +9,9 @@ import { CompanyService } from '../company/company.service';
 import { CategoryService } from '../category/category.service';
 import { CompanySchema } from '../company/company.schema';
 import { CategorySchema } from '../category/category.schema';
+import { AccessRequestSchema } from './accessRequest.schema';
+import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../email/email.service';
 
 describe('UserService (Integration)', () => {
   let service: UserService;
@@ -23,6 +26,7 @@ describe('UserService (Integration)', () => {
         MongooseModule.forRoot(mongod.getUri()),
         MongooseModule.forFeature([
           { name: 'User', schema: UserSchema },
+          { name: 'AccessRequest', schema: AccessRequestSchema },
           { name: 'Company', schema: CompanySchema },
           { name: 'Category', schema: CategorySchema },
         ]),
@@ -32,6 +36,11 @@ describe('UserService (Integration)', () => {
         {
           provide: CompanyService,
           useValue: {
+            findByCnpj: jest.fn().mockResolvedValue({
+              id: 'company-id',
+              name: 'Test Company',
+              cnpj: '123',
+            }),
             findById: jest.fn().mockResolvedValue({
               id: 'company-id',
               name: 'Test Company',
@@ -47,6 +56,19 @@ describe('UserService (Integration)', () => {
               name: 'Test Category',
               keywords: [],
             }),
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            signAsync: jest.fn().mockResolvedValue('fake-token'),
+          },
+        },
+        {
+          provide: EmailService,
+          useValue: {
+            sendResetPasswordEmail: jest.fn(),
+            sendCreatePasswordEmail: jest.fn(),
           },
         },
       ],

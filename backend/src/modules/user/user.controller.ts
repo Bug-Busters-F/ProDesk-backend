@@ -7,6 +7,7 @@ import {
   Body,
   Query,
   UseGuards,
+  Post,
 } from '@nestjs/common';
 
 import { UserService } from './user.service';
@@ -19,6 +20,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserRole } from './user.schema';
 import { ChangeRoleUserDTO } from './dtos/changeRoleUserDTO';
 import { ChangeCategoriesUserDTO } from './dtos/changeCategoriesUserDTO';
+import { RequestAccessDTO } from './dtos/requestAccessDTO';
+import { FilterAccessRequestDTO } from './dtos/filterAccessRequestDTO';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -33,7 +36,52 @@ import {
 @ApiBearerAuth()
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
+
+  @Post('/requestAccess')
+  @ApiOperation({ summary: 'Solicitar acesso ao sistema' })
+  @ApiBody({ type: RequestAccessDTO })
+  @ApiResponse({ status: 201, description: 'Solicitação enviada com sucesso' })
+  @ApiResponse({ status: 400, description: 'Erro na solicitação' })
+  requestAccess(
+    @Body() body: RequestAccessDTO,
+  ) {
+    return this.userService.requestAccess(body.name, body.email, body.cnpj);
+  }
+
+  @Get('/requests')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Listar solicitações de acesso' })
+  getRequests(@Query() query: FilterAccessRequestDTO) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+
+    return this.userService.findAllRequests(page, limit, query);
+  }
+
+  @Get('/requests/:id')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiResponse({ status: 200, description: 'Request encontrado' })
+  @ApiResponse({ status: 404, description: 'Request não encontrado' })
+  getRequestById(@Param('id') id: string) {
+    return this.userService.findRequestById(id);
+  }
+
+  @Patch('/approve/:id')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  approve(@Param('id') id: string) {
+    return this.userService.approveRequest(id);
+  }
+
+  @Patch('/reject/:id')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  reject(@Param('id') id: string) {
+    return this.userService.rejectRequest(id);
+  }
 
   @Get()
   @UseGuards(JwtGuard, RolesGuard)

@@ -130,7 +130,7 @@ export class AuthService {
     try {
       const payload = await this.jwtService.verifyAsync(token);
 
-      if (payload.type !== 'reset-password') {
+      if (payload.type !== 'reset-password' && payload.type !== 'create-password') {
         throw new BadRequestException('Token inválido');
       }
 

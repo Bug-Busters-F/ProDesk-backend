@@ -9,14 +9,21 @@ import { UserDocument, UserRole } from './user.schema';
 import { UserDetails } from './user.interface';
 import { CompanyService } from '../company/company.service';
 import { CategoryService } from '../category/category.service';
+import { AccessRequestDocument } from './accessRequest.schema';
+import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel('User')
     private readonly userModel: Model<UserDocument>,
+    @InjectModel('AccessRequest')
+    private readonly accessRequestModel: Model<AccessRequestDocument>,
     private companyService: CompanyService,
     private categoryService: CategoryService,
+    private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async findAll(
@@ -193,6 +200,149 @@ export class UserService {
     if (!result) {
       throw new NotFoundException('User not found');
     }
+  }
+
+  async requestAccess(name: string, email: string, cnpj: string) {
+
+    const existingUser = await this.findByEmail(email);
+    if (existingUser) {
+      throw new BadRequestException('Email já cadastrado');
+    }
+    const existingRequest = await this.accessRequestModel.findOne({ email });
+    if (existingRequest) {
+      throw new BadRequestException('Solicitação já existente');
+    }
+    try {
+      await this.companyService.findByCnpj(cnpj);
+    } catch {
+      throw new BadRequestException('CNPJ não cadastrado');
+    }
+
+    await this.accessRequestModel.create({
+      name,
+      email,
+      cnpj,
+      status: 'PENDING',
+    });
+
+    return { message: 'Solicitação enviada com sucesso' };
+  }
+
+  private async sendCreatePasswordEmail(user: any) {
+    const payload = {
+      sub: user._id,
+      email: user.email,
+      type: 'create-password',
+    };
+
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: '1d',
+    });
+    await this.emailService.sendCreatePasswordEmail(
+      user.email,
+      token,
+    );
+  }
+
+  async approveRequest(id: string) {
+    const request = await this.accessRequestModel.findById(id);
+    if (!request) {
+      throw new NotFoundException('Request not found');
+    }
+
+    if (request.status !== 'PENDING') {
+      throw new BadRequestException('Request já processada');
+    }
+
+    const existingUser = await this.findByEmail(request.email);
+    if (existingUser) {
+      throw new BadRequestException('Usuário já existe');
+    }
+
+    const company = await this.companyService.findByCnpj(request.cnpj);
+    const randomPassword = Math.random().toString(36).slice(-8);
+
+    const newUser = await this.createUser(
+      request.name,
+      request.email,
+      randomPassword,
+      UserRole.CLIENT,
+      company.id,
+    );
+
+    request.status = 'APPROVED';
+    await request.save();
+
+    await this.sendCreatePasswordEmail(newUser);
+
+    return newUser;
+  }
+
+  async rejectRequest(id: string) {
+    const request = await this.accessRequestModel.findById(id);
+
+    if (!request) {
+      throw new NotFoundException('Request not found');
+    }
+    request.status = 'REJECTED';
+    await request.save();
+    return { message: 'Solicitação rejeitada' };
+  }
+
+  async findAllRequests(
+    page = 1,
+    limit = 10,
+    filters?: {
+      name?: string;
+      email?: string;
+      cnpj?: string;
+      status?: string;
+    },
+  ) {
+    const query: any = {};
+
+    if (filters?.name) {
+      query.name = { $regex: filters.name, $options: 'i' };
+    }
+
+    if (filters?.email) {
+      query.email = { $regex: filters.email, $options: 'i' };
+    }
+
+    if (filters?.cnpj) {
+      query.cnpj = filters.cnpj;
+    }
+
+    if (filters?.status) {
+      query.status = filters.status;
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.accessRequestModel
+        .find(query)
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+
+      this.accessRequestModel.countDocuments(query),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
+  }
+
+  async findRequestById(id: string) {
+    const request = await this.accessRequestModel.findById(id);
+    if (!request) {
+      throw new NotFoundException('Request not found');
+    }
+    return request;
   }
 
   _getUser(user: any): UserDetails {
