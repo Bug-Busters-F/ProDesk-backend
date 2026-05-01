@@ -14,12 +14,18 @@ import {
   INestApplication,
   ValidationPipe,
 } from '@nestjs/common';
-import { Ticket, TicketStatus } from '../../domain/entities/ticket.entity';
+import {
+  Ticket,
+  TicketStatus,
+  TicketEvents,
+} from '../../domain/entities/ticket.entity';
 import { randomUUID } from 'crypto';
 import request from 'supertest';
 import { JwtGuard } from '../../../auth/guards/jwt.guard';
 import { RolesGuard } from '../../../auth/guards/roles.guard';
 import { UserRole } from '../../../shared/enums/user.enum';
+import { GetHistoryFilteredUseCase } from '../../application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
+import { CloseTicketUseCase } from '../../application/useCases/close/close.usecase';
 
 describe('TicketController', () => {
   let app: INestApplication;
@@ -29,8 +35,10 @@ describe('TicketController', () => {
   let readAllUseCase: ReadAllTicketUseCase;
   let readByIdUseCase: ReadByIdTicketUseCase;
   let getHistoryUseCase: GetHistoryTicketUseCase;
+  let getHistoryFilteredUseCase: GetHistoryFilteredUseCase;
   let newAgentUseCase: NewAgentTicketUseCase;
   let escalateTicketUseCase: EscalateTicketUseCase;
+  let closeTicketUseCase: CloseTicketUseCase;
   let deleteUseCase: DeleteTicketUseCase;
 
   const ticketData = {
@@ -39,7 +47,7 @@ describe('TicketController', () => {
     description: 'descricao do chamado 1',
     clientId: randomUUID(),
   };
-  const ticket = Ticket.create(ticketData);
+  let ticket: Ticket;
 
   beforeAll(async () => {
     const modulesFixture: TestingModule = await Test.createTestingModule({
@@ -70,7 +78,19 @@ describe('TicketController', () => {
           useValue: { execute: jest.fn() },
         },
         {
+          provide: CloseTicketUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
           provide: DeleteTicketUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
+          provide: GetHistoryFilteredUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
+          provide: GetHistoryTicketUseCase,
           useValue: { execute: jest.fn() },
         },
       ],
@@ -107,12 +127,16 @@ describe('TicketController', () => {
     readAllUseCase = modulesFixture.get(ReadAllTicketUseCase);
     readByIdUseCase = modulesFixture.get(ReadByIdTicketUseCase);
     getHistoryUseCase = modulesFixture.get(GetHistoryTicketUseCase);
+    getHistoryFilteredUseCase = modulesFixture.get(GetHistoryFilteredUseCase);
     newAgentUseCase = modulesFixture.get(NewAgentTicketUseCase);
     escalateTicketUseCase = modulesFixture.get(EscalateTicketUseCase);
+    closeTicketUseCase = modulesFixture.get(CloseTicketUseCase);
     deleteUseCase = modulesFixture.get(DeleteTicketUseCase);
   });
 
   beforeEach(() => {
+    ticket = Ticket.create(ticketData);
+
     jest.clearAllMocks();
   });
 
@@ -127,6 +151,7 @@ describe('TicketController', () => {
       clientId: primitives.clientId,
       fileUrls: primitives.fileUrls,
       status: primitives.status,
+      level: primitives.escalationLevel,
       createdAt: primitives.createdAt,
     });
 
@@ -145,6 +170,7 @@ describe('TicketController', () => {
         clientId: primitives.clientId,
         fileUrls: primitives.fileUrls,
         status: primitives.status,
+        level: primitives.escalationLevel,
       }),
     );
 
@@ -316,9 +342,8 @@ describe('TicketController', () => {
       description: primitives.category,
       clientId: ticket.clientId,
       status: primitives.status,
-      agentId: agentId,
-      groupId: groupId,
-      escalationLevel: primitives.escalationLevel,
+      agentId: null,
+      escalationLevel: 1,
       createdAt: primitives.createdAt,
       updatedAt: primitives.updatedAt,
     });
@@ -343,14 +368,60 @@ describe('TicketController', () => {
         description: primitives.category,
         clientId: ticket.clientId,
         status: primitives.status,
-        agentId: agentId,
-        groupId: groupId,
-        escalationLevel: 2,
+        agentId: null,
+        escalationLevel: 1,
         updatedAt: primitives.updatedAt?.toISOString(),
       }),
     );
 
     expect(escalateTicketUseCase.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('PUT /tickets/:id/close should close a ticket and return updated', async () => {
+    const agentId = randomUUID();
+
+    // precisa estar IN_PROGRESS antes de fechar
+    ticket.assignToAgent(agentId);
+
+    const primitives = ticket.toPrimitives();
+
+    // simula fechamento
+    ticket.close('Servidor reiniciado');
+
+    jest.spyOn(closeTicketUseCase, 'execute').mockResolvedValue({
+      id: primitives._id,
+      title: primitives.title,
+      category: primitives.category,
+      priority: primitives.priority,
+      description: primitives.description,
+      clientId: primitives.clientId,
+      status: TicketStatus.CLOSED,
+      agentId: agentId,
+      escalationLevel: primitives.escalationLevel,
+      createdAt: primitives.createdAt,
+      updatedAt: primitives.updatedAt,
+    });
+
+    const payload = {
+      solution: 'Servidor reiniciado',
+    };
+
+    const response = await request(httpServer)
+      .put(`/tickets/${ticket.id}/close`)
+      .send(payload)
+      .expect(200);
+
+    expect(response.body).toBeInstanceOf(Object);
+
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        id: primitives._id,
+        status: TicketStatus.CLOSED,
+        agentId: agentId,
+      }),
+    );
+
+    expect(closeTicketUseCase.execute).toHaveBeenCalledTimes(1);
   });
 
   it('DELETE /tickets/:id/ should delete a ticket and return a boolean', async () => {
@@ -363,6 +434,133 @@ describe('TicketController', () => {
     expect(response.body.deleted).toBe(true);
 
     expect(deleteUseCase.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('GET /tickets/:id/history?status= should return filtered history by status', async () => {
+    ticket.assignToAgent(randomUUID());
+
+    const filteredHistory = ticket.history.filter(
+      (e) => e.status === TicketStatus.IN_PROGRESS,
+    );
+
+    jest.spyOn(getHistoryFilteredUseCase, 'execute').mockResolvedValue({
+      id: ticket.id,
+      history: filteredHistory,
+    });
+
+    const response = await request(httpServer)
+      .get(`/tickets/${ticket.id}/history?status=IN_PROGRESS`)
+      .expect(200);
+
+    expect(
+      response.body.history.every((e) => e.status === TicketStatus.IN_PROGRESS),
+    ).toBe(true);
+    expect(getHistoryFilteredUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(getHistoryFilteredUseCase.execute).toHaveBeenCalledWith(
+      ticket.id,
+      expect.objectContaining({ status: TicketStatus.IN_PROGRESS }),
+    );
+    expect(getHistoryUseCase.execute).not.toHaveBeenCalled();
+  });
+
+  it('GET /tickets/:id/history?event= should return filtered history by event', async () => {
+    const filteredHistory = ticket.history.filter(
+      (e) => e.event === TicketEvents.NEW_AGENT,
+    );
+
+    jest.spyOn(getHistoryFilteredUseCase, 'execute').mockResolvedValue({
+      id: ticket.id,
+      history: filteredHistory,
+    });
+
+    const response = await request(httpServer)
+      .get(`/tickets/${ticket.id}/history?event=NEW_AGENT`)
+      .expect(200);
+
+    expect(
+      response.body.history.every((e) => e.event === TicketEvents.NEW_AGENT),
+    ).toBe(true);
+    expect(getHistoryFilteredUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(getHistoryUseCase.execute).not.toHaveBeenCalled();
+  });
+
+  it('GET /tickets/:id/history?responsibleAgent= should return filtered history by agent', async () => {
+    const agentId = randomUUID();
+    ticket.assignToAgent(agentId);
+
+    const filteredHistory = ticket.history.filter(
+      (e) => e.responsibleAgent === agentId,
+    );
+
+    jest.spyOn(getHistoryFilteredUseCase, 'execute').mockResolvedValue({
+      id: ticket.id,
+      history: filteredHistory,
+    });
+
+    const response = await request(httpServer)
+      .get(`/tickets/${ticket.id}/history?responsibleAgent=${agentId}`)
+      .expect(200);
+
+    expect(
+      response.body.history.every((e) => e.responsibleAgent === agentId),
+    ).toBe(true);
+    expect(getHistoryFilteredUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(getHistoryUseCase.execute).not.toHaveBeenCalled();
+  });
+
+  it('GET /tickets/:id/history?fromDate= should return filtered history by date', async () => {
+    const fromDate = new Date(Date.now() - 10000).toISOString();
+
+    jest.spyOn(getHistoryFilteredUseCase, 'execute').mockResolvedValue({
+      id: ticket.id,
+      history: [...ticket.history],
+    });
+
+    const response = await request(httpServer)
+      .get(`/tickets/${ticket.id}/history?fromDate=${fromDate}`)
+      .expect(200);
+
+    expect(Array.isArray(response.body.history)).toBe(true);
+    expect(getHistoryFilteredUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(getHistoryUseCase.execute).not.toHaveBeenCalled();
+  });
+
+  it('GET /tickets/:id/history with multiple filters should call filtered use case', async () => {
+    const agentId = randomUUID();
+
+    jest.spyOn(getHistoryFilteredUseCase, 'execute').mockResolvedValue({
+      id: ticket.id,
+      history: [],
+    });
+
+    await request(httpServer)
+      .get(
+        `/tickets/${ticket.id}/history?status=IN_PROGRESS&event=NEW_AGENT&responsibleAgent=${agentId}`,
+      )
+      .expect(200);
+
+    expect(getHistoryFilteredUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(getHistoryFilteredUseCase.execute).toHaveBeenCalledWith(
+      ticket.id,
+      expect.objectContaining({
+        status: TicketStatus.IN_PROGRESS,
+        event: TicketEvents.NEW_AGENT,
+        responsibleAgent: agentId,
+      }),
+    );
+    expect(getHistoryUseCase.execute).not.toHaveBeenCalled();
+  });
+
+  it('GET /tickets/:id/history without filters should call plain history use case', async () => {
+    jest.spyOn(getHistoryUseCase, 'execute').mockResolvedValue({
+      id: ticket.id,
+      history: [...ticket.history],
+    });
+
+    await request(httpServer).get(`/tickets/${ticket.id}/history`).expect(200);
+
+    expect(getHistoryUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(getHistoryFilteredUseCase.execute).not.toHaveBeenCalled();
   });
 
   it('GET /tickets should return tickets filtered by agentId when role is SUPPORT', async () => {

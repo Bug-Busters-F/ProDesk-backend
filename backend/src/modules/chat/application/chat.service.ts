@@ -9,6 +9,11 @@ import type { IMessageRepository } from '../../Messages/domain/message.repositor
 import type { ChatDetails } from '../domain/chat.entity';
 import { ChatStatus } from '../domain/chat.entity';
 import { UserRole } from '../../shared/enums/user.enum';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { TicketSchemaClass, TicketDocument } from '../../ticket/infra/schemas/ticket.mongo.schema';
+import { from } from 'rxjs';
+import { User, UserDocument } from '../../user/user.schema';
 
 @Injectable()
 export class ChatService {
@@ -17,6 +22,8 @@ export class ChatService {
     private readonly chatRepository: IChatRepository,
     @Inject('IMessageRepository')
     private readonly messageRepository: IMessageRepository,
+    @InjectModel(TicketSchemaClass.name) private ticketModel: Model<TicketDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async createChat(
@@ -40,12 +47,15 @@ export class ChatService {
     return this.chatRepository.findByParticipant(userId);
   }
 
+  // ADICIONADOS attachmentUrl E type NA ASSINATURA DO MÉTODO
   async sendMessage(
     chatId: string,
     senderId: string,
     senderRole: UserRole,
     content: string,
     fileIds?: string[],
+    attachmentUrl?: string, 
+    type?: string           
   ): Promise<any> {
     const chat = await this.chatRepository.findById(chatId);
     if (!chat) {
@@ -53,18 +63,21 @@ export class ChatService {
     }
 
     // ADMINs podem enviar mensagem em qualquer chat
-    if (senderRole !== UserRole.ADMIN && senderRole !== UserRole.SUPPORT) {
+    if (senderRole !== UserRole.ADMIN) {
       if (chat.clientId !== senderId && chat.agentId !== senderId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }
     }
 
+    // PASSANDO OS NOVOS CAMPOS PARA O REPOSITÓRIO
     return this.messageRepository.create({
       chatId,
       senderId,
       content,
       isSystemMessage: false,
       fileIds: fileIds || [],
+      attachmentUrl: attachmentUrl, 
+      type: type || 'TEXT',         
     });
   }
 
@@ -79,7 +92,7 @@ export class ChatService {
     }
 
     // ADMINs podem ver histórico de qualquer chat
-    if (userRole !== UserRole.ADMIN && userRole !== UserRole.SUPPORT) {
+    if (userRole !== UserRole.ADMIN) {
       if (chat.clientId !== userId && chat.agentId !== userId) {
         throw new ForbiddenException('You are not a participant of this chat');
       }
@@ -99,11 +112,42 @@ export class ChatService {
     return result;
   }
 
+  async updateAgentByTicketId(ticketId: string, agentId: string | null): Promise<ChatDetails | null> {
+    return this.chatRepository.updateAgent(ticketId, agentId);
+  }
+
   async isParticipant(chatId: string, userId: string): Promise<boolean> {
     const chat = await this.chatRepository.findById(chatId);
     if (!chat) {
       return false;
     }
-    return chat.clientId === userId || chat.agentId === userId;
+    
+    if (chat.clientId === userId || chat.agentId === userId) {
+      return true;
+    }
+
+    // Se o chat está na "Fila Aberta" (Sem dono)
+    if (!chat.agentId) {
+      const user = await this.userModel.findById(userId).exec();
+      const ticket = await this.ticketModel.findById(chat.ticketId).exec();
+
+      if (user && ticket) {
+        if (user.role === UserRole.ADMIN) {
+          return true;
+        }
+
+        if (user.role === UserRole.SUPPORT) {
+          const hasCategory = user.categories.some(
+            (cat) => cat.toString() === ticket.category.toString()
+          );
+
+          if (hasCategory && (user.level || 1) >= ticket.escalationLevel) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 }

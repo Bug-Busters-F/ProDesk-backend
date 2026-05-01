@@ -1,10 +1,10 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { randomUUID } from 'crypto';
 
 export class EscalateTicketRequest {
   @ApiProperty({ example: randomUUID(), description: 'ID do grupo' })
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
   groupId!: string;
 

@@ -10,7 +10,13 @@ describe('DeleteTicketUseCase', () => {
   beforeEach(() => {
     repository = {
       delete: jest.fn().mockResolvedValue(true),
-    };
+      create: jest.fn(),
+      save: jest.fn(),
+      readAll: jest.fn(),
+      readById: jest.fn(),
+      findByStatus: jest.fn(),
+      findByStatusCategory: jest.fn(),
+    } as unknown as jest.Mocked<ITicketRepository>;
 
     useCase = new DeleteTicketUseCase(repository);
   });

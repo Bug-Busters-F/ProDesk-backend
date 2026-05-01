@@ -34,7 +34,7 @@ export enum TicketValidationErrors {
   ECALATE_WITH_NO_AGENT_ERROR = 'The ticket must be assigned to an agent before being escalated.',
   CLOSE_WITH_WRONG_STATUS_ERROR = 'A ticket can only be closed when in progress status.',
   CLOSE_WITH_NO_SOLUTION_ERROR = 'The solution cannot be empty.',
-  ESCALATION_LEVEL_MAX_ERROR = 'The ticket has reached the maximum escalation level.'
+  ESCALATION_LEVEL_MAX_ERROR = 'The ticket has reached the maximum escalation level.',
 }
 
 export type TicketHistoryEntry = {
@@ -112,6 +112,7 @@ export class Ticket {
 
     ticket._id = randomUUID();
     ticket.createdAt = new Date();
+    ticket.priority = TicketPriority.LOW;
     ticket.escalationLevel = props.level ?? 1;
 
     ticket.addHistory({
@@ -150,8 +151,6 @@ export class Ticket {
     );
 
     ticket._id = props._id;
-
-    ticket.priority = TicketPriority.LOW;
 
     ticket._agentId = props.agentId ?? null;
     ticket._groupId = props.groupId ?? null;
@@ -230,23 +229,31 @@ export class Ticket {
       throw new Error(TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR);
     }
 
-    if (this.escalationLevel >= 3) {
-      throw new Error(TicketValidationErrors.ESCALATION_LEVEL_MAX_ERROR);
-    }
-
     this.touch();
 
     this._groupId = groupId;
-    this.category = category ?? this.category;
-    this.escalationLevel++;
+
+    if (category && category !== this.category) {
+      this.category = category;
+      this.escalationLevel = 1;
+    } else {
+      if (this.escalationLevel >= 3) {
+        throw new Error(TicketValidationErrors.ESCALATION_LEVEL_MAX_ERROR);
+      }
+      this.escalationLevel++;
+    }
+
+    const previousAgentId = this._agentId;
+    this._agentId = null;
+
     this._status = TicketStatus.ESCALATED;
 
     this.addHistory({
       event: TicketEvents.ESCALATE,
-      responsibleAgent: this._agentId,
+      responsibleAgent: previousAgentId,
       status: TicketStatus.ESCALATED,
       message: TicketEventMessage.ESCALATE_MSG,
-      solution: whatWasDone ?? null
+      solution: whatWasDone ?? null,
     });
   }
 

@@ -66,6 +66,7 @@ export class MessageGateway
         senderId: data.senderId,
         content: data.content,
         isSystemMessage: data.isSystemMessage || false,
+        attachmentUrl: data.attachmentUrl,
         fileIds: data.fileIds || [],
       });
 
