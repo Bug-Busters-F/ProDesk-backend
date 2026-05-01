@@ -34,7 +34,7 @@ export enum TicketValidationErrors {
   ECALATE_WITH_NO_AGENT_ERROR = 'The ticket must be assigned to an agent before being escalated.',
   CLOSE_WITH_WRONG_STATUS_ERROR = 'A ticket can only be closed when in progress status.',
   CLOSE_WITH_NO_SOLUTION_ERROR = 'The solution cannot be empty.',
-  ESCALATION_LEVEL_MAX_ERROR = 'The ticket has reached the maximum escalation level.'
+  ESCALATION_LEVEL_MAX_ERROR = 'The ticket has reached the maximum escalation level.',
 }
 
 export type TicketHistoryEntry = {
@@ -112,6 +112,7 @@ export class Ticket {
 
     ticket._id = randomUUID();
     ticket.createdAt = new Date();
+    ticket.priority = TicketPriority.LOW;
     ticket.escalationLevel = props.level ?? 1;
 
     ticket.addHistory({
@@ -150,8 +151,6 @@ export class Ticket {
     );
 
     ticket._id = props._id;
-
-    ticket.priority = TicketPriority.LOW;
 
     ticket._agentId = props.agentId ?? null;
     ticket._groupId = props.groupId ?? null;

@@ -6,11 +6,15 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CreateTicketUseCase } from '../../application/useCases/create/create.usecase';
 import { DeleteTicketUseCase } from '../../application/useCases/delete/delete.usecase';
 import { EscalateTicketUseCase } from '../../application/useCases/escalate/escalate.usecase';
-import { GetHistoryTicketUseCase } from '../../application/useCases/getHistory/getHistory.usecase';
+import {
+  GetHistoryTicketOutput,
+  GetHistoryTicketUseCase,
+} from '../../application/useCases/getHistory/getHistory.usecase';
 import { NewAgentTicketUseCase } from '../../application/useCases/newAgent/newAgent.usecase';
 import { ReadAllTicketUseCase } from '../../application/useCases/readAll/readAll.usecase';
 import { ReadByIdTicketUseCase } from '../../application/useCases/readById/readById.usecase';
@@ -28,7 +32,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { randomUUID } from 'crypto';
+import { GetHistoryFilteredUseCase } from '../../application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
+import { GetHistoryFiltersRequest } from '../dtos/getHistory.dto';
+import { TicketEvents, TicketStatus } from '../../domain/entities/ticket.entity';
 
 @ApiTags('Ticket')
 @Controller('tickets')
@@ -38,6 +44,7 @@ export class TicketController {
     private readonly readAllUseCase: ReadAllTicketUseCase,
     private readonly readByIdUseCase: ReadByIdTicketUseCase,
     private readonly getHistoryUseCase: GetHistoryTicketUseCase,
+    private readonly getHistoryFilteredUseCase: GetHistoryFilteredUseCase,
     private readonly escalateUseCase: EscalateTicketUseCase,
     private readonly newAgentUseCase: NewAgentTicketUseCase,
     private readonly deleteUseCase: DeleteTicketUseCase,
@@ -81,9 +88,38 @@ export class TicketController {
   @Get(':id/history')
   @ApiOperation({ summary: 'Retorna o histórico de um ticket pelo ID' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiQuery({ name: 'status', enum: TicketStatus, required: false })
+  @ApiQuery({ name: 'event', enum: TicketEvents, required: false })
+  @ApiQuery({ name: 'responsibleAgent', type: String, required: false })
+  @ApiQuery({
+    name: 'fromDate',
+    type: String,
+    required: false,
+    example: '2024-01-01T00:00:00.000Z',
+  })
   @ApiResponse({ status: 200, description: 'Histórico retornado com sucesso.' })
-  async getHistoryById(@Param('id') id: string) {
-    const response = await this.getHistoryUseCase.execute(id);
+  async getHistoryById(
+    @Param('id') id: string,
+    @Query() filters: GetHistoryFiltersRequest,
+  ) {
+    let response: GetHistoryTicketOutput;
+
+    const hasFilters =
+      filters.status ||
+      filters.responsibleAgent ||
+      filters.event ||
+      filters.fromDate;
+
+    if (hasFilters) {
+      response = await this.getHistoryFilteredUseCase.execute(id, {
+        status: filters.status,
+        responsibleAgent: filters.responsibleAgent,
+        event: filters.event,
+        fromDate: filters.fromDate ? new Date(filters.fromDate) : undefined,
+      });
+    } else {
+      response = await this.getHistoryUseCase.execute(id);
+    }
 
     return response;
   }

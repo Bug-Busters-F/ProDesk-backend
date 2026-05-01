@@ -15,6 +15,7 @@ import { EscalateTicketUseCase } from './application/useCases/escalate/escalate.
 import { DeleteTicketUseCase } from './application/useCases/delete/delete.usecase';
 import { NewAgentTicketUseCase } from './application/useCases/newAgent/newAgent.usecase';
 import { TriageModule } from '../triage/triage.module';
+import { GetHistoryFilteredUseCase } from './application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
 import { CloseTicketUseCase } from './application/useCases/close/close.usecase';
 import { ChatModule } from '../chat/chat.module';
 
@@ -33,6 +34,7 @@ import { ChatModule } from '../chat/chat.module';
     ReadAllTicketUseCase,
     ReadByIdTicketUseCase,
     GetHistoryTicketUseCase,
+    GetHistoryFilteredUseCase,
     EscalateTicketUseCase,
     DeleteTicketUseCase,
     NewAgentTicketUseCase,
