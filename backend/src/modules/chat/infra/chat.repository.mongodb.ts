@@ -39,15 +39,28 @@ export class ChatRepositoryMongodb implements IChatRepository {
 
   async findById(id: string): Promise<ChatDetails | null> {
     const chatDoc = await this.chatModel.findById(id).exec();
-    
+         
     if (!chatDoc) return null;
-
     return {
       id: chatDoc._id as string,
-      ticketId: chatDoc.ticketId.toString(),
-      clientId: chatDoc.clientId.toString(),
-      agentId: chatDoc.agentId.toString(),
-      groupId: chatDoc.groupId.toString(),
+      ticketId: chatDoc.ticketId?.toString() || '',
+      clientId: chatDoc.clientId?.toString() || '',
+      agentId: chatDoc.agentId?.toString() || '', 
+      groupId: chatDoc.groupId?.toString() || '',
+      status: chatDoc.status as any,
+    };
+  }
+
+  async findByTicketId(ticketId: string): Promise<ChatDetails | null> {
+    const chatDoc = await this.chatModel.findOne({ ticketId }).exec();
+         
+    if (!chatDoc) return null;
+    return {
+      id: chatDoc._id as string,
+      ticketId: chatDoc.ticketId?.toString() || '',
+      clientId: chatDoc.clientId?.toString() || '',
+      agentId: chatDoc.agentId?.toString() || '', 
+      groupId: chatDoc.groupId?.toString() || '',
       status: chatDoc.status as any,
     };
   }
@@ -60,21 +73,6 @@ export class ChatRepositoryMongodb implements IChatRepository {
       .sort({ createdAt: -1 })
       .exec();
     return docs.map((doc) => this.toDetails(doc));
-  }
-
-  async findByTicketId(ticketId: string): Promise<ChatDetails | null> {
-    const chatDoc = await this.chatModel.findOne({ ticketId }).exec();
-    
-    if (!chatDoc) return null;
-
-    return {
-      id: chatDoc._id as string,
-      ticketId: chatDoc.ticketId?.toString() || '',
-      clientId: chatDoc.clientId?.toString() || '',
-      agentId: chatDoc.agentId?.toString() || '',
-      groupId: chatDoc.groupId?.toString() || '',
-      status: chatDoc.status as any,
-    };
   }
 
   async updateStatus(
