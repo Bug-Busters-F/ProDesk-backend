@@ -93,6 +93,7 @@ describe('TicketController', () => {
           provide: GetHistoryTicketUseCase,
           useValue: { execute: jest.fn() },
         },
+
       ],
     })
       .overrideGuard(JwtGuard)
@@ -578,6 +579,8 @@ describe('TicketController', () => {
         { provide: EscalateTicketUseCase, useValue: { execute: jest.fn() } },
         { provide: NewAgentTicketUseCase, useValue: { execute: jest.fn() } },
         { provide: DeleteTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: GetHistoryFilteredUseCase, useValue: { execute: jest.fn() } },
+        { provide: CloseTicketUseCase, useValue: { execute: jest.fn() } },
       ],
     })
       .overrideGuard(JwtGuard)
