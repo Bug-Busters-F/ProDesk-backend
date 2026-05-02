@@ -7,7 +7,6 @@ import {
   TicketEvents,
   TicketEventMessage,
   TicketValidationErrors,
-  AgentField
 } from './ticket.entity';
 
 describe('Ticket entity', () => {
@@ -36,7 +35,7 @@ describe('Ticket entity', () => {
     const primitiveTicket = ticket.toPrimitives();
 
     expect(primitiveTicket.status).toBe(TicketStatus.OPEN);
-    expect(primitiveTicket.agent).toBeNull();
+    expect(primitiveTicket.agentId).toBeNull();
     expect(primitiveTicket.groupId).toBeNull();
     expect(primitiveTicket.escalationLevel).toBe(1);
     expect(primitiveTicket.createdAt).toBeInstanceOf(Date);
@@ -54,12 +53,12 @@ describe('Ticket entity', () => {
     expect(ticket.history.length).toBe(2);
     expect(ticket.history[1]).toMatchObject({
       event: TicketEvents.NEW_AGENT,
-      responsibleAgent: primitiveTicket.agent,
+      responsibleAgent: null,
       status: TicketStatus.IN_PROGRESS,
       message: TicketEventMessage.NEW_AGENT_MSG,
     });
 
-    expect(primitiveTicket.agentId).toBe(newAgentId);
+    expect(ticket.agentId).toBe(newAgentId);
     expect(primitiveTicket.status).toBe(TicketStatus.IN_PROGRESS);
     expect(primitiveTicket.updatedAt).toBeInstanceOf(Date);
     expect(primitiveTicket.updatedAt).not.toBeNull();
@@ -72,11 +71,12 @@ describe('Ticket entity', () => {
     const newGroupId = randomUUID();
     ticket.escalate(newGroupId, 'ia');
 
+    expect(ticket.agentId).toBe(null);
     expect(ticket.status).toBe(TicketStatus.ESCALATED);
     expect(ticket.history.length).toBe(3);
     expect(ticket.history[2]).toMatchObject({
       event: TicketEvents.ESCALATE,
-      responsibleAgent: newAgentId,
+      responsibleAgent: null,
       status: TicketStatus.ESCALATED,
       message: TicketEventMessage.ESCALATE_MSG,
     });
@@ -86,7 +86,6 @@ describe('Ticket entity', () => {
     expect(primitiveTicket.groupId).toBe(newGroupId);
     expect(primitiveTicket.category).toBe('ia');
     expect(primitiveTicket.escalationLevel).toBe(1);
-    expect(primitiveTicket.agentId).toBeNull();
     expect(primitiveTicket.updatedAt).toBeInstanceOf(Date);
     expect(primitiveTicket.updatedAt).not.toBeNull();
   });

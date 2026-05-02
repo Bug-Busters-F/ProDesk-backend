@@ -35,7 +35,7 @@ export class TicketMongoRepository extends ITicketRepository {
       return null;
     }
 
-    return TicketMapper.toDomain(updated);
+    return await this.readById(updated._id);
   }
 
   async readAll(filters?: {
@@ -62,8 +62,16 @@ export class TicketMongoRepository extends ITicketRepository {
         {
           $lookup: {
             from: 'users',
-            localField: 'agentId',
-            foreignField: '_id',
+            let: { agentIdStr: '$agentId' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$_id', { $toObjectId: '$$agentIdStr' }],
+                  },
+                },
+              },
+            ],
             as: 'agentData',
           },
         },
@@ -88,8 +96,16 @@ export class TicketMongoRepository extends ITicketRepository {
         {
           $lookup: {
             from: 'users',
-            localField: 'agentId',
-            foreignField: '_id',
+            let: { agentIdStr: '$agentId' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$_id', { $toObjectId: '$$agentIdStr' }],
+                  },
+                },
+              },
+            ],
             as: 'agentData',
           },
         },
@@ -106,6 +122,7 @@ export class TicketMongoRepository extends ITicketRepository {
       .exec();
 
     if (!result) return null;
+    console.log('Result from readById in repository:', result);
 
     return TicketMapper.toDomain(result);
   }

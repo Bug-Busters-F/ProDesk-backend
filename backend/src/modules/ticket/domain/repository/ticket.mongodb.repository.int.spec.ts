@@ -22,11 +22,16 @@ import {
   TicketStatus,
 } from '../entities/ticket.entity';
 import { randomUUID } from 'crypto';
+import { User, UserSchema } from '../../../user/user.schema';
+import { getModelToken } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { UserRole } from '../../../shared/enums/user.enum';
 
 describe('ITicketRepository', () => {
   let moduleRef: TestingModule;
   let repository: ITicketRepository;
   let connection: Connection;
+  let userModel: Model<User>;
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
@@ -40,10 +45,8 @@ describe('ITicketRepository', () => {
           }),
         }),
         MongooseModule.forFeature([
-          {
-            name: TicketSchemaClass.name,
-            schema: TicketSchema,
-          },
+          { name: TicketSchemaClass.name, schema: TicketSchema },
+          { name: User.name, schema: UserSchema },
         ]),
       ],
       providers: [
@@ -53,11 +56,13 @@ describe('ITicketRepository', () => {
 
     repository = moduleRef.get<ITicketRepository>(ITicketRepository);
     connection = moduleRef.get<Connection>(getConnectionToken());
+    userModel = moduleRef.get<Model<User>>(getModelToken(User.name));
   });
 
   afterEach(async () => {
     const collections = connection.collections;
     await collections['tickets'].deleteMany({});
+    await collections['users'].deleteMany({});
   });
 
   afterAll(async () => {
@@ -81,9 +86,7 @@ describe('ITicketRepository', () => {
 
     expect(primitiveResult.status).toBe(TicketStatus.OPEN);
     expect(primitiveResult.escalationLevel).toBe(1);
-
     expect(ticketToCreate.id).toBe(createResult.id);
-    expect(primitiveResult.agent).toBeNull();
     expect(primitiveResult.groupId).toBeNull();
     expect(primitiveResult.clientId).toBe(ticketToCreate.clientId);
   });
@@ -103,7 +106,6 @@ describe('ITicketRepository', () => {
     expect(resultReadAll).toBeDefined();
     expect(Array.isArray(resultReadAll)).toBe(true);
     expect(resultReadAll.length).toBe(1);
-
     resultReadAll.map((t) => expect(t).toBeInstanceOf(Ticket));
   });
 
@@ -138,6 +140,16 @@ describe('ITicketRepository', () => {
   });
 
   it('Should Save a ticket successfully', async () => {
+    // cria o agente no banco com ObjectId gerado pelo mongo
+    const createdUser = await userModel.create({
+      name: 'João Silva',
+      email: `agent_${randomUUID()}@test.com`,
+      password: 'hashed_password',
+      role: UserRole.AGENT,
+    });
+
+    const agentObjectId = createdUser._id.toString();
+
     const ticketToCreate = Ticket.create({
       title: 'chamado 5',
       category: randomUUID(),
@@ -147,17 +159,20 @@ describe('ITicketRepository', () => {
 
     const ticket = await repository.create(ticketToCreate);
 
-    expect(ticket).toBeDefined();
     expect(ticket.agentId).toBe(null);
     expect(ticket.status).toBe(TicketStatus.OPEN);
 
-    const newAgentId = randomUUID();
-    ticket.assignToAgent(newAgentId);
+    ticket.assignToAgent(agentObjectId);
 
     const savedTicket = await repository.save(ticket);
 
     expect(savedTicket).toBeDefined();
-    expect(savedTicket?.agent).toBe(newAgentId);
+    expect(savedTicket?.agent?.id).toBe(agentObjectId);
+    expect(savedTicket?.agent?.name).toBe('João Silva');
+    expect(savedTicket?.agent).toEqual({
+      id: agentObjectId,
+      name: 'João Silva',
+    });
     expect(savedTicket?.status).toBe(TicketStatus.IN_PROGRESS);
   });
 
@@ -194,7 +209,6 @@ describe('ITicketRepository', () => {
 
     const foundedTicket = await repository.readById(createdTicket.id);
 
-    console.log(foundedTicket);
     expect(foundedTicket).toBeNull();
   });
 
@@ -238,7 +252,14 @@ describe('ITicketRepository', () => {
   });
 
   it('should read all tickets by agentId or unassigned tickets in the same group', async () => {
-    const agentId = randomUUID();
+    const createdUser = await userModel.create({
+      name: 'Agente Teste',
+      email: `agent_${randomUUID()}@test.com`,
+      password: 'hashed_password',
+      role: UserRole.SUPPORT,
+    });
+
+    const agentId = createdUser._id.toString();
     const categoryId = randomUUID();
 
     const ticket1 = Ticket.create({
@@ -272,8 +293,6 @@ describe('ITicketRepository', () => {
       agentId,
       categories: [categoryId],
     });
-
-    console.log(result);
 
     expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);

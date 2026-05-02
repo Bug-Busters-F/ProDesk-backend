@@ -56,7 +56,7 @@ export class Ticket {
   private _id: string;
 
   private _status: TicketStatus = TicketStatus.OPEN;
-  // private _agentId: string | null = null;
+  private _agentId: string | null = null;
   private _agent: AgentField | null = null;
   private _groupId: string | null = null;
   private escalationLevel: number = 1;
@@ -82,7 +82,7 @@ export class Ticket {
   }
 
   get agentId() {
-    return this._agent ? this._agent.id : null;
+    return this._agentId ?? null;
   }
 
   get agent() {
@@ -189,7 +189,7 @@ export class Ticket {
       clientId: this._clientId,
       fileUrls: this.attachmentsUrls,
       status: this.status,
-      agent: this._agent,
+      agentId: this.agentId,
       groupId: this._groupId,
       escalationLevel: this.escalationLevel,
       history: this.history,
@@ -207,7 +207,7 @@ export class Ticket {
   // Appends a new event to the ticket history
   private addHistory(props: {
     event: TicketEvents;
-    responsibleAgent: string | null;
+    responsibleAgent: AgentField | null;
     status: TicketStatus;
     message: string;
     solution?: string | null;
@@ -227,7 +227,7 @@ export class Ticket {
 
     this.addHistory({
       event: TicketEvents.NEW_AGENT,
-      responsibleAgent: this._agent ?? null,
+      responsibleAgent: null,
       status: TicketStatus.IN_PROGRESS,
       message: TicketEventMessage.NEW_AGENT_MSG,
     });
@@ -253,14 +253,13 @@ export class Ticket {
       this.escalationLevel++;
     }
 
-    const previousAgentId = this._agentId;
     this._agentId = null;
-
+    this._agent = null;
     this._status = TicketStatus.ESCALATED;
 
     this.addHistory({
       event: TicketEvents.ESCALATE,
-      responsibleAgent: this._agent ?? null,
+      responsibleAgent: null,
       status: TicketStatus.ESCALATED,
       message: TicketEventMessage.ESCALATE_MSG,
       solution: whatWasDone ?? null,
