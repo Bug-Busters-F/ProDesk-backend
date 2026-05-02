@@ -9,6 +9,11 @@ export abstract class ITicketRepository {
     clientId?: string;
     agentId?: string;
     categories?: string[];
+    noAgent?: boolean;
+    escalationLevel?: number;
+    category?: string;
+    onlyMine?: boolean;
+    onlyClosed?: boolean;
   }): Promise<Ticket[]>;
   abstract readById(id: string): Promise<Ticket | null>;
   abstract delete(id: string): Promise<boolean>;

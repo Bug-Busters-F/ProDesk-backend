@@ -79,15 +79,25 @@ export class TicketController {
   @ApiOperation({ summary: 'Retorna todos os tickets' })
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
+  @ApiQuery({ name: 'noAgent', required: false, type: Boolean })
+  @ApiQuery({ name: 'escalationLevel', required: false, type: Number })
+  @ApiQuery({ name: 'category', required: false, type: String })
+  @ApiQuery({ name: 'onlyMine', required: false, type: Boolean })
+  @ApiQuery({ name: 'onlyClosed', required: false, type: Boolean })
   @ApiResponse({
     status: 200,
     description: 'Todos os tickets retornados com sucesso.',
   })
-  async getAll(@Request() req: any) {
+  async getAll(@Request() req: any, @Query() query: any) {
     const response = await this.readAllUseCase.execute({
       userId: req.user.id,
       categories: req.user.categories ?? undefined,
       role: req.user.role,
+      noAgent: query.noAgent === 'true',
+      escalationLevel: query.escalationLevel ? Number(query.escalationLevel) : undefined,
+      category: query.category,
+      onlyMine: query.onlyMine === 'true',
+      onlyClosed: query.onlyClosed === 'true'
     });
 
     return response;
