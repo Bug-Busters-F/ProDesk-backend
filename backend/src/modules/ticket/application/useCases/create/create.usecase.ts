@@ -36,7 +36,7 @@ export class CreateTicketUseCase {
 
     const ticket = Ticket.create({
       ...input,
-      category: triageResult.category,
+      category: triageResult.categoryId,
       clientId: clientId,
     });
 
