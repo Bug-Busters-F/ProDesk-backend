@@ -27,7 +27,7 @@ export class NewAgentTicketUseCase {
     if (!foundedTicket) {
       throw new Error('Ticket not found.');
     }
-
+    
     foundedTicket.assignToAgent(input.agentId);
 
     const updatedTicket = await this.repository.save(foundedTicket);
@@ -39,7 +39,6 @@ export class NewAgentTicketUseCase {
     try {
       await this.chatService.updateAgentByTicketId(updatedTicket.id, updatedTicket.agentId);
     } catch (e) {
-      // Ignora se o chat não existir, pois os módulos estão fracamente acoplados
       console.warn('Chat não pôde ser atualizado ou não existe:', e);
     }
 

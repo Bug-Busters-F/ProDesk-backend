@@ -30,6 +30,6 @@ import { User, UserSchema } from '../user/user.schema';
     { provide: 'IChatRepository', useExisting: ChatRepositoryMongodb },
     { provide: 'IMessageRepository', useExisting: MessageRepositoryMongodb },
   ],
-  exports: [ChatService],
+  exports: [ChatService, 'IChatRepository'],
 })
 export class ChatModule {}

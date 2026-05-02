@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { randomUUID } from 'crypto';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
-import {
-  Ticket,
-  TicketStatus,
-} from '../../../domain/entities/ticket.entity';
+import { Ticket, TicketStatus } from '../../../domain/entities/ticket.entity';
 import { NewAgentTicketUseCase } from './newAgent.usecase';
 import { ChatService } from '../../../../chat/application/chat.service';
 
@@ -34,14 +31,13 @@ describe('NewAgentTicketUseCase', () => {
     useCase = new NewAgentTicketUseCase(repository, chatService);
   });
 
-  it('should assing a new agent to a ticket successfully', async () => {
+  it('should assign a new agent to a ticket successfully', async () => {
     const input = {
       id: ticket.id,
       agentId: randomUUID(),
     };
 
     repository.readById.mockResolvedValue(ticket);
-
     ticket.assignToAgent(input.agentId);
     repository.save.mockResolvedValue(ticket);
 
@@ -54,9 +50,10 @@ describe('NewAgentTicketUseCase', () => {
 
     expect(repository.readById).toHaveBeenCalledTimes(1);
     expect(repository.readById).toHaveBeenCalledWith(input.id);
-
     expect(repository.save).toHaveBeenCalledTimes(1);
     expect(repository.save).toHaveBeenCalledWith(ticket);
+    expect(chatService.updateAgentByTicketId).toHaveBeenCalledTimes(1);
+    expect(chatService.updateAgentByTicketId).toHaveBeenCalledWith(ticket.id, input.agentId);
 
     expect(output).not.toHaveProperty('toPrimitives');
     expect(output).not.toHaveProperty('escalate');
