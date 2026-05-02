@@ -7,6 +7,7 @@ import {
   TicketEvents,
   TicketEventMessage,
   TicketValidationErrors,
+  AgentField
 } from './ticket.entity';
 
 describe('Ticket entity', () => {
@@ -35,7 +36,7 @@ describe('Ticket entity', () => {
     const primitiveTicket = ticket.toPrimitives();
 
     expect(primitiveTicket.status).toBe(TicketStatus.OPEN);
-    expect(primitiveTicket.agentId).toBeNull();
+    expect(primitiveTicket.agent).toBeNull();
     expect(primitiveTicket.groupId).toBeNull();
     expect(primitiveTicket.escalationLevel).toBe(1);
     expect(primitiveTicket.createdAt).toBeInstanceOf(Date);
@@ -53,7 +54,7 @@ describe('Ticket entity', () => {
     expect(ticket.history.length).toBe(2);
     expect(ticket.history[1]).toMatchObject({
       event: TicketEvents.NEW_AGENT,
-      responsibleAgent: primitiveTicket.agentId,
+      responsibleAgent: primitiveTicket.agent,
       status: TicketStatus.IN_PROGRESS,
       message: TicketEventMessage.NEW_AGENT_MSG,
     });

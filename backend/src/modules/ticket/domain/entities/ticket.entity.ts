@@ -39,11 +39,16 @@ export enum TicketValidationErrors {
 
 export type TicketHistoryEntry = {
   event: TicketEvents;
-  responsibleAgent: string | null;
+  responsibleAgent: AgentField | null;
   status: TicketStatus;
   message: string;
   solution?: string | null;
   occurredAt: Date;
+};
+
+export type AgentField = {
+  id: string;
+  name: string;
 };
 
 export class Ticket {
@@ -51,7 +56,8 @@ export class Ticket {
   private _id: string;
 
   private _status: TicketStatus = TicketStatus.OPEN;
-  private _agentId: string | null = null;
+  // private _agentId: string | null = null;
+  private _agent: AgentField | null = null;
   private _groupId: string | null = null;
   private escalationLevel: number = 1;
   private attachmentsUrls: string[] = [];
@@ -76,7 +82,11 @@ export class Ticket {
   }
 
   get agentId() {
-    return this._agentId;
+    return this._agent ? this._agent.id : null;
+  }
+
+  get agent() {
+    return this._agent;
   }
 
   get groupId() {
@@ -135,7 +145,7 @@ export class Ticket {
     fileUrls?: string[];
     status: TicketStatus;
     clientId: string;
-    agentId?: string;
+    agent?: AgentField | null;
     groupId?: string;
     escalationLevel: number;
     history: TicketHistoryEntry[];
@@ -152,7 +162,7 @@ export class Ticket {
 
     ticket._id = props._id;
 
-    ticket._agentId = props.agentId ?? null;
+    ticket._agent = props.agent ?? null;
     ticket._groupId = props.groupId ?? null;
     ticket.attachmentsUrls = props.fileUrls ?? [];
 
@@ -179,7 +189,7 @@ export class Ticket {
       clientId: this._clientId,
       fileUrls: this.attachmentsUrls,
       status: this.status,
-      agentId: this._agentId,
+      agent: this._agent,
       groupId: this._groupId,
       escalationLevel: this.escalationLevel,
       history: this.history,
@@ -217,7 +227,7 @@ export class Ticket {
 
     this.addHistory({
       event: TicketEvents.NEW_AGENT,
-      responsibleAgent: this._agentId,
+      responsibleAgent: this._agent ?? null,
       status: TicketStatus.IN_PROGRESS,
       message: TicketEventMessage.NEW_AGENT_MSG,
     });
@@ -250,7 +260,7 @@ export class Ticket {
 
     this.addHistory({
       event: TicketEvents.ESCALATE,
-      responsibleAgent: previousAgentId,
+      responsibleAgent: this._agent ?? null,
       status: TicketStatus.ESCALATED,
       message: TicketEventMessage.ESCALATE_MSG,
       solution: whatWasDone ?? null,
@@ -274,7 +284,7 @@ export class Ticket {
 
     this.addHistory({
       event: TicketEvents.CLOSE_TICKET,
-      responsibleAgent: this._agentId,
+      responsibleAgent: this._agent ?? null,
       status: TicketStatus.CLOSED,
       message: TicketEventMessage.CLOSE_TICKET_MSG,
       solution: solution,
