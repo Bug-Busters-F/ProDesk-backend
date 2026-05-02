@@ -18,7 +18,7 @@ export class TicketMapper {
       status: doc.status as TicketStatus,
       description: doc.description,
       clientId: doc.clientId,
-      agentId: doc.agentId ?? undefined,
+      agent: doc.agent ?? null,
       escalationLevel: doc.escalationLevel,
       fileUrls: doc.attachmentsUrls,
       history: doc.history.map(
