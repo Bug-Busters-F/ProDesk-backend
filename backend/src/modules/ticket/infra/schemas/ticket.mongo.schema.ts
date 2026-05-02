@@ -24,7 +24,7 @@ export class TicketHistoryEntrySchema {
 
   @Prop({ type: String, default: null })
   solution: string | null;
-  
+
   @Prop({ type: String, required: false })
   attachmentUrl?: string;
 
@@ -87,6 +87,9 @@ export class TicketSchemaClass {
 
 export type TicketDocument = HydratedDocument<TicketSchemaClass>;
 
-export type TicketLean = TicketSchemaClass & { _id: string };
+export type TicketLean = Omit<TicketSchemaClass, 'agentId'> & {
+  _id: string;
+  agent: { id: string; name: string } | null;
+};
 
 export const TicketSchema = SchemaFactory.createForClass(TicketSchemaClass);

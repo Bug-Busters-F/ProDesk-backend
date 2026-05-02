@@ -1,4 +1,4 @@
-import { Model, QueryFilter } from 'mongoose';
+import { Model } from 'mongoose';
 import { Ticket } from '../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../domain/repository/ticket.repository.interface';
 import { TicketLean, TicketSchemaClass } from '../schemas/ticket.mongo.schema';
@@ -43,32 +43,71 @@ export class TicketMongoRepository extends ITicketRepository {
     agentId?: string;
     categories?: string[];
   }): Promise<Ticket[]> {
-    let query: QueryFilter<TicketSchemaClass> = {};
+    let matchStage: Record<string, unknown> = {};
 
     if (filters?.agentId) {
-      query = {
+      matchStage = {
         $or: [
           { agentId: filters.agentId },
           { category: { $in: filters.categories ?? [] }, agentId: null },
         ],
       };
     } else if (filters?.clientId) {
-      query = { clientId: filters.clientId };
+      matchStage = { clientId: filters.clientId };
     }
 
-    const tickets = await this.ticketModel.find(query).exec();
+    const tickets = await this.ticketModel
+      .aggregate<TicketLean>([
+        { $match: matchStage },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'agentId',
+            foreignField: '_id',
+            as: 'agentData',
+          },
+        },
+        {
+          $addFields: {
+            agent: {
+              id: { $arrayElemAt: ['$agentData._id', 0] },
+              name: { $arrayElemAt: ['$agentData.name', 0] },
+            },
+          },
+        },
+        { $project: { agentData: 0 } },
+      ])
+      .exec();
     return tickets.map((t) => TicketMapper.toDomain(t));
   }
 
   async readById(id: string): Promise<Ticket | null> {
-    const foundedTicket = await this.ticketModel
-      .findById(id)
-      .lean<TicketLean>()
+    const [result]: TicketLean[] = await this.ticketModel
+      .aggregate<TicketLean>([
+        { $match: { _id: id } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'agentId',
+            foreignField: '_id',
+            as: 'agentData',
+          },
+        },
+        {
+          $addFields: {
+            agent: {
+              id: { $arrayElemAt: ['$agentData._id', 0] },
+              name: { $arrayElemAt: ['$agentData.name', 0] },
+            },
+          },
+        },
+        { $project: { agentData: 0 } },
+      ])
       .exec();
 
-    if (!foundedTicket) return null;
+    if (!result) return null;
 
-    return TicketMapper.toDomain(foundedTicket);
+    return TicketMapper.toDomain(result);
   }
 
   async delete(id: string): Promise<boolean> {

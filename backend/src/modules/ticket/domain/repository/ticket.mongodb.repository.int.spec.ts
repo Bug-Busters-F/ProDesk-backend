@@ -83,7 +83,7 @@ describe('ITicketRepository', () => {
     expect(primitiveResult.escalationLevel).toBe(1);
 
     expect(ticketToCreate.id).toBe(createResult.id);
-    expect(primitiveResult.agentId).toBeNull();
+    expect(primitiveResult.agent).toBeNull();
     expect(primitiveResult.groupId).toBeNull();
     expect(primitiveResult.clientId).toBe(ticketToCreate.clientId);
   });
@@ -157,7 +157,7 @@ describe('ITicketRepository', () => {
     const savedTicket = await repository.save(ticket);
 
     expect(savedTicket).toBeDefined();
-    expect(savedTicket?.agentId).toBe(newAgentId);
+    expect(savedTicket?.agent).toBe(newAgentId);
     expect(savedTicket?.status).toBe(TicketStatus.IN_PROGRESS);
   });
 
@@ -194,6 +194,7 @@ describe('ITicketRepository', () => {
 
     const foundedTicket = await repository.readById(createdTicket.id);
 
+    console.log(foundedTicket);
     expect(foundedTicket).toBeNull();
   });
 
@@ -271,6 +272,8 @@ describe('ITicketRepository', () => {
       agentId,
       categories: [categoryId],
     });
+
+    console.log(result);
 
     expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);
