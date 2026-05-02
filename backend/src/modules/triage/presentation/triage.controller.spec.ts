@@ -42,6 +42,7 @@ describe('TriageController', () => {
 
       const mockResponse =
         new Category(
+          '1',
           'WEB_APP',
           0.95,
           'rule'
@@ -78,6 +79,7 @@ describe('TriageController', () => {
 
       const mockResponse =
         new Category(
+          '999',
           'OTHER',
           0.5,
           'fallback'
@@ -113,6 +115,7 @@ describe('TriageController', () => {
       triageService.classify
         .mockResolvedValue(
           new Category(
+            '2',
             'BI',
             0.9,
             'rule'
