@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  AgentField,
   TicketEvents,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
@@ -7,7 +8,7 @@ import { ITicketRepository } from '../../../domain/repository/ticket.repository.
 
 export interface TicketHistoryEntryOutput {
   event: TicketEvents;
-  responsibleAgent: string | null;
+  responsibleAgent: AgentField | null;
   status: TicketStatus;
   message: string;
   solution?: string | null;

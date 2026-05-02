@@ -5,11 +5,12 @@ import {
   TicketPriority,
   TicketStatus,
   TicketHistoryEntry,
+  AgentField,
 } from '../../domain/entities/ticket.entity';
-import { TicketDocument, TicketLean } from '../schemas/ticket.mongo.schema';
+import { TicketLean } from '../schemas/ticket.mongo.schema';
 
 export class TicketMapper {
-  static toDomain(doc: TicketDocument | TicketLean): Ticket {
+  static toDomain(doc: TicketLean): Ticket {
     return Ticket.restore({
       _id: doc._id.toString(),
       title: doc.title,
@@ -26,7 +27,7 @@ export class TicketMapper {
       history: doc.history.map(
         (h): TicketHistoryEntry => ({
           event: h.event as TicketEvents,
-          responsibleAgent: h.responsibleAgent,
+          responsibleAgent: h.responsibleAgent as AgentField | null,
           status: h.status as TicketStatus,
           message: h.message as TicketEventMessage,
           solution: h.solution,

@@ -138,7 +138,7 @@ export class TicketController {
     if (hasFilters) {
       response = await this.getHistoryFilteredUseCase.execute(id, {
         status: filters.status,
-        responsibleAgent: filters.responsibleAgent,
+        responsibleAgentId: filters.responsibleAgent,
         event: filters.event,
         fromDate: filters.fromDate ? new Date(filters.fromDate) : undefined,
       });

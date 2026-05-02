@@ -53,7 +53,7 @@ describe('Ticket entity', () => {
     expect(ticket.history.length).toBe(2);
     expect(ticket.history[1]).toMatchObject({
       event: TicketEvents.NEW_AGENT,
-      responsibleAgent: null,
+      responsibleAgent: { id: newAgentId, name: '' },
       status: TicketStatus.IN_PROGRESS,
       message: TicketEventMessage.NEW_AGENT_MSG,
     });

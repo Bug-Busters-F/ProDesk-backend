@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  AgentField,
   TicketEvents,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
@@ -7,7 +8,7 @@ import { ITicketRepository } from '../../../domain/repository/ticket.repository.
 
 export interface TicketHistoryEntryOutput {
   event: TicketEvents;
-  responsibleAgent: string | null;
+  responsibleAgent: AgentField | null;
   status: TicketStatus;
   message: string;
   solution?: string | null;
@@ -27,7 +28,7 @@ export class GetHistoryFilteredUseCase {
     id: string,
     filters: {
       status?: TicketStatus;
-      responsibleAgent?: string;
+      responsibleAgentId?: string;
       event?: TicketEvents;
       fromDate?: Date;
     },
@@ -44,9 +45,9 @@ export class GetHistoryFilteredUseCase {
       history = history.filter((entry) => entry.status === filters.status);
     }
 
-    if (filters.responsibleAgent) {
+    if (filters.responsibleAgentId) {
       history = history.filter(
-        (entry) => entry.responsibleAgent === filters.responsibleAgent,
+        (entry) => entry.responsibleAgent?.id === filters.responsibleAgentId,
       );
     }
 
@@ -61,7 +62,12 @@ export class GetHistoryFilteredUseCase {
 
     return {
       id: foundTicket.id,
-      history: [...history],
+      history: history.map((entry) => ({
+        ...entry,
+        responsibleAgent: entry.responsibleAgent
+          ? { id: entry.responsibleAgent.id, name: entry.responsibleAgent.name }
+          : null,
+      })),
     };
   }
 }

@@ -546,7 +546,7 @@ describe('TicketController', () => {
       expect.objectContaining({
         status: TicketStatus.IN_PROGRESS,
         event: TicketEvents.NEW_AGENT,
-        responsibleAgent: agentId,
+        responsibleAgentId: agentId,
       }),
     );
     expect(getHistoryUseCase.execute).not.toHaveBeenCalled();

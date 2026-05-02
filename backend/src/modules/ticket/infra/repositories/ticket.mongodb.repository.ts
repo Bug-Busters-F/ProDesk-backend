@@ -15,8 +15,8 @@ export class TicketMongoRepository extends ITicketRepository {
 
   async create(ticket: Ticket): Promise<Ticket> {
     const raw = TicketMapper.toPersistence(ticket);
-    const created = await this.ticketModel.create(raw);
-    return TicketMapper.toDomain(created);
+    await this.ticketModel.create(raw);
+    return this.readById(raw._id) as Promise<Ticket>;
   }
 
   async save(ticket: Ticket): Promise<Ticket | null> {
@@ -56,36 +56,45 @@ export class TicketMongoRepository extends ITicketRepository {
       matchStage = { clientId: filters.clientId };
     }
 
-    const tickets = await this.ticketModel
-      .aggregate<TicketLean>([
-        { $match: matchStage },
-        {
-          $lookup: {
-            from: 'users',
-            let: { agentIdStr: '$agentId' },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $eq: ['$_id', { $toObjectId: '$$agentIdStr' }],
+    let tickets;
+
+    if (!filters) {
+      tickets = await this.ticketModel.find().lean<TicketLean>().exec();
+    } else {
+      tickets = await this.ticketModel
+        .aggregate<TicketLean>([
+          { $match: matchStage },
+          {
+            $lookup: {
+              from: 'users',
+              let: { agentIdStr: '$agentId' },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$_id', { $toObjectId: '$$agentIdStr' }],
+                    },
                   },
                 },
-              },
-            ],
-            as: 'agentData',
-          },
-        },
-        {
-          $addFields: {
-            agent: {
-              id: { $arrayElemAt: ['$agentData._id', 0] },
-              name: { $arrayElemAt: ['$agentData.name', 0] },
+              ],
+              as: 'agentData',
             },
           },
-        },
-        { $project: { agentData: 0 } },
-      ])
-      .exec();
+          {
+            $addFields: {
+              agent: {
+                id: { $arrayElemAt: ['$agentData._id', 0] },
+                name: { $arrayElemAt: ['$agentData.name', 0] },
+              },
+            },
+          },
+          { $project: { agentData: 0 } },
+        ])
+        .exec();
+    }
+
+    if (!tickets) return [];
+
     return tickets.map((t) => TicketMapper.toDomain(t));
   }
 

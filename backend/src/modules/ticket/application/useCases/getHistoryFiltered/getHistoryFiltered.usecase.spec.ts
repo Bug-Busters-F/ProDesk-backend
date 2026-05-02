@@ -66,12 +66,12 @@ describe('GetHistoryFilteredUseCase', () => {
     repository.readById.mockResolvedValue(ticket);
 
     const output = await useCase.execute(ticket.id, {
-      responsibleAgent: agentId,
+      responsibleAgentId: agentId,
     });
 
-    expect(output.history.every((e) => e.responsibleAgent === agentId)).toBe(
-      true,
-    );
+    expect(
+      output.history.every((e) => e.responsibleAgent?.id === agentId),
+    ).toBe(true);
     expect(output.history).toHaveLength(1);
   });
 
@@ -121,17 +121,16 @@ describe('GetHistoryFilteredUseCase', () => {
 
     const output = await useCase.execute(ticket.id, {
       status: TicketStatus.IN_PROGRESS,
-      responsibleAgent: agentId,
+      responsibleAgentId: agentId,
       event: TicketEvents.NEW_AGENT,
       fromDate: before,
     });
 
     expect(output.history).toHaveLength(1);
     expect(output.history[0].status).toBe(TicketStatus.IN_PROGRESS);
-    expect(output.history[0].responsibleAgent).toBe(agentId);
+    expect(output.history[0].responsibleAgent?.id).toBe(agentId);
     expect(output.history[0].event).toBe(TicketEvents.NEW_AGENT);
   });
-
   it('should return empty history when no entries match filters', async () => {
     repository.readById.mockResolvedValue(ticket);
 

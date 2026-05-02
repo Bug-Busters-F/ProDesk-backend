@@ -190,6 +190,7 @@ export class Ticket {
       fileUrls: this.attachmentsUrls,
       status: this.status,
       agentId: this.agentId,
+      agent: this.agent,
       groupId: this._groupId,
       escalationLevel: this.escalationLevel,
       history: this.history,
@@ -227,7 +228,7 @@ export class Ticket {
 
     this.addHistory({
       event: TicketEvents.NEW_AGENT,
-      responsibleAgent: null,
+      responsibleAgent: { id: agentId, name: '' },
       status: TicketStatus.IN_PROGRESS,
       message: TicketEventMessage.NEW_AGENT_MSG,
     });

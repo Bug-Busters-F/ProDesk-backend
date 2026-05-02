@@ -13,8 +13,8 @@ export class TicketHistoryEntrySchema {
   @Prop({ required: true, enum: Object.values(TicketEvents) })
   event: string;
 
-  @Prop({ type: String, default: null })
-  responsibleAgent: string | null;
+  @Prop({ type: { id: String, name: String }, default: null })
+  responsibleAgent: { id: string; name: string } | null;
 
   @Prop({ required: true, enum: Object.values(TicketStatus) })
   status: string;
@@ -89,6 +89,7 @@ export type TicketDocument = HydratedDocument<TicketSchemaClass>;
 
 export type TicketLean = Omit<TicketSchemaClass, 'agentId'> & {
   _id: string;
+  agentId: string | null;
   agent: { id: string; name: string } | null;
 };
 
