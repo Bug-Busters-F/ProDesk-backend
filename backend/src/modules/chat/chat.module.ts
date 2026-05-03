@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { JwtModule } from '@nestjs/jwt';
 import { Chat, ChatSchema } from './infra/chat.schema';
 import { ChatRepositoryMongodb } from './infra/chat.repository.mongodb';
 import { ChatService } from './application/chat.service';
@@ -10,6 +9,7 @@ import { MessageRepositoryMongodb } from '../Messages/infra/message.repository.m
 import { ChatController } from './presentation/chat.controller';
 import { TicketSchemaClass, TicketSchema } from '../ticket/infra/schemas/ticket.mongo.schema';
 import { User, UserSchema } from '../user/user.schema';
+import { SharedModule } from '../shared/shared.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { User, UserSchema } from '../user/user.schema';
       { name: TicketSchemaClass.name, schema: TicketSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    JwtModule.register({ secret: 'secret' }),
+    SharedModule,
   ],
   controllers: [ChatController],
   providers: [
