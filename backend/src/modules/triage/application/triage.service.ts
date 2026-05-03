@@ -19,7 +19,12 @@ export class TriageService {
     const ruleMatch = await this.rulesEngine.match(description);
 
     if (ruleMatch) {
-      return new Category(ruleMatch.category, ruleMatch.confidence, 'rule');
+      return new Category(
+        ruleMatch.categoryId,
+        ruleMatch.category,
+        ruleMatch.confidence,
+        'rule',
+      );
     }
 
     const nlpResult = await this.nlp.classify(description);
@@ -28,13 +33,21 @@ export class TriageService {
       nlpResult.category &&
       nlpResult.confidence >= this.CONFIDENCE_THRESHOLD
     ) {
-      return new Category(nlpResult.category, nlpResult.confidence, 'nlp');
+      const fallbackCategory = await this.categoryService.findByName('OTHER');
+
+      return new Category(
+        nlpResult.categoryId ?? fallbackCategory.id,
+        nlpResult.category,
+        nlpResult.confidence,
+        'nlp',
+      );
     }
 
     const fallbackCategory = await this.categoryService.findByName('OTHER');
 
     return new Category(
-      normalizeIntent(fallbackCategory.name),
+      fallbackCategory.id,
+      fallbackCategory.name,
       0.5,
       'fallback',
     );

@@ -5,14 +5,13 @@ import { normalizeIntent } from '../../shared/utils/intent-normalizer';
 
 @Injectable()
 export class NlpProvider implements OnModuleInit {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly categoryService: CategoryService) { }
   private manager: NlpManager;
 
   async onModuleInit() {
     this.manager = new NlpManager({ languages: ['pt'] });
 
     await this.addTrainingData();
-
     await this.manager.train();
   }
 
@@ -29,15 +28,29 @@ export class NlpProvider implements OnModuleInit {
   }
 
   async classify(text: string) {
-  const normalized = this.normalize(text);
+    const normalized = this.normalize(text);
+    const result = await this.manager.process('pt', normalized);
 
-  const result = await this.manager.process('pt', normalized);
+    if (result.intent === 'None') {
+      return {
+        categoryId: null,
+        category: null,
+        confidence: result.score,
+      };
+    }
 
-  return {
-    category: result.intent === 'None' ? null : result.intent,
-    confidence: result.score,
-  };
-}
+    const categories = await this.categoryService.findAll();
+
+    const found = categories.find(
+      (cat) => normalizeIntent(cat.name) === result.intent,
+    );
+
+    return {
+      categoryId: found?.id || null,
+      category: found?.name || null,
+      confidence: result.score,
+    };
+  }
 
   private normalize(text: string): string {
     return text.toLowerCase().replace(/\n/g, ' ').slice(0, 500);
