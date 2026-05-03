@@ -18,6 +18,7 @@ import { TriageModule } from '../triage/triage.module';
 import { GetHistoryFilteredUseCase } from './application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
 import { CloseTicketUseCase } from './application/useCases/close/close.usecase';
 import { ChatModule } from '../chat/chat.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ChatModule } from '../chat/chat.module';
     ]),
     TriageModule,
     ChatModule,
+    UserModule,
   ],
   controllers: [TicketController],
   providers: [
