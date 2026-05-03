@@ -23,13 +23,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     try {
-      const token =
-        client.handshake.auth?.token ||
-        client.handshake.headers?.authorization?.replace('Bearer ', '');
+      let token = client.handshake.auth?.token;
+      
+      if (!token && client.handshake.headers?.authorization) {
+        token = client.handshake.headers.authorization.replace('Bearer ', '').trim();
+      }
 
       if (!token) {
-        client.disconnect();
-        return;
+        throw new Error('Token não foi enviado pelo frontend');
       }
 
       if (token.startsWith('TEST_TOKEN_')) {
@@ -44,15 +45,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
 
       const payload = await this.jwtService.verifyAsync(token);
+      
       client.data.user = {
         id: payload.sub,
         email: payload.email,
         role: payload.role,
       };
 
-      console.log(`Usuário autenticado conectado: ${client.id} (${payload.email})`);
-    } catch {
-      console.log(`Conexão recusada — token inválido: ${client.id}`);
+      console.log(`Usuário autenticado no chat: ${client.id} (${payload.email})`);
+      
+    } catch (error: any) {
+      console.log(`Conexão recusada [${client.id}] - Motivo: ${error.message}`);
       client.disconnect();
     }
   }
