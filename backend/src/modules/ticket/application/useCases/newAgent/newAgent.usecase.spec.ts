@@ -63,6 +63,13 @@ describe('NewAgentTicketUseCase', () => {
     expect(output.id).toBe(ticket.id);
     expect(output.agentId).toBe(input.agentId);
     expect(output.status).toBe(TicketStatus.IN_PROGRESS);
+
+    expect(repository.readById).toHaveBeenCalledTimes(1);
+    expect(repository.readById).toHaveBeenCalledWith(input.id);
+    expect(repository.save).toHaveBeenCalledTimes(1);
+    expect(repository.save).toHaveBeenCalledWith(ticket);
+    expect(chatService.updateAgentByTicketId).toHaveBeenCalledTimes(1);
+    expect(chatService.updateAgentByTicketId).toHaveBeenCalledWith(ticket.id, input.agentId);
   });
 
   it('should assign a new agent to a ticket successfully as SUPPORT with correct level and sector', async () => {
