@@ -168,7 +168,7 @@ export class TicketController {
   @ApiOperation({ summary: 'Atribui um agente ao ticket' })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPPORT)
+  @Roles(UserRole.SUPPORT)
   @ApiResponse({ status: 200, description: 'Agente atribuído com sucesso.' })
   async assignAgent(@Request() req: any, @Param('id') id: string) {
     const data = TicketMapper.toNewAgentInput(id, req.user.id);

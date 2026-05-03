@@ -95,6 +95,14 @@ export class Ticket {
     return [...this._history];
   }
 
+  get ticketCategory() {
+    return this.category;
+  }
+
+  get level() {
+    return this.escalationLevel;
+  }
+
   // Function to create a new ticket instance
   static create(props: {
     title: string;
