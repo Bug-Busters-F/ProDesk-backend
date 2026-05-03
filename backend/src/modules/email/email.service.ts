@@ -27,4 +27,22 @@ export class EmailService {
       `,
     });
   }
+
+  async sendCreatePasswordEmail(email: string, token: string) {
+    const apiUrl = process.env.API_URL || 'http://localhost:3000';
+    const createLink = `${apiUrl}/ProDeskApi/auth/redirect-app?token=${token}`;
+
+    await this.transporter.sendMail({
+      to: email,
+      subject: 'Criação de senha',
+      html: `
+      <h2>Bem-vindo!</h2>
+      <p>Sua conta foi aprovada.</p>
+      <p>Clique no link abaixo para criar sua senha:</p>
+      <a href="${createLink}">Criar senha</a>
+      <p>Se não abrir, copie o link:</p>
+      <p>${createLink}</p>
+    `,
+    });
+  }
 }

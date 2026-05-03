@@ -39,7 +39,7 @@ export class ChatRepositoryMongodb implements IChatRepository {
 
   async findById(id: string): Promise<ChatDetails | null> {
     const chatDoc = await this.chatModel.findById(id).exec();
-         
+          
     if (!chatDoc) return null;
     return {
       id: chatDoc._id as string,
@@ -53,7 +53,7 @@ export class ChatRepositoryMongodb implements IChatRepository {
 
   async findByTicketId(ticketId: string): Promise<ChatDetails | null> {
     const chatDoc = await this.chatModel.findOne({ ticketId }).exec();
-         
+          
     if (!chatDoc) return null;
     return {
       id: chatDoc._id as string,
