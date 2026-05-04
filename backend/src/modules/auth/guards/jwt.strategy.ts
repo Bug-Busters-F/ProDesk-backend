@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-
+import { normalizeIntent } from '../../shared/utils/intent-normalizer';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
@@ -17,7 +17,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       id: payload.sub,
       email: payload.email,
       role: payload.role,
-      categories: (payload.categories ?? []).map((c) => c.id),
+      categories: (payload.categories ?? []).reduce((acc: string[], c: any) => {
+        if (c.id) acc.push(c.id.toString());
+        if (c.name) acc.push(normalizeIntent(c.name));
+        return acc;
+      }, []),
     };
   }
 }
