@@ -16,7 +16,6 @@ import { CompanyDetails } from './company.interface';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/guards/roles.decorator';
-import { UserRole } from '../user/user.schema';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -25,6 +24,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { UserRole } from '../shared/enums/user.enum';
 
 @ApiTags('Company')
 @ApiBearerAuth()

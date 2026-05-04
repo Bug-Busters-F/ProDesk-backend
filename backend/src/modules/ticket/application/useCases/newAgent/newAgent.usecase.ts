@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TicketStatus } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
+import { ChatService } from '../../../../chat/application/chat.service';
 
 export interface NewAgentTicketInput {
   id: string;
@@ -15,7 +16,10 @@ export interface NewAgentTicketOutput {
 
 @Injectable()
 export class NewAgentTicketUseCase {
-  constructor(private readonly repository: ITicketRepository) {}
+  constructor(
+    private readonly repository: ITicketRepository,
+    private readonly chatService: ChatService,
+  ) {}
 
   async execute(input: NewAgentTicketInput): Promise<NewAgentTicketOutput> {
     const foundedTicket = await this.repository.readById(input.id);
@@ -23,13 +27,19 @@ export class NewAgentTicketUseCase {
     if (!foundedTicket) {
       throw new Error('Ticket not found.');
     }
-
+    
     foundedTicket.assignToAgent(input.agentId);
 
     const updatedTicket = await this.repository.save(foundedTicket);
 
     if (!updatedTicket) {
       throw new Error('Fail to update ticket.');
+    }
+
+    try {
+      await this.chatService.updateAgentByTicketId(updatedTicket.id, updatedTicket.agentId);
+    } catch (e) {
+      console.warn('Chat não pôde ser atualizado ou não existe:', e);
     }
 
     return {

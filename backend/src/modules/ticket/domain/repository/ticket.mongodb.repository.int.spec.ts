@@ -1,3 +1,11 @@
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  afterEach,
+} from '@jest/globals';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -59,7 +67,7 @@ describe('ITicketRepository', () => {
   it('Should Create a ticket successfully', async () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 1',
-      category: 'ia',
+      category: randomUUID(),
       description: 'descricao do chamado 1',
       clientId: randomUUID(),
     });
@@ -83,7 +91,7 @@ describe('ITicketRepository', () => {
   it('Should read all successfully', async () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 2',
-      category: 'bi',
+      category: randomUUID(),
       description: 'descricao do chamado 2',
       clientId: randomUUID(),
     });
@@ -100,9 +108,11 @@ describe('ITicketRepository', () => {
   });
 
   it('Should read a ticket by id successfully', async () => {
+    const categoryId = randomUUID();
+
     const ticketToCreate = Ticket.create({
       title: 'chamado 3',
-      category: 'bi',
+      category: categoryId,
       description: 'descricao do chamado 3',
       clientId: randomUUID(),
     });
@@ -117,7 +127,7 @@ describe('ITicketRepository', () => {
     const primitiveResult = resultById?.toPrimitives();
 
     expect(primitiveResult?.title).toBe('chamado 3');
-    expect(primitiveResult?.category).toBe('bi');
+    expect(primitiveResult?.category).toBe(categoryId);
     expect(primitiveResult?.priority).toBe(TicketPriority.LOW);
     expect(primitiveResult?.description).toBe('descricao do chamado 3');
   });
@@ -130,7 +140,7 @@ describe('ITicketRepository', () => {
   it('Should Save a ticket successfully', async () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 5',
-      category: 'bi',
+      category: randomUUID(),
       description: 'descricao do chamado 5',
       clientId: randomUUID(),
     });
@@ -154,7 +164,7 @@ describe('ITicketRepository', () => {
   it('Should return null when try to save a non-existent ticket', async () => {
     const ticket = Ticket.create({
       title: 'chamado 5',
-      category: 'bi',
+      category: randomUUID(),
       description: 'descricao do chamado 5',
       clientId: randomUUID(),
     });
@@ -169,7 +179,7 @@ describe('ITicketRepository', () => {
   it('Should delete a ticket by id successfully', async () => {
     const ticketToCreate = Ticket.create({
       title: 'chamado 5',
-      category: 'bi',
+      category: randomUUID(),
       description: 'descricao do chamado 5',
       clientId: randomUUID(),
     });
@@ -188,7 +198,88 @@ describe('ITicketRepository', () => {
   });
 
   it('Should return false when try to delete a non-existent ticket', async () => {
-    const deleteResult = await repository.delete(randomUUID());    
+    const deleteResult = await repository.delete(randomUUID());
     expect(deleteResult).toBe(false);
+  });
+
+  it('Should read all tickets by clientId successfully', async () => {
+    const clientId = randomUUID();
+
+    const ticket1 = Ticket.create({
+      title: 'chamado 6',
+      category: randomUUID(),
+      description: 'descricao do chamado 6',
+      clientId,
+    });
+
+    const ticket2 = Ticket.create({
+      title: 'chamado 7',
+      category: randomUUID(),
+      description: 'descricao do chamado 7',
+      clientId,
+    });
+
+    await repository.create(ticket1);
+    await repository.create(ticket2);
+
+    const resultReadAll = await repository.readAll({ clientId });
+    expect(resultReadAll).toBeDefined();
+    expect(Array.isArray(resultReadAll)).toBe(true);
+    expect(resultReadAll.length).toBe(2);
+    resultReadAll.map((t) => expect(t).toBeInstanceOf(Ticket));
+
+    const resultReadAllWithAnotherClientId = await repository.readAll({
+      clientId: randomUUID(),
+    });
+    expect(resultReadAllWithAnotherClientId).toBeDefined();
+    expect(Array.isArray(resultReadAllWithAnotherClientId)).toBe(true);
+    expect(resultReadAllWithAnotherClientId.length).toBe(0);
+  });
+
+  it('should read all tickets by agentId or unassigned tickets in the same group', async () => {
+    const agentId = randomUUID();
+    const categoryId = randomUUID();
+
+    const ticket1 = Ticket.create({
+      title: 'chamado 1',
+      category: categoryId,
+      description: 'atribuído ao agente',
+      clientId: randomUUID(),
+    });
+    ticket1.assignToAgent(agentId);
+
+    const ticket2 = Ticket.create({
+      title: 'chamado 2',
+      category: categoryId,
+      description: 'sem agente no grupo',
+      clientId: randomUUID(),
+    });
+
+    const ticket3 = Ticket.create({
+      title: 'chamado 3',
+      category: categoryId,
+      description: 'outro agente atribuído',
+      clientId: randomUUID(),
+    });
+    ticket3.assignToAgent(randomUUID());
+
+    await repository.create(ticket1);
+    await repository.create(ticket2);
+    await repository.create(ticket3);
+
+    const result = await repository.readAll({
+      agentId,
+      categories: [categoryId],
+    });
+
+    expect(result).toBeDefined();
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBe(2);
+    result.forEach((t) => expect(t).toBeInstanceOf(Ticket));
+
+    const ids = result.map((t) => t.id);
+    expect(ids).toContain(ticket1.id);
+    expect(ids).toContain(ticket2.id);
+    expect(ids).not.toContain(ticket3.id);
   });
 });

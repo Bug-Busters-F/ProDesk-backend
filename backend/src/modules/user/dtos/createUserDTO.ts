@@ -4,9 +4,14 @@ import {
   IsOptional,
   IsEnum,
   IsStrongPassword,
+  IsArray,
+  IsMongoId,
+  IsNumber,
+  Min,
+  Max,
 } from 'class-validator';
-import { UserRole } from '../user.schema';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { UserRole } from '../../shared/enums/user.enum';
 
 export class CreateUserDTO {
   @ApiProperty({ example: 'Gabriel' })
@@ -47,10 +52,24 @@ export class CreateUserDTO {
   @IsString()
   companyId?: string;
 
-  @ApiPropertyOptional({ example: '65f1a2b3c9d123456789efgh' })
+  @ApiPropertyOptional({
+    example: ['65f1a2b3c9d123456789abcd'],
+    description: 'Lista de IDs de categorias',
+  })
   @IsOptional()
-  @IsString()
-  groupId?: string;
+  @IsArray()
+  @IsMongoId({ each: true })
+  categories?: string[];
+
+  @ApiPropertyOptional({
+    example: 1,
+    description: 'Nível do atendente (1 a 3)'
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(3)
+  level?: number;
 }
 
 export class CreateAdminDTO {
@@ -79,10 +98,13 @@ export class CreateAdminDTO {
   )
   password: string;
 
-  @ApiPropertyOptional({ example: '65f1a2b3c9d123456789abcd' })
+  @ApiPropertyOptional({
+    example: ['65f1a2b3c9d123456789abcd'],
+  })
   @IsOptional()
-  @IsString()
-  groupId?: string;
+  @IsArray()
+  @IsMongoId({ each: true })
+  categories?: string[];
 }
 
 export class CreateSupportDTO {
@@ -111,10 +133,23 @@ export class CreateSupportDTO {
   )
   password: string;
 
-  @ApiPropertyOptional({ example: '65f1a2b3c9d123456789abcd' })
+  @ApiPropertyOptional({
+    example: ['65f1a2b3c9d123456789abcd'],
+  })
   @IsOptional()
-  @IsString()
-  groupId?: string;
+  @IsArray()
+  @IsMongoId({ each: true })
+  categories?: string[];
+
+  @ApiPropertyOptional({
+    example: 1,
+    description: 'Nível do atendente (1 a 3)'
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(3)
+  level?: number;
 }
 
 export class CreateClientDTO {

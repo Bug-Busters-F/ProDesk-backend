@@ -13,7 +13,6 @@ async function bootstrap() {
 
   app.enableCors();
   app.setGlobalPrefix('ProDeskApi');
-  app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
     .setTitle('ProDesk')

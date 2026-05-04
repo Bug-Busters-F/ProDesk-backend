@@ -21,22 +21,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly jwtService: JwtService,
   ) {}
 
-  // Conexão / Desconexão
-
   async handleConnection(client: Socket) {
     try {
-      const token =
-        client.handshake.auth?.token ||
-        client.handshake.headers?.authorization?.replace('Bearer ', '');
-
-      if (!token) {
-        client.disconnect();
-        return;
+      let token = client.handshake.auth?.token;
+      
+      if (!token && client.handshake.headers?.authorization) {
+        token = client.handshake.headers.authorization.replace('Bearer ', '').trim();
       }
 
-      // ==========================================
-      // BYPASS DE TESTES (Remover em Produção)
-      // ==========================================
+      if (!token) {
+        throw new Error('Token não foi enviado pelo frontend');
+      }
+
       if (token.startsWith('TEST_TOKEN_')) {
         const role = token.split('_').pop().toLowerCase();
         client.data.user = {
@@ -47,20 +43,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log(`[MODO TESTE] Usuário mockado conectado: ${client.id} (${role})`);
         return;
       }
-      // ==========================================
 
       const payload = await this.jwtService.verifyAsync(token);
+      
       client.data.user = {
         id: payload.sub,
         email: payload.email,
         role: payload.role,
       };
 
-      console.log(
-        `Usuário autenticado conectado: ${client.id} (${payload.email})`,
-      );
-    } catch {
-      console.log(`Conexão recusada — token inválido: ${client.id}`);
+      console.log(`Usuário autenticado no chat: ${client.id} (${payload.email})`);
+      
+    } catch (error: any) {
+      console.log(`Conexão recusada [${client.id}] - Motivo: ${error.message}`);
       client.disconnect();
     }
   }
@@ -68,8 +63,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(client: Socket) {
     console.log(`Usuário desconectado: ${client.id}`);
   }
-
-  // Entrar / Sair do Chat
 
   @SubscribeMessage('entrarChat')
   async handleEntrarChat(
@@ -82,12 +75,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
 
-    const isParticipant = await this.chatService.isParticipant(
-      data.chatId,
-      user.id,
-    );
+    const isParticipant = await this.chatService.isParticipant(data.chatId, user.id);
 
-    if (!isParticipant && user.role !== 'admin' && user.role !== 'support') {
+    if (!isParticipant && user.role !== 'admin') {
       client.emit('erro', {
         mensagem: 'Você não é participante deste chat',
       });
@@ -105,16 +95,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     client.leave(data.chatId);
-    console.log(
-      `Usuário ${client.data?.user?.email} saiu do chat: ${data.chatId}`,
-    );
+    console.log(`Usuário ${client.data?.user?.email} saiu do chat: ${data.chatId}`);
   }
-
-  // Enviar Mensagem
 
   @SubscribeMessage('enviarMensagem')
   async handleEnviarMensagem(
-    @MessageBody() data: { chatId: string; content: string },
+    // ADICIONADO attachmentUrl E type NO PAYLOAD RECEBIDO PELO SOCKET
+    @MessageBody() data: { chatId: string; content: string; attachmentUrl?: string; type?: string },
     @ConnectedSocket() client: Socket,
   ) {
     const user = client.data?.user;
@@ -124,15 +111,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     try {
-      // senderId e role vêm do JWT, não do payload do frontend
+      // REPASSANDO A URL E O TIPO PARA O SERVIÇO
       const mensagemSalva = await this.chatService.sendMessage(
         data.chatId,
         user.id,
         user.role,
         data.content,
+        [], // fileIds vazio
+        data.attachmentUrl, 
+        data.type           
       );
 
-      // Broadcast para todos na sala do chat
       this.server.to(data.chatId).emit('novaMensagem', mensagemSalva);
     } catch (error: any) {
       client.emit('erroMensagem', {
@@ -140,8 +129,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     }
   }
-
-  // Buscar Histórico
 
   @SubscribeMessage('buscarHistorico')
   async handleBuscarHistorico(

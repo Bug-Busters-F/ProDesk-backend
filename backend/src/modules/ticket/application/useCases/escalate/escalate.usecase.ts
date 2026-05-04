@@ -4,11 +4,13 @@ import {
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
+import { ChatService } from '../../../../chat/application/chat.service';
 
 export interface EscalateTicketInput {
   id: string;
   groupId: string;
   category: string;
+  whatWasDone: string;
 }
 
 export interface EscalateTicketOutput {
@@ -20,7 +22,6 @@ export interface EscalateTicketOutput {
   clientId: string;
   status: TicketStatus;
   agentId: string | null;
-  groupId: string | null;
   escalationLevel: number;
   createdAt: Date;
   updatedAt: Date | null;
@@ -28,7 +29,10 @@ export interface EscalateTicketOutput {
 
 @Injectable()
 export class EscalateTicketUseCase {
-  constructor(private readonly repository: ITicketRepository) {}
+  constructor(
+    private readonly repository: ITicketRepository,
+    private readonly chatService: ChatService,
+  ) {}
 
   async execute(input: EscalateTicketInput): Promise<EscalateTicketOutput> {
     const foundedTicket = await this.repository.readById(input.id);
@@ -37,12 +41,18 @@ export class EscalateTicketUseCase {
       throw new Error('Ticket not found');
     }
 
-    foundedTicket.escalate(input.groupId, input.category);
+    foundedTicket.escalate(input.groupId, input.category, input.whatWasDone);
 
     const escalatedTicket = await this.repository.save(foundedTicket);
 
     if (!escalatedTicket) {
       throw new Error('Ticket not escalated');
+    }
+
+    try {
+      await this.chatService.updateAgentByTicketId(escalatedTicket.id, escalatedTicket.agentId);
+    } catch (e) {
+      console.warn('Chat não pôde ser atualizado ou não existe:', e);
     }
 
     const primitive = escalatedTicket.toPrimitives();
@@ -56,7 +66,6 @@ export class EscalateTicketUseCase {
       clientId: primitive.clientId,
       status: primitive.status,
       agentId: primitive.agentId,
-      groupId: primitive.groupId,
       escalationLevel: primitive.escalationLevel,
       createdAt: primitive.createdAt,
       updatedAt: primitive.updatedAt,

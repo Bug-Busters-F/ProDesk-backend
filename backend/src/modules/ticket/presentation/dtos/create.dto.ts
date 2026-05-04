@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTicketRequest {
@@ -13,8 +13,10 @@ export class CreateTicketRequest {
   @IsString()
   description!: string;
 
-  @ApiProperty({ example: 'uuid-do-cliente', description: 'ID do cliente' })
-  @IsString()
-  @IsNotEmpty()
-  clientId!: string;
+  @ApiProperty({ example: 1, description: 'Nível do chamado (1 a 3)' })
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(3)
+  level?: number;
 }

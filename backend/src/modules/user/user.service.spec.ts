@@ -1,36 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import { Connection, Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Types } from 'mongoose';
 
 import { UserService } from './user.service';
-import { UserSchema, UserRole } from './user.schema';
-import { GroupService } from '../group/group.service';
+import { UserSchema } from './user.schema';
 import { CompanyService } from '../company/company.service';
+import { CategoryService } from '../category/category.service';
 import { CompanySchema } from '../company/company.schema';
-import { GroupSchema } from '../group/group.schema';
+import { CategorySchema } from '../category/category.schema';
+import { AccessRequestSchema } from './accessRequest.schema';
+import { JwtService } from '@nestjs/jwt';
+import { EmailService } from '../email/email.service';
+import { UserRole } from '../shared/enums/user.enum';
 
 describe('UserService (Integration)', () => {
   let service: UserService;
   let connection: Connection;
   let mongod: MongoMemoryServer;
-
-  const mockCompanyService = {
-    findById: jest.fn().mockResolvedValue({
-      id: 'company123',
-      name: 'Test Company',
-      cnpj: '12345678901234',
-    }),
-  };
-
-  const mockGroupService = {
-    findById: jest.fn().mockResolvedValue({
-      id: 'group123',
-      name: 'Test Group',
-      description: 'Test desc',
-    }),
-  };
 
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create();
@@ -40,8 +27,9 @@ describe('UserService (Integration)', () => {
         MongooseModule.forRoot(mongod.getUri()),
         MongooseModule.forFeature([
           { name: 'User', schema: UserSchema },
+          { name: 'AccessRequest', schema: AccessRequestSchema },
           { name: 'Company', schema: CompanySchema },
-          { name: 'Group', schema: GroupSchema },
+          { name: 'Category', schema: CategorySchema },
         ]),
       ],
       providers: [
@@ -49,6 +37,11 @@ describe('UserService (Integration)', () => {
         {
           provide: CompanyService,
           useValue: {
+            findByCnpj: jest.fn().mockResolvedValue({
+              id: 'company-id',
+              name: 'Test Company',
+              cnpj: '123',
+            }),
             findById: jest.fn().mockResolvedValue({
               id: 'company-id',
               name: 'Test Company',
@@ -56,15 +49,27 @@ describe('UserService (Integration)', () => {
             }),
           },
         },
-
         {
-          provide: GroupService,
+          provide: CategoryService,
           useValue: {
             findById: jest.fn().mockResolvedValue({
-              id: 'group-id',
-              name: 'Test Group',
-              description: 'desc',
+              id: 'category-id',
+              name: 'Test Category',
+              keywords: [],
             }),
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            signAsync: jest.fn().mockResolvedValue('fake-token'),
+          },
+        },
+        {
+          provide: EmailService,
+          useValue: {
+            sendResetPasswordEmail: jest.fn(),
+            sendCreatePasswordEmail: jest.fn(),
           },
         },
       ],
@@ -88,7 +93,7 @@ describe('UserService (Integration)', () => {
 
   it('should create user successfully', async () => {
     const companyId = new Types.ObjectId();
-    const groupId = new Types.ObjectId();
+    const categoryId = new Types.ObjectId();
 
     await connection.collection('companies').insertOne({
       _id: companyId,
@@ -96,10 +101,10 @@ describe('UserService (Integration)', () => {
       cnpj: '12345678901234',
     });
 
-    await connection.collection('groups').insertOne({
-      _id: groupId,
-      name: 'Test Group',
-      description: 'Test desc',
+    await connection.collection('categories').insertOne({
+      _id: categoryId,
+      name: 'Test Category',
+      keywords: [],
     });
 
     const user = await service.createUser(
@@ -108,7 +113,7 @@ describe('UserService (Integration)', () => {
       'Password123!',
       UserRole.ADMIN,
       companyId.toString(),
-      groupId.toString(),
+      [categoryId.toString()],
     );
 
     expect(user).toBeDefined();

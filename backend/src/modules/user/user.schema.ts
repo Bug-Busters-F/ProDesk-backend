@@ -1,15 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Company } from '../company/company.schema';
-import { Group } from '../group/group.schema';
+import { Category } from '../category/category.schema';
+import { UserRole } from '../shared/enums/user.enum';
 
 export type UserDocument = User & Document;
-
-export enum UserRole {
-  CLIENT = 'client',
-  SUPPORT = 'support',
-  ADMIN = 'admin',
-}
 
 @Schema({ timestamps: { createdAt: true, updatedAt: false } })
 export class User {
@@ -23,11 +18,18 @@ export class User {
   password: string;
 
   @Prop({
+    type: String,
     required: true,
     enum: UserRole,
     default: UserRole.CLIENT,
   })
   role: UserRole;
+
+  @Prop({
+    required: false,
+    default: 1,
+  })
+  level: number;
 
   @Prop({
     type: Types.ObjectId,
@@ -37,13 +39,16 @@ export class User {
   companyId: Types.ObjectId | Company;
 
   @Prop({
-    type: Types.ObjectId,
-    ref: 'Group',
+    type: [{ type: Types.ObjectId, ref: 'Category' }],
     required: false,
+    default: [],
   })
-  groupId: Types.ObjectId | Group;
+  categories: (Types.ObjectId | Category)[];
 
   createdAt?: Date;
+
+  @Prop({ required: false })
+  profileImage?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

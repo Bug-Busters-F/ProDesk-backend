@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 import {
   TicketEventMessage,
@@ -24,6 +24,9 @@ export class TicketHistoryEntrySchema {
 
   @Prop({ type: String, default: null })
   solution: string | null;
+  
+  @Prop({ type: String, required: false })
+  attachmentUrl?: string;
 
   @Prop({ required: true })
   occurredAt: Date;
@@ -44,7 +47,7 @@ export class TicketSchemaClass {
   @Prop({ required: true })
   description: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   category: string;
 
   @Prop({ required: true, enum: Object.values(TicketPriority) })
@@ -65,9 +68,6 @@ export class TicketSchemaClass {
 
   @Prop({ type: String, default: null })
   agentId: string | null;
-
-  @Prop({ type: String, default: null })
-  groupId: string | null;
 
   @Prop({ default: 1 })
   escalationLevel: number;

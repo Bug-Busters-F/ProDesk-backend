@@ -30,7 +30,13 @@ describe('CreateTicketUseCase', () => {
 
     repository = {
       create: jest.fn().mockResolvedValue(ticket),
-    };
+      save: jest.fn(),
+      readAll: jest.fn(),
+      readById: jest.fn(),
+      delete: jest.fn(),
+      findByStatus: jest.fn(),
+      findByStatusCategory: jest.fn(),
+    } as unknown as jest.Mocked<ITicketRepository>;
 
     useCase = new CreateTicketUseCase(repository, triageService);
   });

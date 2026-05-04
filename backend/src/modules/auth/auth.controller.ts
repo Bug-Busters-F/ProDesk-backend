@@ -5,7 +5,11 @@ import {
   HttpStatus,
   Post,
   UseGuards,
+  Get,
+  Query,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import {
   CreateAdminDTO,
@@ -14,7 +18,7 @@ import {
 } from '../user/dtos/createUserDTO';
 import { UserDetails } from '../user/user.interface';
 import { ExistingUserDTO } from '../user/dtos/existingUserDTO';
-import { UserRole } from '../user/user.schema';
+import { UserRole } from '../shared/enums/user.enum';
 import { Roles } from './guards/roles.decorator';
 import { JwtGuard } from './guards/jwt.guard';
 import { RolesGuard } from './guards/roles.guard';
@@ -118,5 +122,61 @@ export class AuthController {
   })
   login(@Body() user: ExistingUserDTO): Promise<{ token: string } | null> {
     return this.authService.login(user);
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Solicitar recuperação de senha' })
+  @ApiBody({
+    schema: {
+      example: {
+        email: 'usuario@email.com',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Se o email existir, um link de recuperação será enviado',
+  })
+  forgotPassword(@Body() body: { email: string }): Promise<void> {
+    return this.authService.forgotPassword(body.email);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Redefinir senha do usuário' })
+  @ApiBody({
+    schema: {
+      example: {
+        token: 'jwt.token.aqui',
+        newPassword: 'NovaSenha@123',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Senha redefinida com sucesso',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Token inválido ou expirado',
+  })
+  resetPassword(
+    @Body() body: { token: string; newPassword: string },
+  ): Promise<void> {
+    return this.authService.resetPassword(
+      body.token,
+      body.newPassword,
+    );
+  }
+
+  @Get('redirect-app')
+  @ApiOperation({ summary: 'Redirecionar usuário para o App Mobile' })
+  redirectApp(@Query('token') token: string, @Res() res: Response) {
+    const expoUrl = process.env.EXPO_URL || 'exp://192.168.0.217:8081';
+    const appLink = `${expoUrl}/--/resetPassword?token=${token}`;
+    
+    return res.redirect(appLink);
   }
 }

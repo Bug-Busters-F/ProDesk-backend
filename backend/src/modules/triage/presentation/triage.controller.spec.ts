@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TriageController } from './triage.controller';
 import { TriageService } from '../application/triage.service';
-import { TicketCategory } from '../../shared/domain/ticket-category.enum';
+import { Category } from '../domain/category.entity';
 
 describe('TriageController', () => {
   let controller: TriageController;
@@ -12,71 +12,124 @@ describe('TriageController', () => {
   };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [TriageController],
-      providers: [
-        {
-          provide: TriageService,
-          useValue: mockTriageService,
-        },
-      ],
-    }).compile();
+    const module: TestingModule =
+      await Test.createTestingModule({
+        controllers: [TriageController],
+        providers: [
+          {
+            provide: TriageService,
+            useValue: mockTriageService,
+          },
+        ],
+      }).compile();
 
-    controller = module.get<TriageController>(TriageController);
-    triageService = module.get(TriageService);
+    controller =
+      module.get<TriageController>(
+        TriageController
+      );
+
+    triageService =
+      module.get(TriageService);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('deve classificar corretamente uma descrição', async () => {
-    const mockResponse = {
-      value: TicketCategory.WEB_APP,
-      confidence: 0.95,
-      source: 'rule',
-    };
+  it(
+    'deve classificar corretamente uma descrição',
+    async () => {
 
-    triageService.classify.mockResolvedValue(mockResponse as any);
+      const mockResponse =
+        new Category(
+          '1',
+          'WEB_APP',
+          0.95,
+          'rule'
+        );
 
-    const body = {
-      description: 'site não abre',
-    };
+      triageService.classify
+        .mockResolvedValue(
+          mockResponse
+        );
 
-    const result = await controller.classify(body);
+      const body = {
+        description: 'site não abre',
+      };
 
-    expect(triageService.classify).toHaveBeenCalledWith(body.description);
-    expect(result).toEqual(mockResponse);
-  });
+      const result =
+        await controller.classify(
+          body
+        );
 
-  it('deve retornar fallback quando service retornar OTHER', async () => {
-    const mockResponse = {
-      value: TicketCategory.OTHER,
-      confidence: 0.5,
-      source: 'fallback',
-    };
+      expect(
+        triageService.classify
+      ).toHaveBeenCalledWith(
+        body.description
+      );
 
-    triageService.classify.mockResolvedValue(mockResponse as any);
+      expect(result)
+        .toEqual(mockResponse);
+    }
+  );
 
-    const body = {
-      description: 'qualquer coisa aleatória',
-    };
+  it(
+    'deve retornar fallback quando categoria for OTHER',
+    async () => {
 
-    const result = await controller.classify(body);
+      const mockResponse =
+        new Category(
+          '999',
+          'OTHER',
+          0.5,
+          'fallback'
+        );
 
-    expect(result.value).toBe(TicketCategory.OTHER);
-    expect(result.source).toBe('fallback');
-  });
+      triageService.classify
+        .mockResolvedValue(
+          mockResponse
+        );
 
-  it('deve chamar o service apenas uma vez', async () => {
-    triageService.classify.mockResolvedValue({
-      value: TicketCategory.BI,
-      confidence: 0.9,
-      source: 'rule',
-    } as any);
+      const body = {
+        description:
+          'qualquer coisa aleatória',
+      };
 
-    await controller.classify({ description: 'erro no dashboard' });
+      const result =
+        await controller.classify(
+          body
+        );
 
-    expect(triageService.classify).toHaveBeenCalledTimes(1);
-  });
+      expect(result.category)
+        .toBe('OTHER');
+
+      expect(result.source)
+        .toBe('fallback');
+    }
+  );
+
+  it(
+    'deve chamar o service apenas uma vez',
+    async () => {
+
+      triageService.classify
+        .mockResolvedValue(
+          new Category(
+            '2',
+            'BI',
+            0.9,
+            'rule'
+          )
+        );
+
+      await controller.classify({
+        description:
+          'erro no dashboard',
+      });
+
+      expect(
+        triageService.classify
+      ).toHaveBeenCalledTimes(1);
+    }
+  );
 });
