@@ -1,5 +1,5 @@
 import { Model, QueryFilter } from 'mongoose';
-import { Ticket } from '../../domain/entities/ticket.entity';
+import { Ticket, TicketStatus } from '../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../domain/repository/ticket.repository.interface';
 import { TicketLean, TicketSchemaClass } from '../schemas/ticket.mongo.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -42,6 +42,10 @@ export class TicketMongoRepository extends ITicketRepository {
     clientId?: string;
     agentId?: string;
     categories?: string[];
+    search?: string;
+    status?: TicketStatus;
+    escalationLevel?: number;
+    onlyMine?: boolean;
   }): Promise<Ticket[]> {
     let query: QueryFilter<TicketSchemaClass> = {};
 
@@ -54,6 +58,28 @@ export class TicketMongoRepository extends ITicketRepository {
       };
     } else if (filters?.clientId) {
       query = { clientId: filters.clientId };
+    }
+
+    if (filters?.search) {
+      query = {
+        ...query,
+        $or: [
+          { title: { $regex: filters.search, $options: 'i' } },
+          { description: { $regex: filters.search, $options: 'i' } },
+        ],
+      };
+    }
+
+    if (filters?.status) {
+      query = { ...query, status: filters.status };
+    }
+
+    if (filters?.escalationLevel) {
+      query = { ...query, escalationLevel: filters.escalationLevel };
+    }
+
+    if (filters?.onlyMine && filters?.agentId) {
+      query = { ...query, agentId: filters.agentId }; 
     }
 
     const tickets = await this.ticketModel.find(query).exec();

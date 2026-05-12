@@ -79,15 +79,20 @@ export class TicketController {
   @ApiOperation({ summary: 'Retorna todos os tickets' })
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
-  @ApiResponse({
-    status: 200,
-    description: 'Todos os tickets retornados com sucesso.',
-  })
-  async getAll(@Request() req: any) {
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'status', required: false, enum: TicketStatus })
+  @ApiQuery({ name: 'escalationLevel', required: false, type: Number })
+  @ApiQuery({ name: 'onlyMine', required: false, type: Boolean })
+  @ApiResponse({ status: 200, description: 'Todos os tickets retornados com sucesso.' })
+  async getAll(@Request() req: any, @Query() query: any) {
     const response = await this.readAllUseCase.execute({
       userId: req.user.id,
       categories: req.user.categories ?? undefined,
       role: req.user.role,
+      search: query.search,
+      status: query.status as TicketStatus,
+      escalationLevel: query.escalationLevel ? Number(query.escalationLevel) : undefined,
+      onlyMine: query.onlyMine === 'true',
     });
 
     return response;

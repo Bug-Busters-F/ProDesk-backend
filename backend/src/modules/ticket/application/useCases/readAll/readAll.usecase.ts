@@ -30,6 +30,10 @@ export class ReadAllTicketUseCase {
     userId: string;
     categories?: string[];
     role: UserRole;
+    search?: string;
+    status?: TicketStatus;
+    escalationLevel?: number;
+    onlyMine?: boolean;
   }): Promise<ReadAllTicketOutput[]> {
     const filters =
       input.role === UserRole.CLIENT
@@ -38,7 +42,13 @@ export class ReadAllTicketUseCase {
           ? { agentId: input.userId, categories: input.categories }
           : undefined;
 
-    const foundedTickets = await this.repository.readAll({ ...filters });
+    const foundedTickets = await this.repository.readAll({
+      ...filters,
+      search: input.search,
+      status: input.status,
+      escalationLevel: input.escalationLevel,
+      onlyMine: input.onlyMine,
+    });
 
     const convertedTickets = foundedTickets.map((t: Ticket) => {
       const primitive = t.toPrimitives();
