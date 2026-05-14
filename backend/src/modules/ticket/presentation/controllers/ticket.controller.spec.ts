@@ -564,42 +564,44 @@ describe('TicketController', () => {
     expect(getHistoryFilteredUseCase.execute).not.toHaveBeenCalled();
   });
 
-  it('GET /tickets should return tickets filtered by agentId when role is SUPPORT', async () => {
-    const agentId = randomUUID();
-    const categories = [randomUUID()];
-    const primitives = ticket.toPrimitives();
+it('GET /tickets should return tickets filtered by agentId when role is SUPPORT', async () => {
+  const agentId = randomUUID();
+  const categories = [randomUUID()];
+  const primitives = ticket.toPrimitives();
 
-    const moduleFixture = await Test.createTestingModule({
-      controllers: [TicketController],
-      providers: [
-        { provide: CreateTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: ReadAllTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: ReadByIdTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: GetHistoryTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: EscalateTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: NewAgentTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: DeleteTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: GetHistoryFilteredUseCase, useValue: { execute: jest.fn() } },
-        { provide: CloseTicketUseCase, useValue: { execute: jest.fn() } },
-      ],
+  const moduleFixture = await Test.createTestingModule({
+    controllers: [TicketController],
+    providers: [
+      { provide: CreateTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: ReadAllTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: ReadByIdTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: GetHistoryTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: EscalateTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: NewAgentTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: DeleteTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: GetHistoryFilteredUseCase, useValue: { execute: jest.fn() } },
+      { provide: CloseTicketUseCase, useValue: { execute: jest.fn() } },
+    ],
+  })
+    .overrideGuard(JwtGuard)
+    .useValue({
+      canActivate: (context: ExecutionContext) => {
+        const req = context.switchToHttp().getRequest();
+        req.user = {
+          id: agentId,
+          role: UserRole.SUPPORT,
+          categories: categories,
+        };
+        return true;
+      },
     })
-      .overrideGuard(JwtGuard)
-      .useValue({
-        canActivate: (context: ExecutionContext) => {
-          const req = context.switchToHttp().getRequest();
-          req.user = {
-            id: agentId,
-            role: UserRole.SUPPORT,
-            categories: categories, // consistente com o JwtStrategy
-          };
-          return true;
-        },
-      })
-      .overrideGuard(RolesGuard)
-      .useValue({ canActivate: () => true })
-      .compile();
+    .overrideGuard(RolesGuard)
+    .useValue({ canActivate: () => true })
+    .compile();
 
-    const isolatedApp = moduleFixture.createNestApplication();
+  const isolatedApp = moduleFixture.createNestApplication();
+  
+  try {
     await isolatedApp.init();
 
     const localReadAllUseCase = moduleFixture.get(ReadAllTicketUseCase);
@@ -635,7 +637,7 @@ describe('TicketController', () => {
       categories: categories,
       role: UserRole.SUPPORT,
     });
-
+  } finally {
     await isolatedApp.close();
-  });
+  }
 });
