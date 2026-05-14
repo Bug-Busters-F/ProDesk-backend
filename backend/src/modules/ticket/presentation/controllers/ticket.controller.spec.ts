@@ -564,43 +564,55 @@ describe('TicketController', () => {
     expect(getHistoryFilteredUseCase.execute).not.toHaveBeenCalled();
   });
 
-  it('GET /tickets should return tickets filtered by agentId when role is SUPPORT', async () => {
-    const agentId = randomUUID();
-    const categories = [randomUUID()];
-    const primitives = ticket.toPrimitives();
+it('GET /tickets should return tickets filtered by agentId when role is SUPPORT', async () => {
+  const agentId = randomUUID();
+  const categories = [randomUUID()];
+  const primitives = ticket.toPrimitives();
 
-    const moduleFixture = await Test.createTestingModule({
-      controllers: [TicketController],
-      providers: [
-        { provide: CreateTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: ReadAllTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: ReadByIdTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: GetHistoryTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: EscalateTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: NewAgentTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: DeleteTicketUseCase, useValue: { execute: jest.fn() } },
-        { provide: GetHistoryFilteredUseCase, useValue: { execute: jest.fn() } },
-        { provide: CloseTicketUseCase, useValue: { execute: jest.fn() } },
-      ],
+  const moduleFixture = await Test.createTestingModule({
+    controllers: [TicketController],
+    providers: [
+      { provide: CreateTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: ReadAllTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: ReadByIdTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: GetHistoryTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: EscalateTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: NewAgentTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: DeleteTicketUseCase, useValue: { execute: jest.fn() } },
+      { provide: GetHistoryFilteredUseCase, useValue: { execute: jest.fn() } },
+      { provide: CloseTicketUseCase, useValue: { execute: jest.fn() } },
+    ],
+  })
+    .overrideGuard(JwtGuard)
+    .useValue({
+      canActivate: (context: ExecutionContext) => {
+        const req = context.switchToHttp().getRequest();
+        req.user = {
+          id: agentId,
+          role: UserRole.SUPPORT,
+          categories: categories,
+        };
+        return true;
+      },
     })
-      .overrideGuard(JwtGuard)
-      .useValue({
-        canActivate: (context: ExecutionContext) => {
-          const req = context.switchToHttp().getRequest();
-          req.user = {
-            id: agentId,
-            role: UserRole.SUPPORT,
-            categories: categories, // consistente com o JwtStrategy
-          };
-          return true;
-        },
-      })
-      .overrideGuard(RolesGuard)
-      .useValue({ canActivate: () => true })
-      .compile();
+    .overrideGuard(RolesGuard)
+    .useValue({ canActivate: () => true })
+    .compile();
 
-    const isolatedApp = moduleFixture.createNestApplication();
+  const isolatedApp = moduleFixture.createNestApplication();
+  
+  try {
+    isolatedApp.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
+    
     await isolatedApp.init();
+
+    const isolatedHttpServer = isolatedApp.getHttpServer() as import('http').Server;
 
     const localReadAllUseCase = moduleFixture.get(ReadAllTicketUseCase);
 
@@ -621,7 +633,7 @@ describe('TicketController', () => {
       },
     ]);
 
-    const response = await request(isolatedApp.getHttpServer())
+    const response = await request(isolatedHttpServer)
       .get('/tickets')
       .expect(200);
 
@@ -634,8 +646,13 @@ describe('TicketController', () => {
       userId: agentId,
       categories: categories,
       role: UserRole.SUPPORT,
+      search: undefined,
+      status: undefined,
+      escalationLevel: undefined, 
+      onlyMine: false
     });
-
+  } finally {
     await isolatedApp.close();
-  });
+  }
+});
 });
