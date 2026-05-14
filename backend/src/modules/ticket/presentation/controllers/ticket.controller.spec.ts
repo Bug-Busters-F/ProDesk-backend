@@ -602,7 +602,17 @@ it('GET /tickets should return tickets filtered by agentId when role is SUPPORT'
   const isolatedApp = moduleFixture.createNestApplication();
   
   try {
+    isolatedApp.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
+    
     await isolatedApp.init();
+
+    const isolatedHttpServer = isolatedApp.getHttpServer() as import('http').Server;
 
     const localReadAllUseCase = moduleFixture.get(ReadAllTicketUseCase);
 
@@ -623,7 +633,7 @@ it('GET /tickets should return tickets filtered by agentId when role is SUPPORT'
       },
     ]);
 
-    const response = await request(isolatedApp.getHttpServer())
+    const response = await request(isolatedHttpServer)
       .get('/tickets')
       .expect(200);
 
@@ -636,6 +646,10 @@ it('GET /tickets should return tickets filtered by agentId when role is SUPPORT'
       userId: agentId,
       categories: categories,
       role: UserRole.SUPPORT,
+      search: undefined,
+      status: undefined,
+      escalationLevel: undefined, 
+      onlyMine: false
     });
   } finally {
     await isolatedApp.close();
