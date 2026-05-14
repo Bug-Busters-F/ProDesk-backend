@@ -641,3 +641,4 @@ it('GET /tickets should return tickets filtered by agentId when role is SUPPORT'
     await isolatedApp.close();
   }
 });
+});
