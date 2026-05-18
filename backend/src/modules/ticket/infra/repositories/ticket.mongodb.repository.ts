@@ -1,4 +1,4 @@
-import { Model, QueryFilter } from 'mongoose';
+import { Model } from 'mongoose';
 import { Ticket } from '../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../domain/repository/ticket.repository.interface';
 import { TicketLean, TicketSchemaClass } from '../schemas/ticket.mongo.schema';
@@ -43,20 +43,59 @@ export class TicketMongoRepository extends ITicketRepository {
     agentId?: string;
     categories?: string[];
   }): Promise<Ticket[]> {
-    let query: QueryFilter<TicketSchemaClass> = {};
+    let matchStage: Record<string, any> = {};
 
     if (filters?.agentId) {
-      query = {
+      matchStage = {
         $or: [
           { agentId: filters.agentId },
           { category: { $in: filters.categories ?? [] }, agentId: null },
         ],
       };
     } else if (filters?.clientId) {
-      query = { clientId: filters.clientId };
+      matchStage = { clientId: filters.clientId };
     }
 
-    const tickets = await this.ticketModel.find(query).exec();
+    // const tickets = await this.ticketModel.find(query).exec();
+
+    const tickets = await this.ticketModel.aggregate([
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: 'users',
+          let: { agentId: '$agentId' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $ne: ['$$agentId', null] },
+                    { $eq: [{ $toString: '$_id' }, '$$agentId'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'agentData',
+        },
+      },
+      {
+        $addFields: {
+          agent: {
+            $cond: {
+              if: { $gt: [{ $size: '$agentData' }, 0] },
+              then: {
+                id: { $toString: { $arrayElemAt: ['$agentData._id', 0] } },
+                name: { $arrayElemAt: ['$agentData.name', 0] },
+              },
+              else: null,
+            },
+          },
+        },
+      },
+      { $unset: ['agentData', 'agentId', '__v'] },
+    ]);
+
     return tickets.map((t) => TicketMapper.toDomain(t));
   }
 

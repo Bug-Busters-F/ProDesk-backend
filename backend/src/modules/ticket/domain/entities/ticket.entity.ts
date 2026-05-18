@@ -46,6 +46,11 @@ export type TicketHistoryEntry = {
   occurredAt: Date;
 };
 
+export type AgentField = {
+  id: string;
+  name: string;
+};
+
 export class Ticket {
   // Strutucture definition
   private _id: string;
@@ -136,6 +141,7 @@ export class Ticket {
     status: TicketStatus;
     clientId: string;
     agentId?: string;
+    // agent?: AgentField;
     groupId?: string;
     escalationLevel: number;
     history: TicketHistoryEntry[];
@@ -152,7 +158,9 @@ export class Ticket {
 
     ticket._id = props._id;
 
+    // ticket._agentId = props.agent?.id ?? null;
     ticket._agentId = props.agentId ?? null;
+
     ticket._groupId = props.groupId ?? null;
     ticket.attachmentsUrls = props.fileUrls ?? [];
 
