@@ -190,6 +190,7 @@ export class Ticket {
       fileUrls: this.attachmentsUrls,
       status: this.status,
       agentId: this._agentId,
+      agent: this.agent ? { ...this.agent } : null,
       groupId: this._groupId,
       escalationLevel: this.escalationLevel,
       history: this.history,

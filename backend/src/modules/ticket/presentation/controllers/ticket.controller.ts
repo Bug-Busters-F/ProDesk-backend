@@ -43,7 +43,10 @@ import { Roles } from '../../../auth/guards/roles.decorator';
 import { UserRole } from '../../../shared/enums/user.enum';
 import { GetHistoryFilteredUseCase } from '../../application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
 import { GetHistoryFiltersRequest } from '../dtos/getHistory.dto';
-import { TicketEvents, TicketStatus } from '../../domain/entities/ticket.entity';
+import {
+  TicketEvents,
+  TicketStatus,
+} from '../../domain/entities/ticket.entity';
 
 @ApiTags('Ticket')
 @Controller('tickets')
@@ -59,7 +62,7 @@ export class TicketController {
     private readonly newAgentUseCase: NewAgentTicketUseCase,
     private readonly deleteUseCase: DeleteTicketUseCase,
     private readonly closeUseCase: CloseTicketUseCase,
-  ) { }
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Cria um ticket' })
@@ -195,10 +198,7 @@ export class TicketController {
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
   @ApiBody({ type: CloseTicketRequest })
   @ApiResponse({ status: 200, description: 'Ticket fechado com sucesso.' })
-  async closeTicket(
-    @Param('id') id: string,
-    @Body() body: CloseTicketRequest,
-  ) {
+  async closeTicket(@Param('id') id: string, @Body() body: CloseTicketRequest) {
     const data = TicketMapper.toCloseTicketInput(id, body);
 
     const response = await this.closeUseCase.execute(data);

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
-  Ticket,
+  AgentField,
   TicketPriority,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
@@ -19,6 +19,7 @@ export interface ReadAllTicketOutput {
   createdAt: Date;
   updatedAt: Date | null;
   closedAt: Date | null;
+  agent?: AgentField | null;
 }
 
 @Injectable()
@@ -40,7 +41,7 @@ export class ReadAllTicketUseCase {
     const foundedTickets = await this.repository.readAll({ ...filters });
     console.log('Founded tickets:', foundedTickets);
 
-    const convertedTickets = foundedTickets.map((t: Ticket) => {
+    const convertedTickets = foundedTickets.map((t) => {
       const primitive = t.toPrimitives();
 
       return {
@@ -55,6 +56,7 @@ export class ReadAllTicketUseCase {
         createdAt: primitive.createdAt,
         updatedAt: primitive.updatedAt,
         closedAt: primitive.closedAt,
+        agent: primitive.agent,
       };
     });
 
