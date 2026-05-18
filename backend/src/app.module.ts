@@ -15,12 +15,15 @@ import { FileModule } from './modules/file/file.module';
 import { FaqModule } from './modules/faq/faq.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { NotificationModule } from './modules/notification/notification.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'uploads'), 
-      serveRoot: '/uploads', 
+      rootPath: join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -37,7 +40,9 @@ import { join } from 'path';
     TicketModule,
     EmailModule,
     FileModule,
-    FaqModule
+    FaqModule,
+    NotificationModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [],
   providers: [],
