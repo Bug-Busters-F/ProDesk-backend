@@ -6,10 +6,16 @@ import {
   TicketStatus,
   TicketHistoryEntry,
 } from '../../domain/entities/ticket.entity';
-import { TicketDocument, TicketLean } from '../schemas/ticket.mongo.schema';
+import {
+  TicketAggregate,
+  TicketDocument,
+  TicketLean,
+} from '../schemas/ticket.mongo.schema';
 
 export class TicketMapper {
-  static toDomain(doc: TicketDocument | TicketLean): Ticket {
+  static toDomain(doc: TicketDocument | TicketLean | TicketAggregate): Ticket {
+    const aggregated = doc as TicketAggregate;
+
     return Ticket.restore({
       _id: doc._id.toString(),
       title: doc.title,
@@ -18,7 +24,7 @@ export class TicketMapper {
       status: doc.status as TicketStatus,
       description: doc.description,
       clientId: doc.clientId,
-      agentId: doc.agentId ?? undefined,
+      agent: aggregated.agent ?? null,
       escalationLevel: doc.escalationLevel,
       fileUrls: doc.attachmentsUrls,
       history: doc.history.map(

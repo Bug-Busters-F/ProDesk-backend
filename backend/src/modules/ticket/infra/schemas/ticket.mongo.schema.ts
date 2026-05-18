@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
 import {
+  AgentField,
   TicketEventMessage,
   TicketEvents,
   TicketPriority,
@@ -90,3 +91,7 @@ export type TicketDocument = HydratedDocument<TicketSchemaClass>;
 export type TicketLean = TicketSchemaClass & { _id: string };
 
 export const TicketSchema = SchemaFactory.createForClass(TicketSchemaClass);
+
+export type TicketAggregate = TicketLean & {
+  agent: AgentField | null;
+};

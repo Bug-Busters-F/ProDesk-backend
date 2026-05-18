@@ -57,6 +57,8 @@ export class Ticket {
 
   private _status: TicketStatus = TicketStatus.OPEN;
   private _agentId: string | null = null;
+  private agent: AgentField | null = null;
+
   private _groupId: string | null = null;
   private escalationLevel: number = 1;
   private attachmentsUrls: string[] = [];
@@ -141,7 +143,7 @@ export class Ticket {
     status: TicketStatus;
     clientId: string;
     agentId?: string;
-    // agent?: AgentField;
+    agent?: AgentField | null;
     groupId?: string;
     escalationLevel: number;
     history: TicketHistoryEntry[];
@@ -158,8 +160,8 @@ export class Ticket {
 
     ticket._id = props._id;
 
-    // ticket._agentId = props.agent?.id ?? null;
     ticket._agentId = props.agentId ?? null;
+    ticket.agent = props.agent ?? null;
 
     ticket._groupId = props.groupId ?? null;
     ticket.attachmentsUrls = props.fileUrls ?? [];

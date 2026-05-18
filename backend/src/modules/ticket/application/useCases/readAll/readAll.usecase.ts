@@ -15,7 +15,6 @@ export interface ReadAllTicketOutput {
   description: string;
   clientId: string;
   status: TicketStatus;
-  agentId: string | null;
   escalationLevel: number;
   createdAt: Date;
   updatedAt: Date | null;
@@ -39,6 +38,7 @@ export class ReadAllTicketUseCase {
           : undefined;
 
     const foundedTickets = await this.repository.readAll({ ...filters });
+    console.log('Founded tickets:', foundedTickets);
 
     const convertedTickets = foundedTickets.map((t: Ticket) => {
       const primitive = t.toPrimitives();
@@ -51,7 +51,6 @@ export class ReadAllTicketUseCase {
         description: primitive.description,
         clientId: primitive.clientId,
         status: primitive.status,
-        agentId: primitive.agentId,
         escalationLevel: primitive.escalationLevel,
         createdAt: primitive.createdAt,
         updatedAt: primitive.updatedAt,
