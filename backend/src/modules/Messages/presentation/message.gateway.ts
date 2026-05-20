@@ -9,6 +9,9 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MessageRepositoryMongodb } from '../infra/message.repository.mongodb';
+import { ReceivedMessageNotificationEvent } from '../../../shared/events/received-message-notification.event';
+import { NotificationType } from '../../notification/shared/enums/notification.enum';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @WebSocketGateway({ cors: true })
 export class MessageGateway
@@ -19,7 +22,9 @@ export class MessageGateway
   server: Server;
 
   // Injeta o repositório
-  constructor(private readonly messageRepository: MessageRepositoryMongodb) {}
+  constructor(private readonly messageRepository: MessageRepositoryMongodb,
+              private readonly eventEmitter:EventEmitter2,
+  ) {}
 
   // Método disparado quando um usuário conecta
   handleConnection(client: Socket) {
@@ -69,6 +74,31 @@ export class MessageGateway
         attachmentUrl: data.attachmentUrl,
         fileIds: data.fileIds || [],
       });
+
+      this.eventEmitter.emit(
+      NotificationType.NEW_MESSAGE,
+
+      new ReceivedMessageNotificationEvent(
+
+        data.receiverId,
+
+        mensagemSalva.chatId,
+
+        mensagemSalva.id,
+
+        mensagemSalva.senderId,
+
+        data.senderName,
+
+        mensagemSalva.content,
+
+        mensagemSalva.type || 'TEXT',
+
+        1,
+
+        new Date(),
+      ),
+    );
 
       console.log(`Mensagem salva no banco com ID: ${mensagemSalva.id}`);
 

@@ -18,7 +18,7 @@ export class TicketClosedListener {
             NotificationStreamService,
     ) {}
 
-    @OnEvent('ticket_closed')
+    @OnEvent(NotificationType.TICKET_CLOSED)
     async handle(event: TicketClosedEvent) {
 
         console.log('TicketClosedListener: Ticket closed event received', event);

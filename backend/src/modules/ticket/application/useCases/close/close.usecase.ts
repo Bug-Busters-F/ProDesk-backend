@@ -5,6 +5,7 @@ import {
 } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NotificationType } from '../../../../notification/shared/enums/notification.enum';
 
 
 export interface CloseTicketInput {
@@ -48,7 +49,7 @@ export class CloseTicketUseCase {
 
     const primitive = closedTicket.toPrimitives();
 
-    this.eventEmitter.emit('ticket_closed', {
+    this.eventEmitter.emit(NotificationType.TICKET_CLOSED, {
       title: primitive.title,
       clientId: primitive.clientId,
       supportAgentId: primitive.agentId,
