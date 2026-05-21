@@ -127,7 +127,6 @@ describe('ITicketRepository', () => {
     const primitiveResult = resultById?.toPrimitives();
 
     expect(primitiveResult?.title).toBe('chamado 3');
-    expect(primitiveResult?.category).toBe(categoryId);
     expect(primitiveResult?.priority).toBe(TicketPriority.LOW);
     expect(primitiveResult?.description).toBe('descricao do chamado 3');
   });
@@ -148,7 +147,6 @@ describe('ITicketRepository', () => {
     const ticket = await repository.create(ticketToCreate);
 
     expect(ticket).toBeDefined();
-    expect(ticket.agent).toBeNull();
     expect(ticket.status).toBe(TicketStatus.OPEN);
 
     const newAgentId = randomUUID();

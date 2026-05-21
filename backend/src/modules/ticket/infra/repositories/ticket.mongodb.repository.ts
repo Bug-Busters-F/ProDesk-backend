@@ -63,8 +63,6 @@ export class TicketMongoRepository extends ITicketRepository {
       ...TicketAggregateBuilder.buildAggregate(),
     ]);
 
-    console.log('Aggregated tickets:', tickets);
-
     return tickets.map((t) => TicketMapper.toDomain(t));
   }
 
