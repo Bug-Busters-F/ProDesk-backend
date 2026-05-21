@@ -47,9 +47,15 @@ export type TicketHistoryEntry = {
 };
 
 export type AgentField = {
-  id: string;
+  id: string | null;
   name: string;
 };
+
+export type ClientField = {
+  id: string | null;
+  name: string;
+};
+
 
 export class Ticket {
   // Strutucture definition
@@ -58,6 +64,7 @@ export class Ticket {
   private _status: TicketStatus = TicketStatus.OPEN;
   private _agentId: string | null = null;
   private agent: AgentField | null = null;
+  private client: ClientField | null = null;
 
   private _groupId: string | null = null;
   private escalationLevel: number = 1;
@@ -142,7 +149,8 @@ export class Ticket {
     fileUrls?: string[];
     status: TicketStatus;
     clientId: string;
-    agentId?: string;
+    client?: ClientField | null;
+    agentId?: string | null;
     agent?: AgentField | null;
     groupId?: string;
     escalationLevel: number;
@@ -162,6 +170,7 @@ export class Ticket {
 
     ticket._agentId = props.agentId ?? null;
     ticket.agent = props.agent ?? null;
+    ticket.client = props.client ?? null;
 
     ticket._groupId = props.groupId ?? null;
     ticket.attachmentsUrls = props.fileUrls ?? [];

@@ -148,7 +148,7 @@ describe('ITicketRepository', () => {
     const ticket = await repository.create(ticketToCreate);
 
     expect(ticket).toBeDefined();
-    expect(ticket.agentId).toBe(null);
+    expect(ticket.agent).toBeNull();
     expect(ticket.status).toBe(TicketStatus.OPEN);
 
     const newAgentId = randomUUID();

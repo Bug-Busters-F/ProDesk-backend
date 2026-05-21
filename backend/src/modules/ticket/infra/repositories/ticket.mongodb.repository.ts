@@ -4,6 +4,8 @@ import { ITicketRepository } from '../../domain/repository/ticket.repository.int
 import { TicketLean, TicketSchemaClass } from '../schemas/ticket.mongo.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { TicketMapper } from '../mappers/ticket.mapper';
+import { TicketAggregateBuilder } from '../helpers/ticket.aggregate.builder';
+// import TicketAggregateBuilder from  '../helpers/ticket.aggregate.builder';
 
 export class TicketMongoRepository extends ITicketRepository {
   constructor(
@@ -56,58 +58,30 @@ export class TicketMongoRepository extends ITicketRepository {
       matchStage = { clientId: filters.clientId };
     }
 
-    // const tickets = await this.ticketModel.find(query).exec();
-
     const tickets = await this.ticketModel.aggregate([
       { $match: matchStage },
-      {
-        $lookup: {
-          from: 'users',
-          let: { agentId: '$agentId' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $ne: ['$$agentId', null] },
-                    { $eq: [{ $toString: '$_id' }, '$$agentId'] },
-                  ],
-                },
-              },
-            },
-          ],
-          as: 'agentData',
-        },
-      },
-      {
-        $addFields: {
-          agent: {
-            $cond: {
-              if: { $gt: [{ $size: '$agentData' }, 0] },
-              then: {
-                id: { $toString: { $arrayElemAt: ['$agentData._id', 0] } },
-                name: { $arrayElemAt: ['$agentData.name', 0] },
-              },
-              else: null,
-            },
-          },
-        },
-      },
-      { $unset: ['agentData', 'agentId', '__v'] },
+      ...TicketAggregateBuilder.buildAggregate(),
     ]);
 
     return tickets.map((t) => TicketMapper.toDomain(t));
   }
 
   async readById(id: string): Promise<Ticket | null> {
-    const foundedTicket = await this.ticketModel
-      .findById(id)
-      .lean<TicketLean>()
+    const result = await this.ticketModel
+      .aggregate([
+        { $match: { _id: id } },
+        { $limit: 1 },
+        ...TicketAggregateBuilder.buildAggregate(),
+      ])
       .exec();
 
-    if (!foundedTicket) return null;
+    if (!result.length) return null;
 
-    return TicketMapper.toDomain(foundedTicket);
+    const foundedTicket = TicketMapper.toDomain(result[0] as TicketLean);
+
+    console.log('Founded ticket:', foundedTicket);
+
+    return foundedTicket;
   }
 
   async delete(id: string): Promise<boolean> {

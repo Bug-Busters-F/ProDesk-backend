@@ -24,6 +24,8 @@ export class TicketMapper {
       status: doc.status as TicketStatus,
       description: doc.description,
       clientId: doc.clientId,
+      client: aggregated.client ?? null,
+      agentId: doc.agentId ?? null,
       agent: aggregated.agent ?? null,
       escalationLevel: doc.escalationLevel,
       fileUrls: doc.attachmentsUrls,

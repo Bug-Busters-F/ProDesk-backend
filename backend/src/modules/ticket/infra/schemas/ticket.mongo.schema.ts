@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 import {
   AgentField,
+  ClientField,
   TicketEventMessage,
   TicketEvents,
   TicketPriority,
@@ -94,4 +95,5 @@ export const TicketSchema = SchemaFactory.createForClass(TicketSchemaClass);
 
 export type TicketAggregate = TicketLean & {
   agent: AgentField | null;
+  client: ClientField | null;
 };
