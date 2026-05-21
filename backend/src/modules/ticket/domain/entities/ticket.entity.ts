@@ -56,7 +56,6 @@ export type ClientField = {
   name: string;
 };
 
-
 export class Ticket {
   // Strutucture definition
   private _id: string;
@@ -196,6 +195,7 @@ export class Ticket {
       priority: this.priority,
       description: this.description,
       clientId: this._clientId,
+      client: this.client ? { ...this.client } : null,
       fileUrls: this.attachmentsUrls,
       status: this.status,
       agentId: this._agentId,

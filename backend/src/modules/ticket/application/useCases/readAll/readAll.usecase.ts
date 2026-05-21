@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   AgentField,
+  ClientField,
   TicketPriority,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
@@ -13,7 +14,7 @@ export interface ReadAllTicketOutput {
   category: string;
   priority: TicketPriority;
   description: string;
-  clientId: string;
+  client: ClientField | null;
   status: TicketStatus;
   escalationLevel: number;
   createdAt: Date;
@@ -50,7 +51,7 @@ export class ReadAllTicketUseCase {
         category: primitive.category,
         priority: primitive.priority,
         description: primitive.description,
-        clientId: primitive.clientId,
+        client: primitive.client,
         status: primitive.status,
         escalationLevel: primitive.escalationLevel,
         createdAt: primitive.createdAt,
