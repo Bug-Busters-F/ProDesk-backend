@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Ticket } from '../../domain/entities/ticket.entity';
+import { Ticket, TicketStatus } from '../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../domain/repository/ticket.repository.interface';
 import { TicketLean, TicketSchemaClass } from '../schemas/ticket.mongo.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -44,6 +44,10 @@ export class TicketMongoRepository extends ITicketRepository {
     clientId?: string;
     agentId?: string;
     categories?: string[];
+    search?: string;
+    status?: TicketStatus;
+    escalationLevel?: number;
+    onlyMine?: boolean;
   }): Promise<Ticket[]> {
     let matchStage: Record<string, any> = {};
 
@@ -58,12 +62,34 @@ export class TicketMongoRepository extends ITicketRepository {
       matchStage = { clientId: filters.clientId };
     }
 
+    if (filters?.search) {
+      matchStage = {
+        ...matchStage,
+        $or: [
+          { title: { $regex: filters.search, $options: 'i' } },
+          { description: { $regex: filters.search, $options: 'i' } },
+        ],
+      };
+    }
+
+    if (filters?.status) {
+      matchStage = { ...matchStage, status: filters.status };
+    }
+
+    if (filters?.escalationLevel) {
+      matchStage = { ...matchStage, escalationLevel: filters.escalationLevel };
+    }
+
+    if (filters?.onlyMine && filters?.agentId) {
+      matchStage = { ...matchStage, agentId: filters.agentId };
+    }
+
     const tickets = await this.ticketModel.aggregate([
       { $match: matchStage },
       ...TicketAggregateBuilder.buildAggregate(),
     ]);
 
-    return tickets.map((t) => TicketMapper.toDomain(t));
+    return tickets.map((t: TicketLean) => TicketMapper.toDomain(t));
   }
 
   async readById(id: string): Promise<Ticket | null> {
