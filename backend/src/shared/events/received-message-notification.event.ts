@@ -1,6 +1,7 @@
 export class ReceivedMessageNotificationEvent {
 
     constructor(
+
         public readonly receiverId: string,
 
         public readonly chatId: string,

@@ -25,6 +25,8 @@ import { NotificationStreamService }
 import { TicketClosedListener } from "./application/listeners/ticket-closed.listener";
 import { UserModule } from "../user/user.module";
 import { TicketOpenListener } from "./application/listeners/ticket-open.listener";
+import { ReceivedMessageListener } from "./application/listeners/received-message.listener";
+import { CreateMessageNotificationUseCase } from "./application/use-cases/create-message-notification.use-case";
 
 
 @Module({
@@ -43,8 +45,10 @@ import { TicketOpenListener } from "./application/listeners/ticket-open.listener
     NotificationStreamService,
     CreateNotificationUseCase,
     NotificationMongoRepository,
+    CreateMessageNotificationUseCase,
     TicketClosedListener,
     TicketOpenListener,
+    ReceivedMessageListener,
 
         {
             provide: INotificationRepository,

@@ -75,32 +75,31 @@ export class MessageGateway
         fileIds: data.fileIds || [],
       });
 
-      this.eventEmitter.emit(
-      NotificationType.NEW_MESSAGE,
+     this.eventEmitter.emit(
+          NotificationType.NEW_MESSAGE,
 
-      new ReceivedMessageNotificationEvent(
+          new ReceivedMessageNotificationEvent(
 
-        data.receiverId,
+              data.receiverId,
 
-        mensagemSalva.chatId,
+              mensagemSalva.chatId,
 
-        mensagemSalva.id,
+              mensagemSalva.id,
 
-        mensagemSalva.senderId,
+              mensagemSalva.senderId,
 
-        data.senderName,
+              data.senderName,
 
-        mensagemSalva.content,
+              mensagemSalva.content,
 
-        mensagemSalva.type || 'TEXT',
+              mensagemSalva.type || 'TEXT',
 
-        1,
+              1,
 
-        new Date(),
-      ),
-    );
-
-      console.log(`Mensagem salva no banco com ID: ${mensagemSalva.id}`);
+              new Date(),
+          ),
+      );
+            console.log(`Mensagem salva no banco com ID: ${mensagemSalva.id}`);
 
       // Emite a mensagem para os clientes dentro da sala do chamado
       this.server.to(data.chatId).emit('novaMensagem', mensagemSalva);
