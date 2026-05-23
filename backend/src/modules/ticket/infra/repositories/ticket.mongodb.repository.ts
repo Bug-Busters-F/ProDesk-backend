@@ -27,7 +27,8 @@ export class TicketMongoRepository extends ITicketRepository {
       .findOneAndUpdate(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         { _id: raw._id },
-        { $set: raw },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        { $set: { ...raw, category: raw.category.id } },
         { returnDocument: 'after' },
       )
       .lean<TicketLean>()

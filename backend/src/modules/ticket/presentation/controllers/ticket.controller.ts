@@ -86,7 +86,10 @@ export class TicketController {
   @ApiQuery({ name: 'status', required: false, enum: TicketStatus })
   @ApiQuery({ name: 'escalationLevel', required: false, type: Number })
   @ApiQuery({ name: 'onlyMine', required: false, type: Boolean })
-  @ApiResponse({ status: 200, description: 'Todos os tickets retornados com sucesso.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Todos os tickets retornados com sucesso.',
+  })
   async getAll(@Request() req: any, @Query() query: any) {
     const response = await this.readAllUseCase.execute({
       userId: req.user.id,
@@ -94,7 +97,9 @@ export class TicketController {
       role: req.user.role,
       search: query.search,
       status: query.status as TicketStatus,
-      escalationLevel: query.escalationLevel ? Number(query.escalationLevel) : undefined,
+      escalationLevel: query.escalationLevel
+        ? Number(query.escalationLevel)
+        : undefined,
       onlyMine: query.onlyMine === 'true',
     });
 
