@@ -16,4 +16,9 @@ export class ChatController {
     if (!chat) throw new NotFoundException('Chat não encontrado');
     return chat;
   }
+
+  @Get(':id')
+  async getChatById(@Param('id') id: string) {
+    return this.chatService.getChatById(id);
+  }
 }

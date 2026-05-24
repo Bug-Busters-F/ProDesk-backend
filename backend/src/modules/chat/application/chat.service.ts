@@ -69,6 +69,11 @@ export class ChatService {
       }
     }
 
+    const ticket = await this.ticketModel.findById(chat.ticketId).exec();
+    if (ticket && ticket.status === 'CLOSED') {
+      throw new ForbiddenException('Este chamado está resolvido/fechado. Não é permitido enviar novas mensagens.');
+    }
+
     // PASSANDO OS NOVOS CAMPOS PARA O REPOSITÓRIO
     return this.messageRepository.create({
       chatId,
