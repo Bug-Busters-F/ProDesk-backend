@@ -17,7 +17,7 @@ export class NotificationSchemaClass {
   @Prop({ required: false })
   clientId: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   supportAgentId: string;
 
   @Prop({ default: false })

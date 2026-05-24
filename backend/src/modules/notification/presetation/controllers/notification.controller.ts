@@ -89,8 +89,10 @@ export class NotificationController {
         @Param('id') id: string,
     ) {
 
-        return this.readNotificationUseCase.execute(
+         this.readNotificationUseCase.execute(
             id,
         );
+
+        return { message: 'Notificação marcada como lida' };
     }
 }

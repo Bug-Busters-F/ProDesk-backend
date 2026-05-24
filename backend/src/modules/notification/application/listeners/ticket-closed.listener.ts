@@ -27,17 +27,12 @@ export class TicketClosedListener {
             title: event.title,
             message: 'Seu chamado foi fechado',
             clientId: event.clientId,
-            supportAgentId: event.supportAgentId,
+            supportAgentId: "",
             type: NotificationType.TICKET_CLOSED,
         });
 
         this.notificationStreamService.send(
             event.clientId,
-            notification,
-        );
-
-        this.notificationStreamService.send(
-            event.supportAgentId,
             notification,
         );
 

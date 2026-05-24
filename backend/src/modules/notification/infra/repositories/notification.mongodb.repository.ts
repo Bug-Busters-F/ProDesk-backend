@@ -17,15 +17,16 @@ export class NotificationMongoRepository extends INotificationRepository {
         const created = await this.notificationModel.create(raw);
         return NotificationMapper.toDomain(created);
     }
-
+    
     async update(notification: Notification): Promise<Notification | null> {
+
         const raw = NotificationMapper.toPersistence(notification);
+
         const updated = await this.notificationModel
-            .findOneAndUpdate(
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                { _id: raw._id },
+            .findByIdAndUpdate(
+                notification.id,
                 { $set: raw },
-                { returnDocument: 'after' },
+                { new: true },
             )
             .lean<NotificationLean>()
             .exec();
@@ -36,19 +37,30 @@ export class NotificationMongoRepository extends INotificationRepository {
 
         return NotificationMapper.toDomain(updated);
     }
-
     async findByUserId(filters?: {
         userId?: string;
         read?: boolean;
     }): Promise<Notification[]> {
-        let query: QueryFilter<NotificationSchemaClass> = {};
+
+        const query: QueryFilter<NotificationSchemaClass> = {};
+
         if (filters?.userId) {
-            query.clientId = filters.userId;
+
+            query.$or = [
+                { clientId: filters.userId },
+                { supportAgentId: filters.userId },
+            ];
         }
+
         if (filters?.read !== undefined) {
             query.read = filters.read;
         }
-        const docs = await this.notificationModel.find(query).lean<NotificationLean[]>().exec();
+
+        const docs = await this.notificationModel
+            .find(query)
+            .lean<NotificationLean[]>()
+            .exec();
+
         return docs.map(NotificationMapper.toDomain);
     }
 

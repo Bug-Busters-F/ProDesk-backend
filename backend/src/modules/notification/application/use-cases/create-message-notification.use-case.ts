@@ -1,8 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { INotificationRepository } from "../../domain/repository/notification.repository.interface";
-import { NotificationType } from "../../shared/enums/notification.enum";
-import { CreateMessageNotificationDTO } from "../dto/create-notification.dto";
-import { Notification } from "../../domain/entities/notification.entity";
+
+import { INotificationRepository }
+    from "../../domain/repository/notification.repository.interface";
+
+import { NotificationType }
+    from "../../shared/enums/notification.enum";
+
+import { CreateMessageNotificationDTO }
+    from "../dto/create-notification.dto";
+
+import { Notification }
+    from "../../domain/entities/notification.entity";
 
 @Injectable()
 export class CreateMessageNotificationUseCase {
@@ -16,16 +24,31 @@ export class CreateMessageNotificationUseCase {
         data: CreateMessageNotificationDTO,
     ): Promise<Notification> {
 
+        const isSupport =
+            data.senderName
+                .toLowerCase()
+                .includes('support');
+
         const notification = Notification.create({
-            title: `Nova mensagem de ${data.senderName}`,
 
-            message: data.contentPreview,
+            title:
+                `Nova mensagem de ${data.senderName}`,
 
-            clientId: data.receiverId,
+            message:
+                data.contentPreview,
 
-            supportAgentId: data.senderId,
+            clientId:
+                isSupport
+                    ? data.receiverId
+                    : '',
 
-            type: NotificationType.NEW_MESSAGE,
+            supportAgentId:
+                isSupport
+                    ? ''
+                    : data.receiverId,
+
+            type:
+                NotificationType.NEW_MESSAGE,
         });
 
         await this.notificationRepository.create(
