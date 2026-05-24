@@ -7,6 +7,7 @@ export interface CreateNotificationDTO {
     clientId: string;
     supportAgentId: string;
     type: NotificationType;
+    ticketId?: string;
 }
 
 export interface CreateMessageNotificationDTO {
@@ -21,8 +22,6 @@ export interface CreateMessageNotificationDTO {
     messageId: string;
 
     contentPreview: string;
-
-    unreadCount: number;
 
     createdAt: Date;
 }

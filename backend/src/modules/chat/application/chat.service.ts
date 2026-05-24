@@ -180,7 +180,7 @@ export class ChatService {
 
         receiverId,
 
-        savedMessage.chatId,
+        chatId,
 
         savedMessage.id,
 
@@ -191,8 +191,6 @@ export class ChatService {
         savedMessage.content,
 
         savedMessage.type || 'TEXT',
-
-        1,
 
         new Date(),
       ),

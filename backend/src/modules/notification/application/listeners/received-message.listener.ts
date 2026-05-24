@@ -57,9 +57,6 @@ export class ReceivedMessageListener {
                 contentPreview:
                     event.contentPreview,
 
-                unreadCount:
-                    event.unreadCount,
-
                 createdAt:
                     event.createdAt,
             });
@@ -92,9 +89,6 @@ export class ReceivedMessageListener {
 
                 type:
                     notification.type,
-
-                unreadCount:
-                    event.unreadCount,
 
                 createdAt:
                     event.createdAt,

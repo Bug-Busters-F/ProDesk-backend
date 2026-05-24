@@ -20,64 +20,29 @@ export class TicketOpenListener {
         private readonly userService:
         UserService,
     ) {}
-
     @OnEvent(NotificationType.TICKET_OPEN)
-    async handle(event: TicketOpenEvent) {
-
+        async handle(event: TicketOpenEvent) {
         console.log('[TicketOpenListener] Evento recebido:', event);
 
-        const users = await this.userService.findAll(
-            1,
-            100,
-            {
-                categoryId: event.category,
-            },
-        );
+        const users = await this.userService.findAll(1, 100, {
+            categoryId: event.category,
+        });
 
-        console.log(
-            `[TicketOpenListener] Usuários encontrados: ${users.data.length}`,
-        );
+        if (!users.data.length) return;
 
-        console.log(
-            '[TicketOpenListener] IDs dos usuários:',
-            users.data.map(u => u.id),
-        );
-
-        if (!users.data.length) {
-            console.log(
-                '[TicketOpenListener] Nenhum usuário encontrado para essa categoria',
-            );
-            return;
-        }
-
-        for (const user of users.data) {
-
-            console.log(
-                `[TicketOpenListener] Criando notificação para userId=${user.id}`,
-            );
-
+        await Promise.all(
+            users.data.map(async (user) => {
             const notification = await this.createNotificationUseCase.execute({
                 title: event.title,
                 message: 'Um novo chamado foi aberto na sua categoria',
                 clientId: '',
                 supportAgentId: user.id,
                 type: NotificationType.TICKET_OPEN,
+                ticketId: event.ticketId,
             });
 
-            console.log(
-                `[TicketOpenListener] Notificação criada para userId=${user.id}`,
-                notification,
-            );
-
-            this.notificationStreamService.send(
-                user.id,
-                notification,
-            );
-
-            console.log(
-                `[TicketOpenListener] Enviado via SSE para userId=${user.id}`,
-            );
+            this.notificationStreamService.send(user.id, notification.toPrimitives());
+            }),
+        );
         }
-    }
-    
 }

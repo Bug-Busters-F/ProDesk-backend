@@ -16,8 +16,6 @@ export class ReceivedMessageNotificationEvent {
 
         public readonly type: string,
 
-        public readonly unreadCount: number,
-
         public readonly createdAt: Date,
     ) {}
 }

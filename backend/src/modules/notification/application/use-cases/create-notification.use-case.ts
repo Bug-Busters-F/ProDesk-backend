@@ -13,13 +13,15 @@ export class CreateNotificationUseCase {
 
     async execute(data: CreateNotificationDTO): Promise<Notification> {
 
-        const notification = Notification.create({
-            title: data.title,
-            message: data.message,
-            clientId: data.clientId,
-            supportAgentId: data.supportAgentId,
-            type: data.type,
-        });
+    const notification = Notification.create({
+        title: data.title,
+        message: data.message,
+        clientId: data.clientId,
+        supportAgentId: data.supportAgentId,
+        type: data.type,
+
+        ticketId: data.ticketId,
+    });
 
         await this.notificationRepository.create(
             notification,

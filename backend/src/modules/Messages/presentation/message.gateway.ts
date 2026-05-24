@@ -94,8 +94,6 @@ export class MessageGateway
 
               mensagemSalva.type || 'TEXT',
 
-              1,
-
               new Date(),
           ),
       );

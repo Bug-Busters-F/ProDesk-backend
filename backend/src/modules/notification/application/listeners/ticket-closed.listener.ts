@@ -23,17 +23,19 @@ export class TicketClosedListener {
 
         console.log('TicketClosedListener: Ticket closed event received', event);
 
-        const notification: Notification = await this.createNotificationUseCase.execute({
+        const notification: Notification =
+        await this.createNotificationUseCase.execute({
             title: event.title,
             message: 'Seu chamado foi fechado',
             clientId: event.clientId,
             supportAgentId: "",
             type: NotificationType.TICKET_CLOSED,
+            ticketId: event.ticketId,
         });
 
         this.notificationStreamService.send(
             event.clientId,
-            notification,
+            notification.toPrimitives(),
         );
 
     }

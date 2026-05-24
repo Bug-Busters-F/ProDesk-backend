@@ -2,7 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { NotificationType } from '../../shared/enums/notification.enum';
 
-
 @Schema()
 export class NotificationSchemaClass {
   @Prop({ required: true, unique: true })
@@ -19,6 +18,12 @@ export class NotificationSchemaClass {
 
   @Prop({ required: false })
   supportAgentId: string;
+
+  @Prop({ required: false })
+  chatId?: string;
+
+  @Prop({ required: false })
+  ticketId?: string;
 
   @Prop({ default: false })
   read: boolean;

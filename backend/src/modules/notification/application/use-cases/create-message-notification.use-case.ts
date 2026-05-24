@@ -29,27 +29,17 @@ export class CreateMessageNotificationUseCase {
                 .toLowerCase()
                 .includes('support');
 
-        const notification = Notification.create({
+    const notification = Notification.create({
+        title: `Nova mensagem de ${data.senderName}`,
+        message: data.contentPreview,
 
-            title:
-                `Nova mensagem de ${data.senderName}`,
+        clientId: isSupport ? data.receiverId : '',
+        supportAgentId: isSupport ? '' : data.receiverId,
 
-            message:
-                data.contentPreview,
+        type: NotificationType.NEW_MESSAGE,
 
-            clientId:
-                isSupport
-                    ? data.receiverId
-                    : '',
-
-            supportAgentId:
-                isSupport
-                    ? ''
-                    : data.receiverId,
-
-            type:
-                NotificationType.NEW_MESSAGE,
-        });
+        chatId: data.chatId,
+    });
 
         await this.notificationRepository.create(
             notification,
