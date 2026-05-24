@@ -39,6 +39,14 @@ const mockChat: ChatDetails = {
   createdAt: new Date('2026-01-01'),
 };
 
+const mockTicketQuery = {
+  exec: jest.fn().mockResolvedValue(null),
+};
+
+const mockTicketModel = {
+  findById: jest.fn().mockReturnValue(mockTicketQuery),
+};
+
 describe('ChatService', () => {
   let service: ChatService;
 
@@ -48,8 +56,8 @@ describe('ChatService', () => {
         ChatService,
         { provide: 'IChatRepository', useValue: mockChatRepository },
         { provide: 'IMessageRepository', useValue: mockMessageRepository },
-        { provide: getModelToken(TicketSchemaClass.name), useValue: {} },
-        { provide: getModelToken(UserRole.ADMIN ? 'User' : 'User'), useValue: {} }, // Gambiarra provisória pra obter a string 'User'
+        { provide: getModelToken(TicketSchemaClass.name), useValue: mockTicketModel },
+        { provide: getModelToken('User'), useValue: {} },
       ],
     }).compile();
 

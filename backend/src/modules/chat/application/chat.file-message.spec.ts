@@ -35,6 +35,14 @@ const mockChat = {
   createdAt: new Date(),
 };
 
+const mockTicketQuery = {
+  exec: jest.fn().mockResolvedValue(null),
+};
+
+const mockTicketModel = {
+  findById: jest.fn().mockReturnValue(mockTicketQuery),
+};
+
 describe('ChatService — envio de mensagem com arquivo', () => {
   let service: ChatService;
 
@@ -44,8 +52,8 @@ describe('ChatService — envio de mensagem com arquivo', () => {
         ChatService,
         { provide: 'IChatRepository', useValue: mockChatRepository },
         { provide: 'IMessageRepository', useValue: mockMessageRepository },
-        { provide: getModelToken(TicketSchemaClass.name), useValue: {} },
-        { provide: getModelToken(UserRole.ADMIN ? 'User' : 'User'), useValue: {} },
+        { provide: getModelToken(TicketSchemaClass.name), useValue: mockTicketModel },
+        { provide: getModelToken('User'), useValue: {} },
       ],
     }).compile();
 
