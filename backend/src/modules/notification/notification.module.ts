@@ -27,6 +27,9 @@ import { UserModule } from "../user/user.module";
 import { TicketOpenListener } from "./application/listeners/ticket-open.listener";
 import { ReceivedMessageListener } from "./application/listeners/received-message.listener";
 import { CreateMessageNotificationUseCase } from "./application/use-cases/create-message-notification.use-case";
+import { NotificationController } from "./presetation/controllers/notification.controller";
+import { ListNotificationsUseCase } from "./application/use-cases/list-notifications.use-case";
+import { ReadNotificationUseCase } from "./application/use-cases/read-notification.use-case";
 
 
 @Module({
@@ -41,14 +44,19 @@ import { CreateMessageNotificationUseCase } from "./application/use-cases/create
     ],
 
     providers: [
+        NotificationStreamService,
 
-    NotificationStreamService,
-    CreateNotificationUseCase,
-    NotificationMongoRepository,
-    CreateMessageNotificationUseCase,
-    TicketClosedListener,
-    TicketOpenListener,
-    ReceivedMessageListener,
+        CreateNotificationUseCase,
+        CreateMessageNotificationUseCase,
+
+        ListNotificationsUseCase,
+        ReadNotificationUseCase,
+
+        NotificationMongoRepository,
+
+        TicketClosedListener,
+        TicketOpenListener,
+        ReceivedMessageListener,
 
         {
             provide: INotificationRepository,
@@ -58,6 +66,7 @@ import { CreateMessageNotificationUseCase } from "./application/use-cases/create
 
     controllers: [
         NotificationSSEController,
+        NotificationController,
     ],
 
     exports: [

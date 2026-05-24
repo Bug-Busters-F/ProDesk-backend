@@ -51,4 +51,17 @@ export class NotificationMongoRepository extends INotificationRepository {
         const docs = await this.notificationModel.find(query).lean<NotificationLean[]>().exec();
         return docs.map(NotificationMapper.toDomain);
     }
+
+    async findById(id: string): Promise<Notification | null> {
+    const doc = await this.notificationModel
+        .findById(id)
+        .lean<NotificationLean>()
+        .exec();
+
+    if (!doc) {
+        return null;
+    }
+
+    return NotificationMapper.toDomain(doc);
+}
 }
