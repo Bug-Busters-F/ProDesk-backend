@@ -1,11 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { ChatService } from './chat.service';
 import { TicketSchemaClass } from '../../ticket/infra/schemas/ticket.mongo.schema';
+import { User } from '../../user/user.schema';
+
 import { NotFoundException } from '@nestjs/common';
 
 import type { IChatRepository } from '../domain/chat.repository';
 import type { IMessageRepository } from '../../Messages/domain/message.repository';
+
 import { UserRole } from '../../shared/enums/user.enum';
 
 const mockChatRepository: jest.Mocked<IChatRepository> = {
@@ -20,6 +25,14 @@ const mockChatRepository: jest.Mocked<IChatRepository> = {
 const mockMessageRepository: jest.Mocked<IMessageRepository> = {
   create: jest.fn(),
   findByChatId: jest.fn(),
+};
+
+const mockEventEmitter = {
+  emit: jest.fn(),
+};
+
+const mockUserModel = {
+  findById: jest.fn(),
 };
 
 const CHAT_ID = 'chat-001';
@@ -42,19 +55,47 @@ describe('ChatService — envio de mensagem com arquivo', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ChatService,
-        { provide: 'IChatRepository', useValue: mockChatRepository },
-        { provide: 'IMessageRepository', useValue: mockMessageRepository },
-        { provide: getModelToken(TicketSchemaClass.name), useValue: {} },
-        { provide: getModelToken(UserRole.ADMIN ? 'User' : 'User'), useValue: {} },
+
+        {
+          provide: 'IChatRepository',
+          useValue: mockChatRepository,
+        },
+
+        {
+          provide: 'IMessageRepository',
+          useValue: mockMessageRepository,
+        },
+
+        {
+          provide: getModelToken(TicketSchemaClass.name),
+          useValue: {},
+        },
+
+        {
+          provide: getModelToken(User.name),
+          useValue: mockUserModel,
+        },
+
+        {
+          provide: EventEmitter2,
+          useValue: mockEventEmitter,
+        },
       ],
     }).compile();
 
     service = module.get<ChatService>(ChatService);
+
     jest.clearAllMocks();
+
+    mockUserModel.findById.mockResolvedValue({
+      _id: CLIENT_ID,
+      name: 'Gabriel',
+    });
   });
 
   it('should send message with attached file', async () => {
     const FILE_ID = 'file-001';
+
     const mockSavedMessage = {
       id: 'msg-001',
       chatId: CHAT_ID,
@@ -66,7 +107,10 @@ describe('ChatService — envio de mensagem com arquivo', () => {
     };
 
     mockChatRepository.findById.mockResolvedValue(mockChat as any);
-    mockMessageRepository.create.mockResolvedValue(mockSavedMessage as any);
+
+    mockMessageRepository.create.mockResolvedValue(
+      mockSavedMessage as any,
+    );
 
     const result = await service.sendMessage(
       CHAT_ID,
@@ -77,7 +121,10 @@ describe('ChatService — envio de mensagem com arquivo', () => {
     );
 
     expect(result).toEqual(mockSavedMessage);
-    expect(mockMessageRepository.create).toHaveBeenCalledWith({
+
+    expect(
+      mockMessageRepository.create,
+    ).toHaveBeenCalledWith({
       chatId: CHAT_ID,
       senderId: CLIENT_ID,
       content: 'Arquivo anexado',
@@ -86,6 +133,8 @@ describe('ChatService — envio de mensagem com arquivo', () => {
       attachmentUrl: undefined,
       type: 'TEXT',
     });
+
+    expect(mockEventEmitter.emit).toHaveBeenCalled();
   });
 
   it('should send message without fileIds', async () => {
@@ -99,8 +148,13 @@ describe('ChatService — envio de mensagem com arquivo', () => {
       createdAt: new Date(),
     };
 
-    mockChatRepository.findById.mockResolvedValue(mockChat as any);
-    mockMessageRepository.create.mockResolvedValue(mockSavedMessage as any);
+    mockChatRepository.findById.mockResolvedValue(
+      mockChat as any,
+    );
+
+    mockMessageRepository.create.mockResolvedValue(
+      mockSavedMessage as any,
+    );
 
     const result = await service.sendMessage(
       CHAT_ID,
@@ -110,7 +164,10 @@ describe('ChatService — envio de mensagem com arquivo', () => {
     );
 
     expect(result).toEqual(mockSavedMessage);
-    expect(mockMessageRepository.create).toHaveBeenCalledWith({
+
+    expect(
+      mockMessageRepository.create,
+    ).toHaveBeenCalledWith({
       chatId: CHAT_ID,
       senderId: CLIENT_ID,
       content: 'Mensagem normal',
@@ -119,6 +176,8 @@ describe('ChatService — envio de mensagem com arquivo', () => {
       attachmentUrl: undefined,
       type: 'TEXT',
     });
+
+    expect(mockEventEmitter.emit).toHaveBeenCalled();
   });
 
   it('should throw NotFoundException when chat does not exist', async () => {
@@ -131,7 +190,7 @@ describe('ChatService — envio de mensagem com arquivo', () => {
         UserRole.CLIENT,
         'Teste',
         ['file-001'],
-      )
+      ),
     ).rejects.toThrow(NotFoundException);
   });
 });

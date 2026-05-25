@@ -4,26 +4,56 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import type { IChatRepository } from '../domain/chat.repository';
-import type { IMessageRepository } from '../../Messages/domain/message.repository';
+
+import type { IMessageRepository }
+  from '../../Messages/domain/message.repository';
+
 import type { ChatDetails } from '../domain/chat.entity';
+
 import { ChatStatus } from '../domain/chat.entity';
-import { UserRole } from '../../shared/enums/user.enum';
+
+import { UserRole }
+  from '../../shared/enums/user.enum';
+
 import { InjectModel } from '@nestjs/mongoose';
+
 import { Model } from 'mongoose';
-import { TicketSchemaClass, TicketDocument } from '../../ticket/infra/schemas/ticket.mongo.schema';
-import { from } from 'rxjs';
-import { User, UserDocument } from '../../user/user.schema';
+
+import {
+  TicketSchemaClass,
+  TicketDocument,
+} from '../../ticket/infra/schemas/ticket.mongo.schema';
+
+import { User, UserDocument }
+  from '../../user/user.schema';
+
+import { NotificationType }
+  from '../../notification/shared/enums/notification.enum';
+
+import { ReceivedMessageNotificationEvent }
+  from '../../../shared/events/received-message-notification.event';
 
 @Injectable()
 export class ChatService {
+
   constructor(
     @Inject('IChatRepository')
     private readonly chatRepository: IChatRepository,
+
     @Inject('IMessageRepository')
     private readonly messageRepository: IMessageRepository,
-    @InjectModel(TicketSchemaClass.name) private ticketModel: Model<TicketDocument>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+
+    @InjectModel(TicketSchemaClass.name)
+    private ticketModel: Model<TicketDocument>,
+
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async createChat(
@@ -32,53 +62,145 @@ export class ChatService {
     agentId: string,
     groupId: string,
   ): Promise<ChatDetails> {
-    return this.chatRepository.create({ ticketId, clientId, agentId, groupId });
+
+    return this.chatRepository.create({
+      ticketId,
+      clientId,
+      agentId,
+      groupId,
+    });
   }
 
-  async getChatById(chatId: string): Promise<ChatDetails> {
+  async getChatById(
+    chatId: string,
+  ): Promise<ChatDetails> {
+
     const chat = await this.chatRepository.findById(chatId);
+
     if (!chat) {
       throw new NotFoundException('Chat not found');
     }
+
     return chat;
   }
 
-  async getChatsByUser(userId: string): Promise<ChatDetails[]> {
+  async getChatsByUser(
+    userId: string,
+  ): Promise<ChatDetails[]> {
+
     return this.chatRepository.findByParticipant(userId);
   }
 
-  // ADICIONADOS attachmentUrl E type NA ASSINATURA DO MÉTODO
   async sendMessage(
     chatId: string,
     senderId: string,
     senderRole: UserRole,
     content: string,
     fileIds?: string[],
-    attachmentUrl?: string, 
-    type?: string           
+    attachmentUrl?: string,
+    type?: string,
   ): Promise<any> {
+
     const chat = await this.chatRepository.findById(chatId);
+
     if (!chat) {
       throw new NotFoundException('Chat not found');
     }
 
-    // ADMINs podem enviar mensagem em qualquer chat
+    /**
+     * ADMIN pode enviar em qualquer chat
+     */
     if (senderRole !== UserRole.ADMIN) {
-      if (chat.clientId !== senderId && chat.agentId !== senderId) {
-        throw new ForbiddenException('You are not a participant of this chat');
+
+      if (
+        chat.clientId !== senderId &&
+        chat.agentId !== senderId
+      ) {
+        throw new ForbiddenException(
+          'You are not a participant of this chat',
+        );
       }
     }
 
-    // PASSANDO OS NOVOS CAMPOS PARA O REPOSITÓRIO
-    return this.messageRepository.create({
-      chatId,
-      senderId,
-      content,
-      isSystemMessage: false,
-      fileIds: fileIds || [],
-      attachmentUrl: attachmentUrl, 
-      type: type || 'TEXT',         
-    });
+    /**
+     * Salva mensagem
+     */
+    const savedMessage =
+      await this.messageRepository.create({
+
+        chatId,
+
+        senderId,
+
+        content,
+
+        isSystemMessage: false,
+
+        fileIds: fileIds || [],
+
+        attachmentUrl,
+
+        type: type || 'TEXT',
+      });
+
+    /**
+     * Descobre quem recebe a mensagem
+     */
+    const receiverId =
+      chat.clientId === senderId
+        ? chat.agentId
+        : chat.clientId;
+
+    /**
+     * Evita erro se não houver destinatário
+     */
+    if (!receiverId) {
+
+      console.log(
+        '[ChatService] Mensagem sem destinatário',
+      );
+
+      return savedMessage;
+    }
+
+    /**
+     * Busca nome do remetente
+     */
+    const sender =
+      await this.userModel.findById(senderId);
+
+    /**
+     * Dispara evento de notificação
+     */
+    this.eventEmitter.emit(
+
+      NotificationType.NEW_MESSAGE,
+
+      new ReceivedMessageNotificationEvent(
+
+        receiverId,
+
+        chatId,
+
+        savedMessage.id,
+
+        senderId,
+
+        sender?.name || 'Usuário',
+
+        savedMessage.content,
+
+        savedMessage.type || 'TEXT',
+
+        new Date(),
+      ),
+    );
+
+    console.log(
+      `[ChatService] Evento ${NotificationType.NEW_MESSAGE} disparado`,
+    );
+
+    return savedMessage;
   }
 
   async getChatHistory(
@@ -86,62 +208,106 @@ export class ChatService {
     userId: string,
     userRole: UserRole,
   ): Promise<any[]> {
-    const chat = await this.chatRepository.findById(chatId);
+
+    const chat =
+      await this.chatRepository.findById(chatId);
+
     if (!chat) {
       throw new NotFoundException('Chat not found');
     }
 
-    // ADMINs podem ver histórico de qualquer chat
     if (userRole !== UserRole.ADMIN) {
-      if (chat.clientId !== userId && chat.agentId !== userId) {
-        throw new ForbiddenException('You are not a participant of this chat');
+
+      if (
+        chat.clientId !== userId &&
+        chat.agentId !== userId
+      ) {
+        throw new ForbiddenException(
+          'You are not a participant of this chat',
+        );
       }
     }
 
     return this.messageRepository.findByChatId(chatId);
   }
 
-  async closeChat(chatId: string): Promise<ChatDetails> {
-    const result = await this.chatRepository.updateStatus(
-      chatId,
-      ChatStatus.CLOSED,
-    );
+  async closeChat(
+    chatId: string,
+  ): Promise<ChatDetails> {
+
+    const result =
+      await this.chatRepository.updateStatus(
+        chatId,
+        ChatStatus.CLOSED,
+      );
+
     if (!result) {
       throw new NotFoundException('Chat not found');
     }
+
     return result;
   }
 
-  async updateAgentByTicketId(ticketId: string, agentId: string | null): Promise<ChatDetails | null> {
-    return this.chatRepository.updateAgent(ticketId, agentId);
+  async updateAgentByTicketId(
+    ticketId: string,
+    agentId: string | null,
+  ): Promise<ChatDetails | null> {
+
+    return this.chatRepository.updateAgent(
+      ticketId,
+      agentId,
+    );
   }
 
-  async isParticipant(chatId: string, userId: string): Promise<boolean> {
-    const chat = await this.chatRepository.findById(chatId);
+  async isParticipant(
+    chatId: string,
+    userId: string,
+  ): Promise<boolean> {
+
+    const chat =
+      await this.chatRepository.findById(chatId);
+
     if (!chat) {
       return false;
     }
-    
-    if (chat.clientId === userId || chat.agentId === userId) {
+
+    if (
+      chat.clientId === userId ||
+      chat.agentId === userId
+    ) {
       return true;
     }
 
-    // Se o chat está na "Fila Aberta" (Sem dono)
     if (!chat.agentId) {
-      const user = await this.userModel.findById(userId).exec();
-      const ticket = await this.ticketModel.findById(chat.ticketId).exec();
+
+      const user =
+        await this.userModel.findById(userId);
+
+      const ticket =
+        await this.ticketModel.findById(
+          chat.ticketId,
+        );
 
       if (user && ticket) {
+
         if (user.role === UserRole.ADMIN) {
           return true;
         }
 
         if (user.role === UserRole.SUPPORT) {
-          const hasCategory = user.categories.some(
-            (cat) => cat.toString() === ticket.category.toString()
-          );
 
-          if (hasCategory && (user.level || 1) >= ticket.escalationLevel) {
+          const hasCategory =
+            user.categories.some(
+              (cat) =>
+                cat.toString() ===
+                ticket.category.toString(),
+            );
+
+          if (
+            hasCategory &&
+            (user.level || 1) >=
+              ticket.escalationLevel
+          ) {
             return true;
           }
         }

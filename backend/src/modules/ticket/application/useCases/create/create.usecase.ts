@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Ticket, TicketStatus } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 import { TriageService } from '../../../../triage/application/triage.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NotificationType } from '../../../../notification/shared/enums/notification.enum';
+import { TicketOpenEvent } from '../../../../../shared/events/ticket-open.event';
 
 export interface CreateTicketInput {
   title: string;
@@ -26,6 +29,7 @@ export class CreateTicketUseCase {
   constructor(
     private readonly repository: ITicketRepository,
     private readonly triageService: TriageService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(
@@ -42,6 +46,16 @@ export class CreateTicketUseCase {
 
     const created = await this.repository.create(ticket);
     const primitives = created.toPrimitives();
+
+    this.eventEmitter.emit(
+      NotificationType.TICKET_OPEN,
+      new TicketOpenEvent(
+        primitives._id,
+        primitives.title,
+        primitives.category,
+        primitives.escalationLevel,
+      ),
+    );
 
     return {
       _id: primitives._id,
