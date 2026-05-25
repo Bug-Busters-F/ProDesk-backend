@@ -48,6 +48,14 @@ const mockChat = {
   createdAt: new Date(),
 };
 
+const mockTicketQuery = {
+  exec: jest.fn().mockResolvedValue(null),
+};
+
+const mockTicketModel = {
+  findById: jest.fn().mockReturnValue(mockTicketQuery),
+};
+
 describe('ChatService — envio de mensagem com arquivo', () => {
   let service: ChatService;
 

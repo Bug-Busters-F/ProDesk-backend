@@ -98,6 +98,14 @@ const mockChat: ChatDetails = {
     new Date('2026-01-01'),
 };
 
+const mockTicketQuery = {
+  exec: jest.fn().mockResolvedValue(null),
+};
+
+const mockTicketModel = {
+  findById: jest.fn().mockReturnValue(mockTicketQuery),
+};
+
 describe('ChatService', () => {
 
   let service: ChatService;
