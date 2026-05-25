@@ -1,3 +1,5 @@
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
 import { CloseTicketUseCase } from './close.usecase';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
 import { Ticket } from '../../../domain/entities/ticket.entity';
@@ -5,6 +7,10 @@ import { Ticket } from '../../../domain/entities/ticket.entity';
 describe('CloseTicketUseCase', () => {
   let useCase: CloseTicketUseCase;
   let repository: jest.Mocked<ITicketRepository>;
+
+  const mockEventEmitter = {
+    emit: jest.fn(),
+  };
 
   beforeEach(() => {
     repository = {
@@ -15,11 +21,15 @@ describe('CloseTicketUseCase', () => {
       delete: jest.fn(),
     } as unknown as jest.Mocked<ITicketRepository>;
 
-    useCase = new CloseTicketUseCase(repository);
+    useCase = new CloseTicketUseCase(
+      repository,
+      mockEventEmitter as unknown as EventEmitter2,
+    );
+
+    jest.clearAllMocks();
   });
 
   it('should close a ticket successfully', async () => {
-    // Arrange
     const ticket = Ticket.create({
       title: 'Erro no sistema',
       category: 'TI',
@@ -33,17 +43,18 @@ describe('CloseTicketUseCase', () => {
     repository.readById.mockResolvedValue(ticket);
     repository.save.mockResolvedValue(ticket);
 
-    // Act
     const result = await useCase.execute({
       id: ticket.id,
       solution: 'Servidor reiniciado',
     });
 
-    // Assert
     expect(repository.readById).toHaveBeenCalledWith(ticket.id);
+
     expect(repository.save).toHaveBeenCalled();
 
     expect(result.status).toBe('CLOSED');
+
+    expect(mockEventEmitter.emit).toHaveBeenCalled();
   });
 
   it('should throw error if ticket not found', async () => {
