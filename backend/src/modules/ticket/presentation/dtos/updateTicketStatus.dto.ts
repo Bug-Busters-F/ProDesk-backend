@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsOptional, IsNumber } from 'class-validator';
 import { TicketStatus } from '../../domain/entities/ticket.entity';
 
 export class UpdateTicketStatusRequest {
@@ -42,4 +42,13 @@ export class UpdateTicketStatusRequest {
   @IsString()
   @IsOptional()
   whatWasDone?: string;
+
+  @ApiProperty({
+    example: 2,
+    required: false,
+    description: 'Nível do escalonamento',
+  })
+  @IsNumber()
+  @IsOptional()
+  escalationLevel?: number;
 }
