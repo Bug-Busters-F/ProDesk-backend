@@ -9,6 +9,7 @@ import { ChatService } from '../../../../chat/application/chat.service';
 export interface EscalateTicketInput {
   id: string;
   groupId: string;
+  escalationLevel?: number;
   category: string;
   whatWasDone: string;
 }
@@ -41,7 +42,7 @@ export class EscalateTicketUseCase {
       throw new Error('Ticket not found');
     }
 
-    foundedTicket.escalate(input.groupId, input.category, input.whatWasDone);
+    foundedTicket.escalate(input.groupId, input.escalationLevel, input.category, input.whatWasDone);
 
     const escalatedTicket = await this.repository.save(foundedTicket);
 

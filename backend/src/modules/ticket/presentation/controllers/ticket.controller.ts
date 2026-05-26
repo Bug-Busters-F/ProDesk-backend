@@ -236,6 +236,7 @@ export class TicketController {
       }
       const data = TicketMapper.toEscalateTicketInput(id, {
         groupId: body.groupId,
+        escalationLevel: body.escalationLevel,
         category: body.category || '',
         whatWasDone: body.whatWasDone || '',
       });
