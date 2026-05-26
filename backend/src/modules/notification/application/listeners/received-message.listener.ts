@@ -51,6 +51,9 @@ export class ReceivedMessageListener {
                 chatId:
                     event.chatId,
 
+                ticketId: 
+                    event.ticketId,
+
                 messageId:
                     event.messageId,
 
@@ -74,6 +77,9 @@ export class ReceivedMessageListener {
 
                 chatId:
                     event.chatId,
+
+                ticketId: // Adicionado aqui para o frontend SSE
+                    event.ticketId,
 
                 messageId:
                     event.messageId,

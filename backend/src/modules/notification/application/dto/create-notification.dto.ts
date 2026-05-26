@@ -19,6 +19,8 @@ export interface CreateMessageNotificationDTO {
 
     chatId: string;
 
+    ticketId?: string; 
+
     messageId: string;
 
     contentPreview: string;

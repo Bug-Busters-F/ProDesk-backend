@@ -193,6 +193,8 @@ export class ChatService {
         savedMessage.type || 'TEXT',
 
         new Date(),
+
+        chat.ticketId, // Adicionado aqui
       ),
     );
 
