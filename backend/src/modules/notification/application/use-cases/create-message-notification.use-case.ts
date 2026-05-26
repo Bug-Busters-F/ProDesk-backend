@@ -39,6 +39,7 @@ export class CreateMessageNotificationUseCase {
         type: NotificationType.NEW_MESSAGE,
 
         chatId: data.chatId,
+        ticketId: data.ticketId, 
     });
 
         await this.notificationRepository.create(

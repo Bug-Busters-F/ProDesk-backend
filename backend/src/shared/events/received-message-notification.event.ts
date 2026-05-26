@@ -17,5 +17,7 @@ export class ReceivedMessageNotificationEvent {
         public readonly type: string,
 
         public readonly createdAt: Date,
+
+        public readonly ticketId?: string,
     ) {}
 }
