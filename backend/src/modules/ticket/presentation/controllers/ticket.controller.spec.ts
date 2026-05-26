@@ -306,6 +306,7 @@ describe('TicketController', () => {
 
     const payload = {
       groupUD: randomUUID(),
+      escalationLevel: 1,
       category: 'iot',
     };
 
@@ -331,7 +332,7 @@ describe('TicketController', () => {
     const groupId = randomUUID();
 
     ticket.assignToAgent(agentId);
-    ticket.escalate(groupId, 'iot');
+    ticket.escalate(groupId,1, 'iot');
 
     const primitives = ticket.toPrimitives();
 

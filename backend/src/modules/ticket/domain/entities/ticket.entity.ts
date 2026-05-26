@@ -224,7 +224,13 @@ export class Ticket {
   }
 
   // Escalates the ticket to a new responsible group and optionally changes the category
-  escalate(groupId: string, escalationLevel?: number, category?: string, whatWasDone?: string): void {
+  escalate(
+    groupId: string,
+    escalationLevel?: number,
+    category?: string,
+    whatWasDone?: string,
+  ): void {
+
     if (!this._agentId) {
       throw new Error(TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR);
     }
@@ -233,7 +239,14 @@ export class Ticket {
 
     this._groupId = groupId;
 
+    // ALTERA A CATEGORIA
+    if (category) {
+      this.category = category;
+    }
+
+    // ALTERA O NÍVEL
     if (escalationLevel !== undefined) {
+
       if (![1, 2, 3].includes(escalationLevel)) {
         throw new Error('Invalid escalation level');
       }
@@ -242,6 +255,7 @@ export class Ticket {
     }
 
     const previousAgentId = this._agentId;
+
     this._agentId = null;
 
     this._status = TicketStatus.ESCALATED;
