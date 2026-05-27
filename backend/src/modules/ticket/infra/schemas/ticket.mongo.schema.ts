@@ -97,3 +97,13 @@ export type TicketAggregate = TicketLean & {
   agent: AgentField | null;
   client: ClientField | null;
 };
+
+export type TicketMetricsRaw = {
+  total: { total: number }[];
+  byStatus: { _id: string; count: number }[];
+};
+
+export type TicketMetrics = {
+  total: number;
+  byStatus: Record<string, number>;
+};

@@ -127,4 +127,26 @@ export class TicketAggregateBuilder {
       this.cleanup(),
     ];
   }
+
+  static countTicketByField(field: string) {
+    return [
+      { $group: { _id: `$${field}`, count: { $sum: 1 } } },
+      { $sort: { _id: 1 as const } },
+    ];
+  }
+
+  static countTotal() {
+    return [{ $count: 'total' }];
+  }
+
+  static buildMetrics() {
+    return [
+      {
+        $facet: {
+          total: TicketAggregateBuilder.countTotal(),
+          byStatus: TicketAggregateBuilder.countTicketByField('status'),
+        },
+      },
+    ];
+  }
 }

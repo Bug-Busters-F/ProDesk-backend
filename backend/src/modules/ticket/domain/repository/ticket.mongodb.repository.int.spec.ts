@@ -280,4 +280,97 @@ describe('ITicketRepository', () => {
     expect(ids).toContain(ticket2.id);
     expect(ids).not.toContain(ticket3.id);
   });
+
+  it('Should return null when there are no tickets', async () => {
+    const metrics = await repository.getMetrics();
+    expect(metrics).toBeNull();
+  });
+
+  it('Should return metrics with correct total', async () => {
+    const clientId = randomUUID();
+
+    await repository.create(
+      Ticket.create({
+        title: 'chamado 1',
+        category: randomUUID(),
+        description: 'descricao 1',
+        clientId,
+      }),
+    );
+
+    await repository.create(
+      Ticket.create({
+        title: 'chamado 2',
+        category: randomUUID(),
+        description: 'descricao 2',
+        clientId,
+      }),
+    );
+
+    const metrics = await repository.getMetrics();
+
+    expect(metrics).toBeDefined();
+    expect(metrics?.total).toBe(2);
+  });
+
+  it('Should return metrics with correct byStatus count', async () => {
+    const clientId = randomUUID();
+
+    const ticket1 = Ticket.create({
+      title: 'chamado 1',
+      category: randomUUID(),
+      description: 'descricao 1',
+      clientId,
+    });
+
+    const ticket2 = Ticket.create({
+      title: 'chamado 2',
+      category: randomUUID(),
+      description: 'descricao 2',
+      clientId,
+    });
+
+    const ticket3 = Ticket.create({
+      title: 'chamado 3',
+      category: randomUUID(),
+      description: 'descricao 3',
+      clientId,
+    });
+
+    await repository.create(ticket1);
+    const createdTicket2 = await repository.create(ticket2);
+    const createdTicket3 = await repository.create(ticket3);
+
+    createdTicket2.assignToAgent(randomUUID());
+    createdTicket3.assignToAgent(randomUUID());
+    await repository.save(createdTicket2);
+    await repository.save(createdTicket3);
+
+    const metrics = await repository.getMetrics();
+
+    expect(metrics).toBeDefined();
+    expect(metrics?.total).toBe(3);
+    expect(metrics?.byStatus[TicketStatus.OPEN]).toBe(1);
+    expect(metrics?.byStatus[TicketStatus.IN_PROGRESS]).toBe(2);
+  });
+
+  it('Should return metrics with all existing statuses', async () => {
+    const clientId = randomUUID();
+
+    const ticket1 = Ticket.create({
+      title: 'chamado 1',
+      category: randomUUID(),
+      description: 'descricao 1',
+      clientId,
+    });
+
+    await repository.create(ticket1);
+
+    const metrics = await repository.getMetrics();
+
+    expect(metrics).toBeDefined();
+    expect(metrics?.byStatus).toBeDefined();
+    expect(Object.keys(metrics?.byStatus ?? {}).length).toBe(1);
+    expect(metrics?.byStatus[TicketStatus.OPEN]).toBe(1);
+  });
 });
