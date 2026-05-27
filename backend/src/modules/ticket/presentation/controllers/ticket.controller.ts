@@ -49,6 +49,7 @@ import {
   TicketEvents,
   TicketStatus,
 } from '../../domain/entities/ticket.entity';
+import { GetMetricsUseCase } from '../../application/useCases/getMetrics/getMetrics.usecase';
 
 @ApiTags('Ticket')
 @Controller('tickets')
@@ -64,6 +65,7 @@ export class TicketController {
     private readonly newAgentUseCase: NewAgentTicketUseCase,
     private readonly deleteUseCase: DeleteTicketUseCase,
     private readonly closeUseCase: CloseTicketUseCase,
+    private readonly getMetricsUseCase: GetMetricsUseCase,
   ) {}
 
   @Post()
@@ -106,6 +108,16 @@ export class TicketController {
     });
 
     return response;
+  }
+
+  @Get('/metrics')
+  @ApiOperation({ summary: 'Obtém métricas dos tickets' })
+  @ApiResponse({
+    status: 200,
+    description: 'Métricas dos tickets obtidas com sucesso.',
+  })
+  async getMetrics() {
+    return await this.getMetricsUseCase.execute();
   }
 
   @Get(':id')
@@ -219,12 +231,17 @@ export class TicketController {
   }
 
   @Put(':id/status')
-  @ApiOperation({ summary: 'Altera o status de um ticket de forma genérica e integrada' })
+  @ApiOperation({
+    summary: 'Altera o status de um ticket de forma genérica e integrada',
+  })
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
   @ApiBody({ type: UpdateTicketStatusRequest })
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPPORT)
-  @ApiResponse({ status: 200, description: 'Status do ticket alterado com sucesso.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Status do ticket alterado com sucesso.',
+  })
   async updateStatus(
     @Request() req: any,
     @Param('id') id: string,
@@ -250,7 +267,9 @@ export class TicketController {
 
     if (body.status === TicketStatus.CLOSED) {
       if (!body.solution) {
-        throw new BadRequestException('Fechamento do chamado exige uma solução descrita.');
+        throw new BadRequestException(
+          'Fechamento do chamado exige uma solução descrita.',
+        );
       }
       const data = TicketMapper.toCloseTicketInput(id, {
         solution: body.solution,
@@ -258,6 +277,8 @@ export class TicketController {
       return await this.closeUseCase.execute(data);
     }
 
-    throw new BadRequestException('Transição de status inválida ou não suportada.');
+    throw new BadRequestException(
+      'Transição de status inválida ou não suportada.',
+    );
   }
 }
