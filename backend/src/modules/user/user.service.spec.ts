@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { Connection, Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { UserService } from './user.service';
 import { UserSchema } from './user.schema';
@@ -25,6 +26,7 @@ describe('UserService (Integration)', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(mongod.getUri()),
+
         MongooseModule.forFeature([
           { name: 'User', schema: UserSchema },
           { name: 'AccessRequest', schema: AccessRequestSchema },
@@ -32,8 +34,17 @@ describe('UserService (Integration)', () => {
           { name: 'Category', schema: CategorySchema },
         ]),
       ],
+
       providers: [
         UserService,
+
+        {
+          provide: EventEmitter2,
+          useValue: {
+            emit: jest.fn(),
+          },
+        },
+
         {
           provide: CompanyService,
           useValue: {
@@ -42,6 +53,7 @@ describe('UserService (Integration)', () => {
               name: 'Test Company',
               cnpj: '123',
             }),
+
             findById: jest.fn().mockResolvedValue({
               id: 'company-id',
               name: 'Test Company',
@@ -49,6 +61,7 @@ describe('UserService (Integration)', () => {
             }),
           },
         },
+
         {
           provide: CategoryService,
           useValue: {
@@ -59,12 +72,14 @@ describe('UserService (Integration)', () => {
             }),
           },
         },
+
         {
           provide: JwtService,
           useValue: {
             signAsync: jest.fn().mockResolvedValue('fake-token'),
           },
         },
+
         {
           provide: EmailService,
           useValue: {
@@ -76,19 +91,30 @@ describe('UserService (Integration)', () => {
     }).compile();
 
     service = module.get<UserService>(UserService);
-    connection = module.get<Connection>(getConnectionToken());
+
+    connection = module.get<Connection>(
+      getConnectionToken(),
+    );
   });
 
   afterEach(async () => {
-    const collections = connection.collections;
-    for (const key in collections) {
-      await collections[key].deleteMany({});
+    if (connection && connection.readyState === 1) {
+      const collections = connection.collections;
+
+      for (const key in collections) {
+        await collections[key].deleteMany({});
+      }
     }
   });
 
   afterAll(async () => {
-    await connection.close();
-    await mongod.stop();
+    if (connection && connection.readyState === 1) {
+      await connection.close();
+    }
+
+    if (mongod) {
+      await mongod.stop();
+    }
   });
 
   it('should create user successfully', async () => {
@@ -128,7 +154,9 @@ describe('UserService (Integration)', () => {
       UserRole.CLIENT,
     );
 
-    const result = await service.findById(created._id.toString());
+    const result = await service.findById(
+      created._id.toString(),
+    );
 
     expect(result).toBeDefined();
     expect(result.email).toBe('test@email.com');
@@ -141,6 +169,7 @@ describe('UserService (Integration)', () => {
       'Password123!',
       UserRole.CLIENT,
     );
+
     await service.createUser(
       'User2',
       'u2@email.com',
@@ -163,6 +192,7 @@ describe('UserService (Integration)', () => {
       'Password123!',
       UserRole.CLIENT,
     );
+
     await service.createUser(
       'Maria',
       'm@email.com',
@@ -170,7 +200,11 @@ describe('UserService (Integration)', () => {
       UserRole.CLIENT,
     );
 
-    const result = await service.findAll(1, 10, { name: 'gab' });
+    const result = await service.findAll(
+      1,
+      10,
+      { name: 'gab' },
+    );
 
     expect(result.data.length).toBe(1);
     expect(result.data[0].name).toBe('Gabriel');
@@ -184,9 +218,12 @@ describe('UserService (Integration)', () => {
       UserRole.CLIENT,
     );
 
-    const updated = await service.updateUser(created._id.toString(), {
-      name: 'New Name',
-    });
+    const updated = await service.updateUser(
+      created._id.toString(),
+      {
+        name: 'New Name',
+      },
+    );
 
     expect(updated.name).toBe('New Name');
   });
@@ -199,9 +236,13 @@ describe('UserService (Integration)', () => {
       UserRole.CLIENT,
     );
 
-    await service.deleteUser(created._id.toString());
+    await service.deleteUser(
+      created._id.toString(),
+    );
 
-    await expect(service.findById(created._id.toString())).rejects.toThrow();
+    await expect(
+      service.findById(created._id.toString()),
+    ).rejects.toThrow();
   });
 
   it('should throw error when email already exists on update', async () => {
@@ -220,9 +261,12 @@ describe('UserService (Integration)', () => {
     );
 
     await expect(
-      service.updateUser(user2._id.toString(), {
-        email: 'same@email.com',
-      }),
+      service.updateUser(
+        user2._id.toString(),
+        {
+          email: 'same@email.com',
+        },
+      ),
     ).rejects.toThrow();
   });
 });

@@ -10,6 +10,7 @@ export interface CreateNotificationDTO {
     ticketId?: string;
 }
 
+
 export interface CreateMessageNotificationDTO {
     receiverId: string;
 

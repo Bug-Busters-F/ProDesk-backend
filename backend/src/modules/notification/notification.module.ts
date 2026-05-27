@@ -22,10 +22,12 @@ import { NotificationSSEController }
 
 import { NotificationStreamService }
     from "./application/services/notificatio.stream.service";
+
 import { TicketClosedListener } from "./application/listeners/ticket-closed.listener";
 import { UserModule } from "../user/user.module";
 import { TicketOpenListener } from "./application/listeners/ticket-open.listener";
 import { ReceivedMessageListener } from "./application/listeners/received-message.listener";
+import { AccessRequestListener } from "./application/listeners/access-request.listener";
 import { CreateMessageNotificationUseCase } from "./application/use-cases/create-message-notification.use-case";
 import { NotificationController } from "./presetation/controllers/notification.controller";
 import { ListNotificationsUseCase } from "./application/use-cases/list-notifications.use-case";
@@ -57,6 +59,7 @@ import { ReadNotificationUseCase } from "./application/use-cases/read-notificati
         TicketClosedListener,
         TicketOpenListener,
         ReceivedMessageListener,
+        AccessRequestListener,
 
         {
             provide: INotificationRepository,
