@@ -2,14 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { Connection, Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { UserService } from './user.service';
 import { UserSchema } from './user.schema';
 import { AccessRequestSchema } from './accessRequest.schema';
+
 import { CompanyService } from '../company/company.service';
 import { CategoryService } from '../category/category.service';
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../email/email.service';
+
 import { CompanySchema } from '../company/company.schema';
 import { CategorySchema } from '../category/category.schema';
 
@@ -26,6 +29,7 @@ describe('AccessRequest (Integration)', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         MongooseModule.forRoot(mongod.getUri()),
+
         MongooseModule.forFeature([
           { name: 'User', schema: UserSchema },
           { name: 'AccessRequest', schema: AccessRequestSchema },
@@ -33,8 +37,17 @@ describe('AccessRequest (Integration)', () => {
           { name: 'Category', schema: CategorySchema },
         ]),
       ],
+
       providers: [
         UserService,
+
+        {
+          provide: EventEmitter2,
+          useValue: {
+            emit: jest.fn(),
+          },
+        },
+
         {
           provide: CompanyService,
           useValue: {
@@ -44,6 +57,7 @@ describe('AccessRequest (Integration)', () => {
               name: 'Empresa Teste',
               cnpj: '123',
             }),
+
             findById: jest.fn().mockResolvedValue({
               _id: companyId,
               id: companyId.toString(),
@@ -69,25 +83,37 @@ describe('AccessRequest (Integration)', () => {
           provide: EmailService,
           useValue: {
             sendCreatePasswordEmail: jest.fn(),
+            sendResetPasswordEmail: jest.fn(),
           },
         },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
-    connection = module.get<Connection>(getConnectionToken());
+
+    connection = module.get<Connection>(
+      getConnectionToken(),
+    );
   });
 
   afterEach(async () => {
-    const collections = connection.collections;
-    for (const key in collections) {
-      await collections[key].deleteMany({});
+    if (connection && connection.readyState === 1) {
+      const collections = connection.collections;
+
+      for (const key in collections) {
+        await collections[key].deleteMany({});
+      }
     }
   });
 
   afterAll(async () => {
-    await connection.close();
-    await mongod.stop();
+    if (connection && connection.readyState === 1) {
+      await connection.close();
+    }
+
+    if (mongod) {
+      await mongod.stop();
+    }
   });
 
   it('should create access request', async () => {
