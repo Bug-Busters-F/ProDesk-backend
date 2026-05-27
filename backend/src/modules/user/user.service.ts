@@ -14,6 +14,10 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../email/email.service';
 import { UserRole } from '../shared/enums/user.enum';
 
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NotificationType } from '../notification/shared/enums/notification.enum';
+import { AccessRequestEvent } from '../../../shared/events/access-request.event';
+
 
 @Injectable()
 export class UserService {
@@ -26,6 +30,7 @@ export class UserService {
     private categoryService: CategoryService,
     private jwtService: JwtService,
     private emailService: EmailService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async findAll(
@@ -220,12 +225,22 @@ export class UserService {
       throw new BadRequestException('CNPJ não cadastrado');
     }
 
+
     await this.accessRequestModel.create({
       name,
       email,
       cnpj,
       status: 'PENDING',
     });
+
+    // Emitir evento para notificação de administradores
+    this.eventEmitter.emit(
+      NotificationType.ACCESS_REQUEST,
+      new AccessRequestEvent(name, email, cnpj),
+    );
+
+    // Log
+    console.log('[UserService] Evento ACCESS_REQUEST emitido:', { name, email, cnpj });
 
     return { message: 'Solicitação enviada com sucesso' };
   }

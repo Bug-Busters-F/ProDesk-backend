@@ -14,10 +14,10 @@ export class Chat {
   @Prop({ required: true, type: Types.ObjectId })
   clientId: Types.ObjectId;
 
-  @Prop({ required: true, type: Types.ObjectId })
+  @Prop({ type: Types.ObjectId, default: null })
   agentId: Types.ObjectId;
 
-  @Prop({ required: true, type: Types.ObjectId })
+  @Prop({ type: Types.ObjectId, default: null }) 
   groupId: Types.ObjectId;
 
   @Prop({ default: 'open', enum: ['open', 'closed'] })

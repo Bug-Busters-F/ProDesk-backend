@@ -12,6 +12,7 @@ import {
   Request,
   UseGuards,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateTicketUseCase } from '../../application/useCases/create/create.usecase';
 import { DeleteTicketUseCase } from '../../application/useCases/delete/delete.usecase';
@@ -28,6 +29,7 @@ import { CreateTicketRequest } from '../dtos/create.dto';
 import { EscalateTicketRequest } from '../dtos/escalateTicket.dto';
 import { TicketMapper } from '../mappers/ticket.mapper';
 import { CloseTicketRequest } from '../dtos/closeTicket.dto';
+import { UpdateTicketStatusRequest } from '../dtos/updateTicketStatus.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -214,5 +216,48 @@ export class TicketController {
     const response = await this.closeUseCase.execute(data);
 
     return response;
+  }
+
+  @Put(':id/status')
+  @ApiOperation({ summary: 'Altera o status de um ticket de forma genérica e integrada' })
+  @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiBody({ type: UpdateTicketStatusRequest })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT)
+  @ApiResponse({ status: 200, description: 'Status do ticket alterado com sucesso.' })
+  async updateStatus(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() body: UpdateTicketStatusRequest,
+  ) {
+    if (body.status === TicketStatus.IN_PROGRESS) {
+      const data = TicketMapper.toNewAgentInput(id, req.user.id);
+      return await this.newAgentUseCase.execute(data);
+    }
+
+    if (body.status === TicketStatus.ESCALATED) {
+      if (!body.groupId) {
+        throw new BadRequestException('Escalonamento exige groupId.');
+      }
+      const data = TicketMapper.toEscalateTicketInput(id, {
+        groupId: body.groupId,
+        escalationLevel: body.escalationLevel,
+        category: body.category || '',
+        whatWasDone: body.whatWasDone || '',
+      });
+      return await this.escalateUseCase.execute(data);
+    }
+
+    if (body.status === TicketStatus.CLOSED) {
+      if (!body.solution) {
+        throw new BadRequestException('Fechamento do chamado exige uma solução descrita.');
+      }
+      const data = TicketMapper.toCloseTicketInput(id, {
+        solution: body.solution,
+      });
+      return await this.closeUseCase.execute(data);
+    }
+
+    throw new BadRequestException('Transição de status inválida ou não suportada.');
   }
 }

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { randomUUID } from 'crypto';
 
@@ -7,6 +7,15 @@ export class EscalateTicketRequest {
   @IsString()
   @IsNotEmpty()
   groupId!: string;
+
+  @ApiProperty({
+    example: 2,
+    description: 'Nível de escalonamento',
+    required: false,
+  })
+  @IsNumber()
+  @IsOptional()
+  escalationLevel?: number;
 
   @ApiProperty({ example: 'web_app', description: 'Categoria do ticket' })
   @IsString()
