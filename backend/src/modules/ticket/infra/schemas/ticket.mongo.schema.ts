@@ -101,9 +101,21 @@ export type TicketAggregate = TicketLean & {
 export type TicketMetricsRaw = {
   total: { total: number }[];
   byStatus: { _id: string; count: number }[];
+  avgResolutionTime: {
+    count: number;
+    avgHours: number;
+    avgMinutes: number;
+    avgDays: number;
+  }[];
 };
 
 export type TicketMetrics = {
   total: number;
   byStatus: Record<string, number>;
+  avgResolutionTime: {
+    count: number;
+    avgHours: number;
+    avgMinutes: number;
+    avgDays: number;
+  };
 };

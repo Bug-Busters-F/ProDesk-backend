@@ -373,4 +373,108 @@ describe('ITicketRepository', () => {
     expect(Object.keys(metrics?.byStatus ?? {}).length).toBe(1);
     expect(metrics?.byStatus[TicketStatus.OPEN]).toBe(1);
   });
+
+  it('Should return metrics with avgResolutionTime as zeros when no tickets are closed', async () => {
+    const clientId = randomUUID();
+
+    await repository.create(
+      Ticket.create({
+        title: 'chamado 1',
+        category: randomUUID(),
+        description: 'descricao 1',
+        clientId,
+      }),
+    );
+
+    const metrics = await repository.getMetrics();
+
+    expect(metrics).toBeDefined();
+    expect(metrics?.avgResolutionTime).toBeDefined();
+    expect(metrics?.avgResolutionTime.count).toBe(0);
+    expect(metrics?.avgResolutionTime.avgHours).toBe(0);
+    expect(metrics?.avgResolutionTime.avgMinutes).toBe(0);
+    expect(metrics?.avgResolutionTime.avgDays).toBe(0);
+  });
+
+  it('Should return metrics with correct avgResolutionTime when tickets are closed', async () => {
+    const clientId = randomUUID();
+
+    const ticket1 = Ticket.create({
+      title: 'chamado 1',
+      category: randomUUID(),
+      description: 'descricao 1',
+      clientId,
+    });
+
+    const ticket2 = Ticket.create({
+      title: 'chamado 2',
+      category: randomUUID(),
+      description: 'descricao 2',
+      clientId,
+    });
+
+    await repository.create(ticket1);
+    const createdTicket2 = await repository.create(ticket2);
+
+    // coloca em progresso e fecha
+    createdTicket2.assignToAgent(randomUUID());
+    await repository.save(createdTicket2);
+    createdTicket2.close('Problema resolvido');
+    await repository.save(createdTicket2);
+
+    const metrics = await repository.getMetrics();
+
+    expect(metrics).toBeDefined();
+    expect(metrics?.avgResolutionTime).toBeDefined();
+    expect(metrics?.avgResolutionTime.count).toBe(1);
+    expect(metrics?.avgResolutionTime.avgHours).toBeGreaterThanOrEqual(0);
+    expect(metrics?.avgResolutionTime.avgMinutes).toBeGreaterThanOrEqual(0);
+    expect(metrics?.avgResolutionTime.avgDays).toBeGreaterThanOrEqual(0);
+  });
+
+  it('Should return avgResolutionTime count equal to number of closed tickets', async () => {
+    const clientId = randomUUID();
+
+    const ticket1 = Ticket.create({
+      title: 'chamado 1',
+      category: randomUUID(),
+      description: 'descricao 1',
+      clientId,
+    });
+
+    const ticket2 = Ticket.create({
+      title: 'chamado 2',
+      category: randomUUID(),
+      description: 'descricao 2',
+      clientId,
+    });
+
+    const ticket3 = Ticket.create({
+      title: 'chamado 3',
+      category: randomUUID(),
+      description: 'descricao 3',
+      clientId,
+    });
+
+    await repository.create(ticket1);
+    const createdTicket2 = await repository.create(ticket2);
+    const createdTicket3 = await repository.create(ticket3);
+
+    createdTicket2.assignToAgent(randomUUID());
+    await repository.save(createdTicket2);
+    createdTicket2.close('Solução 1');
+    await repository.save(createdTicket2);
+
+    createdTicket3.assignToAgent(randomUUID());
+    await repository.save(createdTicket3);
+    createdTicket3.close('Solução 2');
+    await repository.save(createdTicket3);
+
+    const metrics = await repository.getMetrics();
+
+    expect(metrics?.total).toBe(3);
+    expect(metrics?.avgResolutionTime.count).toBe(2);
+    expect(metrics?.byStatus[TicketStatus.OPEN]).toBe(1);
+    expect(metrics?.byStatus[TicketStatus.CLOSED]).toBe(2);
+  });
 });

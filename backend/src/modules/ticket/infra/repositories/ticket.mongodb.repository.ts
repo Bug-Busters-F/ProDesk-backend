@@ -142,6 +142,12 @@ export class TicketMongoRepository extends ITicketRepository {
     return {
       total,
       byStatus: toMap(rawMetrics.byStatus),
+      avgResolutionTime: rawMetrics.avgResolutionTime[0] ?? {
+        count: 0,
+        avgHours: 0,
+        avgMinutes: 0,
+        avgDays: 0,
+      },
     };
   }
 }
