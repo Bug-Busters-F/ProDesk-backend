@@ -271,7 +271,7 @@ export class Ticket {
 
   // Function to close the ticket and register the solution
   close(solution: string): void {
-    if (this.status !== TicketStatus.IN_PROGRESS) {
+    if (this.status === TicketStatus.CLOSED) {
       throw new Error(TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR);
     }
 
