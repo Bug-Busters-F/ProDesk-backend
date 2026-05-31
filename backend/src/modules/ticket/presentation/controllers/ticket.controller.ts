@@ -112,12 +112,22 @@ export class TicketController {
 
   @Get('/metrics')
   @ApiOperation({ summary: 'Obtém métricas dos tickets' })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT)
+  @ApiQuery({ name: 'categoryId', required: false, type: String })
   @ApiResponse({
     status: 200,
     description: 'Métricas dos tickets obtidas com sucesso.',
   })
-  async getMetrics() {
-    return await this.getMetricsUseCase.execute();
+  async getMetrics(
+    @Request() req: any,
+    @Query('categoryId') categoryId?: string,
+  ) {
+    return await this.getMetricsUseCase.execute({
+      role: req.user.role,
+      categories: req.user.categories ?? undefined,
+      categoryId,
+    });
   }
 
   @Get(':id')

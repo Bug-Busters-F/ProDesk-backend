@@ -17,5 +17,9 @@ export abstract class ITicketRepository {
   }): Promise<Ticket[]>;
   abstract readById(id: string): Promise<Ticket | null>;
   abstract delete(id: string): Promise<boolean>;
-  abstract getMetrics(): Promise<TicketMetrics | null>;
+  abstract getMetrics(filters?: {
+    role?: string;
+    categories?: string[];
+    categoryId?: string;
+  }): Promise<TicketMetrics | null>;
 }

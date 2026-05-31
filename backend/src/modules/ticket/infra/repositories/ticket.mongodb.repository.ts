@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Ticket, TicketStatus } from '../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../domain/repository/ticket.repository.interface';
 import {
@@ -121,9 +121,32 @@ export class TicketMongoRepository extends ITicketRepository {
     return result !== null;
   }
 
-  async getMetrics(): Promise<TicketMetrics | null> {
+  async getMetrics(filters?: {
+    role?: string;
+    categories?: string[];
+    categoryId?: string;
+  }): Promise<TicketMetrics | null> {
+    const matchStage: any = {};
+
+    if (filters?.role === 'support' && filters?.categories) {
+      if (filters?.categoryId && filters.categories.includes(filters.categoryId)) {
+        matchStage.category = filters.categoryId;
+      } else {
+        matchStage.category = {
+          $in: filters.categories,
+        };
+      }
+    } else if (filters?.role === 'admin' && filters?.categoryId) {
+      matchStage.category = filters.categoryId;
+    }
+
+    const basePipeline = TicketAggregateBuilder.buildMetrics();
+    const pipeline = Object.keys(matchStage).length > 0 
+      ? [{ $match: matchStage }, ...basePipeline] 
+      : basePipeline;
+
     const result = await this.ticketModel
-      .aggregate<TicketMetricsRaw>(TicketAggregateBuilder.buildMetrics())
+      .aggregate<TicketMetricsRaw>(pipeline)
       .exec();
 
     if (!result.length) return null;

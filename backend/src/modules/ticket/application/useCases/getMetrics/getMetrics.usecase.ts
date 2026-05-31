@@ -20,8 +20,12 @@ export interface GetMetricsOutput {
 export class GetMetricsUseCase {
   constructor(private readonly repository: ITicketRepository) {}
 
-  async execute(): Promise<GetMetricsOutput> {
-    const metrics = await this.repository.getMetrics();
+  async execute(filters?: {
+    role?: string;
+    categories?: string[];
+    categoryId?: string;
+  }): Promise<GetMetricsOutput> {
+    const metrics = await this.repository.getMetrics(filters);
     if (!metrics) {
       return {
         totalTickets: 0,
