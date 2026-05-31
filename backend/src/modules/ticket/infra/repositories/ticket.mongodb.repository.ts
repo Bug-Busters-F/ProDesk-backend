@@ -1,9 +1,11 @@
-import { Model, QueryFilter } from 'mongoose';
+import { Model } from 'mongoose';
 import { Ticket, TicketStatus } from '../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../domain/repository/ticket.repository.interface';
 import { TicketLean, TicketSchemaClass } from '../schemas/ticket.mongo.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { TicketMapper } from '../mappers/ticket.mapper';
+import { TicketAggregateBuilder } from '../helpers/ticket.aggregate.builder';
+// import TicketAggregateBuilder from  '../helpers/ticket.aggregate.builder';
 
 export class TicketMongoRepository extends ITicketRepository {
   constructor(
@@ -25,7 +27,8 @@ export class TicketMongoRepository extends ITicketRepository {
       .findOneAndUpdate(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         { _id: raw._id },
-        { $set: raw },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        { $set: { ...raw, category: raw.category.id } },
         { returnDocument: 'after' },
       )
       .lean<TicketLean>()
@@ -47,22 +50,22 @@ export class TicketMongoRepository extends ITicketRepository {
     escalationLevel?: number;
     onlyMine?: boolean;
   }): Promise<Ticket[]> {
-    let query: QueryFilter<TicketSchemaClass> = {};
+    let matchStage: Record<string, any> = {};
 
     if (filters?.agentId) {
-      query = {
+      matchStage = {
         $or: [
           { agentId: filters.agentId },
           { category: { $in: filters.categories ?? [] }, agentId: null },
         ],
       };
     } else if (filters?.clientId) {
-      query = { clientId: filters.clientId };
+      matchStage = { clientId: filters.clientId };
     }
 
     if (filters?.search) {
-      query = {
-        ...query,
+      matchStage = {
+        ...matchStage,
         $or: [
           { title: { $regex: filters.search, $options: 'i' } },
           { description: { $regex: filters.search, $options: 'i' } },
@@ -71,30 +74,41 @@ export class TicketMongoRepository extends ITicketRepository {
     }
 
     if (filters?.status) {
-      query = { ...query, status: filters.status };
+      matchStage = { ...matchStage, status: filters.status };
     }
 
     if (filters?.escalationLevel) {
-      query = { ...query, escalationLevel: filters.escalationLevel };
+      matchStage = { ...matchStage, escalationLevel: filters.escalationLevel };
     }
 
     if (filters?.onlyMine && filters?.agentId) {
-      query = { ...query, agentId: filters.agentId }; 
+      matchStage = { ...matchStage, agentId: filters.agentId };
     }
 
-    const tickets = await this.ticketModel.find(query).exec();
-    return tickets.map((t) => TicketMapper.toDomain(t));
+    const tickets = await this.ticketModel.aggregate([
+      { $match: matchStage },
+      ...TicketAggregateBuilder.buildAggregate(),
+    ]);
+
+    return tickets.map((t: TicketLean) => TicketMapper.toDomain(t));
   }
 
   async readById(id: string): Promise<Ticket | null> {
-    const foundedTicket = await this.ticketModel
-      .findById(id)
-      .lean<TicketLean>()
+    const result = await this.ticketModel
+      .aggregate([
+        { $match: { _id: id } },
+        { $limit: 1 },
+        ...TicketAggregateBuilder.buildAggregate(),
+      ])
       .exec();
 
-    if (!foundedTicket) return null;
+    if (!result.length) return null;
 
-    return TicketMapper.toDomain(foundedTicket);
+    const foundedTicket = TicketMapper.toDomain(result[0] as TicketLean);
+
+    console.log('Founded ticket:', foundedTicket);
+
+    return foundedTicket;
   }
 
   async delete(id: string): Promise<boolean> {

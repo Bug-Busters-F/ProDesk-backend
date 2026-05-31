@@ -1,0 +1,130 @@
+export class TicketAggregateBuilder {
+  static agentLookup() {
+    return [
+      {
+        $lookup: {
+          from: 'users',
+          let: { agentId: '$agentId' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $ne: ['$$agentId', null] },
+                    { $eq: [{ $toString: '$_id' }, '$$agentId'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'agentData',
+        },
+      },
+      {
+        $addFields: {
+          agent: {
+            $cond: {
+              if: { $gt: [{ $size: '$agentData' }, 0] },
+              then: {
+                id: { $toString: { $arrayElemAt: ['$agentData._id', 0] } },
+                name: { $arrayElemAt: ['$agentData.name', 0] },
+              },
+              else: null,
+            },
+          },
+        },
+      },
+    ];
+  }
+
+  static categoryLookup() {
+    return [
+      {
+        $lookup: {
+          from: 'categories',
+          let: { categoryId: '$category' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $ne: ['$$categoryId', null] },
+                    { $eq: [{ $toString: '$_id' }, '$$categoryId'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'categoryData',
+        },
+      },
+      {
+        $addFields: {
+          category: {
+            $cond: {
+              if: { $gt: [{ $size: '$categoryData' }, 0] },
+              then: {
+                id: { $toString: { $arrayElemAt: ['$categoryData._id', 0] } },
+                name: { $arrayElemAt: ['$categoryData.name', 0] },
+              },
+              else: null,
+            },
+          },
+        },
+      },
+    ];
+  }
+
+  static clientLookup() {
+    return [
+      {
+        $lookup: {
+          from: 'users',
+          let: { id: '$clientId' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $ne: ['$$id', null] },
+                    { $eq: [{ $toString: '$_id' }, '$$id'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'clientData',
+        },
+      },
+      {
+        $addFields: {
+          client: {
+            $cond: {
+              if: { $gt: [{ $size: '$clientData' }, 0] },
+              then: {
+                id: { $toString: { $arrayElemAt: ['$clientData._id', 0] } },
+                name: { $arrayElemAt: ['$clientData.name', 0] },
+              },
+              else: null,
+            },
+          },
+        },
+      },
+    ];
+  }
+
+  static cleanup() {
+    return {
+      $unset: ['agentData', 'agentId', 'categoryData', '__v'],
+    };
+  }
+
+  static buildAggregate() {
+    return [
+      ...this.agentLookup(),
+      ...this.categoryLookup(),
+      ...this.clientLookup(),
+      this.cleanup(),
+    ];
+  }
+}
