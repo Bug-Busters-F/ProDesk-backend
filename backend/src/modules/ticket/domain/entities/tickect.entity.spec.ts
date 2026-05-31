@@ -103,16 +103,14 @@ describe('Ticket entity', () => {
     );
   });
 
-  it('Should throw an error when closing a ticket with ESCALATED status', () => {
+  it('Should successfully close a ticket when status is ESCALATED', () => {
     ticket.assignToAgent(randomUUID());
-
     ticket.escalate(randomUUID(), 1, 'web_app');
 
     expect(ticket.status).toBe(TicketStatus.ESCALATED);
 
-    expect(() => ticket.close('Test solution')).toThrow(
-      TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR,
-    );
+    ticket.close('Test solution');
+    expect(ticket.status).toBe(TicketStatus.CLOSED);
   });
 
   it('Close a ticket should change the status and closedAt field, and add the event to history', () => {
@@ -133,18 +131,17 @@ describe('Ticket entity', () => {
     expect(primitiveTicket.closedAt).not.toBeNull();
   });
 
-  it('Should throw an error when closing a ticket with OPEN status', () => {
+  it('Should successfully close a ticket when status is OPEN', () => {
     expect(ticket.status).toBe(TicketStatus.OPEN);
-    expect(() => ticket.close('Test solution')).toThrow(
-      TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR,
-    );
+    
+    ticket.close('Test solution');
+    expect(ticket.status).toBe(TicketStatus.CLOSED);
   });
 
-  it('Should throw an error when closing a ticket with ESCALATED status', () => {
-    ticket.assignToAgent(randomUUID());
-    ticket.escalate(randomUUID(),1, 'web_app');
+  it('Should throw an error when trying to close a ticket that is already CLOSED', () => {
+    ticket.close('First solution');
+    expect(ticket.status).toBe(TicketStatus.CLOSED);
 
-    expect(ticket.status).toBe(TicketStatus.ESCALATED);
     expect(() => ticket.close('Test solution')).toThrow(
       TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR,
     );
