@@ -247,7 +247,7 @@ export class TicketController {
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
   @ApiBody({ type: UpdateTicketStatusRequest })
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPPORT)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
   @ApiResponse({
     status: 200,
     description: 'Status do ticket alterado com sucesso.',
