@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Ticket, TicketStatus } from '../entities/ticket.entity';
+import { TicketMetrics } from '../../infra/schemas/ticket.mongo.schema';
 
 @Injectable()
 export abstract class ITicketRepository {
@@ -16,4 +17,9 @@ export abstract class ITicketRepository {
   }): Promise<Ticket[]>;
   abstract readById(id: string): Promise<Ticket | null>;
   abstract delete(id: string): Promise<boolean>;
+  abstract getMetrics(filters?: {
+    role?: string;
+    categories?: string[];
+    categoryId?: string;
+  }): Promise<TicketMetrics | null>;
 }

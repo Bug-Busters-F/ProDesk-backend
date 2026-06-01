@@ -26,6 +26,7 @@ import { RolesGuard } from '../../../auth/guards/roles.guard';
 import { UserRole } from '../../../shared/enums/user.enum';
 import { GetHistoryFilteredUseCase } from '../../application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
 import { CloseTicketUseCase } from '../../application/useCases/close/close.usecase';
+import { GetMetricsUseCase } from '../../application/useCases/getMetrics/getMetrics.usecase';
 
 describe('TicketController', () => {
   let app: INestApplication;
@@ -40,6 +41,7 @@ describe('TicketController', () => {
   let escalateTicketUseCase: EscalateTicketUseCase;
   let closeTicketUseCase: CloseTicketUseCase;
   let deleteUseCase: DeleteTicketUseCase;
+  let getMetricsUseCase: GetMetricsUseCase;
 
   const ticketData = {
     title: 'chamado 1',
@@ -93,7 +95,10 @@ describe('TicketController', () => {
           provide: GetHistoryTicketUseCase,
           useValue: { execute: jest.fn() },
         },
-
+        {
+          provide: GetMetricsUseCase,
+          useValue: { execute: jest.fn() },
+        },
       ],
     })
       .overrideGuard(JwtGuard)
@@ -133,6 +138,7 @@ describe('TicketController', () => {
     escalateTicketUseCase = modulesFixture.get(EscalateTicketUseCase);
     closeTicketUseCase = modulesFixture.get(CloseTicketUseCase);
     deleteUseCase = modulesFixture.get(DeleteTicketUseCase);
+    getMetricsUseCase = modulesFixture.get(GetMetricsUseCase);
   });
 
   beforeEach(() => {
@@ -332,7 +338,7 @@ describe('TicketController', () => {
     const groupId = randomUUID();
 
     ticket.assignToAgent(agentId);
-    ticket.escalate(groupId,1, 'iot');
+    ticket.escalate(groupId, 1, 'iot');
 
     const primitives = ticket.toPrimitives();
 
@@ -565,95 +571,138 @@ describe('TicketController', () => {
     expect(getHistoryFilteredUseCase.execute).not.toHaveBeenCalled();
   });
 
-it('GET /tickets should return tickets filtered by agentId when role is SUPPORT', async () => {
-  const agentId = randomUUID();
-  const categories = [randomUUID()];
-  const primitives = ticket.toPrimitives();
+  it('GET /tickets should return tickets filtered by agentId when role is SUPPORT', async () => {
+    const agentId = randomUUID();
+    const categories = [randomUUID()];
+    const primitives = ticket.toPrimitives();
 
-  const moduleFixture = await Test.createTestingModule({
-    controllers: [TicketController],
-    providers: [
-      { provide: CreateTicketUseCase, useValue: { execute: jest.fn() } },
-      { provide: ReadAllTicketUseCase, useValue: { execute: jest.fn() } },
-      { provide: ReadByIdTicketUseCase, useValue: { execute: jest.fn() } },
-      { provide: GetHistoryTicketUseCase, useValue: { execute: jest.fn() } },
-      { provide: EscalateTicketUseCase, useValue: { execute: jest.fn() } },
-      { provide: NewAgentTicketUseCase, useValue: { execute: jest.fn() } },
-      { provide: DeleteTicketUseCase, useValue: { execute: jest.fn() } },
-      { provide: GetHistoryFilteredUseCase, useValue: { execute: jest.fn() } },
-      { provide: CloseTicketUseCase, useValue: { execute: jest.fn() } },
-    ],
-  })
-    .overrideGuard(JwtGuard)
-    .useValue({
-      canActivate: (context: ExecutionContext) => {
-        const req = context.switchToHttp().getRequest();
-        req.user = {
-          id: agentId,
-          role: UserRole.SUPPORT,
-          categories: categories,
-        };
-        return true;
-      },
+    const moduleFixture = await Test.createTestingModule({
+      controllers: [TicketController],
+      providers: [
+        { provide: CreateTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: ReadAllTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: ReadByIdTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: GetHistoryTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: EscalateTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: NewAgentTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: DeleteTicketUseCase, useValue: { execute: jest.fn() } },
+        {
+          provide: GetHistoryFilteredUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        { provide: CloseTicketUseCase, useValue: { execute: jest.fn() } },
+        { provide: GetMetricsUseCase, useValue: { execute: jest.fn() } },
+      ],
     })
-    .overrideGuard(RolesGuard)
-    .useValue({ canActivate: () => true })
-    .compile();
+      .overrideGuard(JwtGuard)
+      .useValue({
+        canActivate: (context: ExecutionContext) => {
+          const req = context.switchToHttp().getRequest();
+          req.user = {
+            id: agentId,
+            role: UserRole.SUPPORT,
+            categories: categories,
+          };
+          return true;
+        },
+      })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
-  const isolatedApp = moduleFixture.createNestApplication();
-  
-  try {
-    isolatedApp.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-      }),
-    );
-    
-    await isolatedApp.init();
+    const isolatedApp = moduleFixture.createNestApplication();
 
-    const isolatedHttpServer = isolatedApp.getHttpServer() as import('http').Server;
+    try {
+      isolatedApp.useGlobalPipes(
+        new ValidationPipe({
+          whitelist: true,
+          forbidNonWhitelisted: true,
+          transform: true,
+        }),
+      );
 
-    const localReadAllUseCase = moduleFixture.get(ReadAllTicketUseCase);
+      await isolatedApp.init();
 
-    jest.spyOn(localReadAllUseCase, 'execute').mockResolvedValue([
-      {
-        id: primitives._id,
-        title: primitives.title,
-        category: categories[0],
-        priority: primitives.priority,
-        description: primitives.description,
-        clientId: primitives.clientId,
-        status: primitives.status,
-        createdAt: primitives.createdAt,
-        agentId: agentId,
-        escalationLevel: 1,
-        updatedAt: null,
-        closedAt: null,
-      },
-    ]);
+      const isolatedHttpServer =
+        isolatedApp.getHttpServer() as import('http').Server;
 
-    const response = await request(isolatedHttpServer)
-      .get('/tickets')
+      const localReadAllUseCase = moduleFixture.get(ReadAllTicketUseCase);
+
+      jest.spyOn(localReadAllUseCase, 'execute').mockResolvedValue([
+        {
+          id: primitives._id,
+          title: primitives.title,
+          category: categories[0],
+          priority: primitives.priority,
+          description: primitives.description,
+          clientId: primitives.clientId,
+          status: primitives.status,
+          createdAt: primitives.createdAt,
+          agentId: agentId,
+          escalationLevel: 1,
+          updatedAt: null,
+          closedAt: null,
+        },
+      ]);
+
+      const response = await request(isolatedHttpServer)
+        .get('/tickets')
+        .expect(200);
+
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body[0]).toEqual(
+        expect.objectContaining({ agentId, category: categories[0] }),
+      );
+
+      expect(localReadAllUseCase.execute).toHaveBeenCalledWith({
+        userId: agentId,
+        categories: categories,
+        role: UserRole.SUPPORT,
+        search: undefined,
+        status: undefined,
+        escalationLevel: undefined,
+        onlyMine: false,
+      });
+    } finally {
+      await isolatedApp.close();
+    }
+  });
+
+  it('GET /tickets/metrics should return ticket metrics', async () => {
+    const mockMetrics = {
+      totalTickets: 10,
+      openTickets: 4,
+      InProgressTickets: 3,
+      escalatedTickets: 2,
+      closedTickets: 1,
+    };
+
+    jest.spyOn(getMetricsUseCase, 'execute').mockResolvedValue(mockMetrics);
+
+    const response = await request(httpServer)
+      .get('/tickets/metrics')
       .expect(200);
 
-    expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body[0]).toEqual(
-      expect.objectContaining({ agentId, category: categories[0] }),
-    );
+    expect(response.body).toEqual(mockMetrics);
+    expect(getMetricsUseCase.execute).toHaveBeenCalledTimes(1);
+  });
 
-    expect(localReadAllUseCase.execute).toHaveBeenCalledWith({
-      userId: agentId,
-      categories: categories,
-      role: UserRole.SUPPORT,
-      search: undefined,
-      status: undefined,
-      escalationLevel: undefined, 
-      onlyMine: false
-    });
-  } finally {
-    await isolatedApp.close();
-  }
-});
+  it('GET /tickets/metrics should return all zeros when there are no tickets', async () => {
+    const emptyMetrics = {
+      totalTickets: 0,
+      openTickets: 0,
+      InProgressTickets: 0,
+      escalatedTickets: 0,
+      closedTickets: 0,
+    };
+
+    jest.spyOn(getMetricsUseCase, 'execute').mockResolvedValue(emptyMetrics);
+
+    const response = await request(httpServer)
+      .get('/tickets/metrics')
+      .expect(200);
+
+    expect(response.body).toEqual(emptyMetrics);
+    expect(getMetricsUseCase.execute).toHaveBeenCalledTimes(1);
+  });
 });
