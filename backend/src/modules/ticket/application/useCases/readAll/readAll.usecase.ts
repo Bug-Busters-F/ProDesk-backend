@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
-  Ticket,
+  AgentField,
+  ClientField,
   TicketPriority,
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
@@ -13,13 +14,13 @@ export interface ReadAllTicketOutput {
   category: string;
   priority: TicketPriority;
   description: string;
-  clientId: string;
+  client: ClientField | null;
   status: TicketStatus;
-  agentId: string | null;
   escalationLevel: number;
   createdAt: Date;
   updatedAt: Date | null;
   closedAt: Date | null;
+  agent?: AgentField | null;
 }
 
 @Injectable()
@@ -30,6 +31,10 @@ export class ReadAllTicketUseCase {
     userId: string;
     categories?: string[];
     role: UserRole;
+    search?: string;
+    status?: TicketStatus;
+    escalationLevel?: number;
+    onlyMine?: boolean;
   }): Promise<ReadAllTicketOutput[]> {
     const filters =
       input.role === UserRole.CLIENT
@@ -38,9 +43,15 @@ export class ReadAllTicketUseCase {
           ? { agentId: input.userId, categories: input.categories }
           : undefined;
 
-    const foundedTickets = await this.repository.readAll({ ...filters });
+    const foundedTickets = await this.repository.readAll({
+      ...filters,
+      search: input.search,
+      status: input.status,
+      escalationLevel: input.escalationLevel,
+      onlyMine: input.onlyMine,
+    });
 
-    const convertedTickets = foundedTickets.map((t: Ticket) => {
+    const convertedTickets = foundedTickets.map((t) => {
       const primitive = t.toPrimitives();
 
       return {
@@ -49,13 +60,13 @@ export class ReadAllTicketUseCase {
         category: primitive.category,
         priority: primitive.priority,
         description: primitive.description,
-        clientId: primitive.clientId,
+        client: primitive.client,
         status: primitive.status,
-        agentId: primitive.agentId,
         escalationLevel: primitive.escalationLevel,
         createdAt: primitive.createdAt,
         updatedAt: primitive.updatedAt,
         closedAt: primitive.closedAt,
+        agent: primitive.agent,
       };
     });
 

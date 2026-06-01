@@ -18,6 +18,7 @@ import { TriageModule } from '../triage/triage.module';
 import { GetHistoryFilteredUseCase } from './application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
 import { CloseTicketUseCase } from './application/useCases/close/close.usecase';
 import { ChatModule } from '../chat/chat.module';
+import { GetMetricsUseCase } from './application/useCases/getMetrics/getMetrics.usecase';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ChatModule } from '../chat/chat.module';
     DeleteTicketUseCase,
     NewAgentTicketUseCase,
     CloseTicketUseCase,
+    GetMetricsUseCase,
   ],
 })
 export class TicketModule {}

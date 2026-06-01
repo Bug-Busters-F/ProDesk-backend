@@ -28,6 +28,7 @@ export class TicketMapper {
     return {
       id: id,
       groupId: req.groupId,
+      escalationLevel: req.escalationLevel,
       category: req.category,
       whatWasDone: req.whatWasDone,
     };

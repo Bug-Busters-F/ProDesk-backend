@@ -4,6 +4,9 @@ import {
   TicketStatus,
 } from '../../../domain/entities/ticket.entity';
 import { ITicketRepository } from '../../../domain/repository/ticket.repository.interface';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NotificationType } from '../../../../notification/shared/enums/notification.enum';
+
 
 export interface CloseTicketInput {
   id: string;
@@ -26,7 +29,7 @@ export interface CloseTicketOutput {
 
 @Injectable()
 export class CloseTicketUseCase {
-  constructor(private readonly repository: ITicketRepository) {}
+  constructor(private readonly repository: ITicketRepository, private readonly eventEmitter: EventEmitter2,) {}
 
   async execute(input: CloseTicketInput): Promise<CloseTicketOutput> {
     const foundedTicket = await this.repository.readById(input.id);
@@ -45,6 +48,13 @@ export class CloseTicketUseCase {
     }
 
     const primitive = closedTicket.toPrimitives();
+
+    this.eventEmitter.emit(NotificationType.TICKET_CLOSED, {
+      title: primitive.title,
+      clientId: primitive.clientId,
+      supportAgentId: primitive.agentId,
+      ticketId: primitive._id,
+    });
 
     return {
       id: primitive._id,

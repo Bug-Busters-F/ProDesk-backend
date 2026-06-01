@@ -46,12 +46,25 @@ export type TicketHistoryEntry = {
   occurredAt: Date;
 };
 
+export type AgentField = {
+  id: string | null;
+  name: string;
+};
+
+export type ClientField = {
+  id: string | null;
+  name: string;
+};
+
 export class Ticket {
   // Strutucture definition
   private _id: string;
 
   private _status: TicketStatus = TicketStatus.OPEN;
   private _agentId: string | null = null;
+  private agent: AgentField | null = null;
+  private client: ClientField | null = null;
+
   private _groupId: string | null = null;
   private escalationLevel: number = 1;
   private attachmentsUrls: string[] = [];
@@ -135,7 +148,9 @@ export class Ticket {
     fileUrls?: string[];
     status: TicketStatus;
     clientId: string;
-    agentId?: string;
+    client?: ClientField | null;
+    agentId?: string | null;
+    agent?: AgentField | null;
     groupId?: string;
     escalationLevel: number;
     history: TicketHistoryEntry[];
@@ -153,6 +168,9 @@ export class Ticket {
     ticket._id = props._id;
 
     ticket._agentId = props.agentId ?? null;
+    ticket.agent = props.agent ?? null;
+    ticket.client = props.client ?? null;
+
     ticket._groupId = props.groupId ?? null;
     ticket.attachmentsUrls = props.fileUrls ?? [];
 
@@ -177,9 +195,11 @@ export class Ticket {
       priority: this.priority,
       description: this.description,
       clientId: this._clientId,
+      client: this.client ? { ...this.client } : null,
       fileUrls: this.attachmentsUrls,
       status: this.status,
       agentId: this._agentId,
+      agent: this.agent ? { ...this.agent } : null,
       groupId: this._groupId,
       escalationLevel: this.escalationLevel,
       history: this.history,
@@ -224,7 +244,13 @@ export class Ticket {
   }
 
   // Escalates the ticket to a new responsible group and optionally changes the category
-  escalate(groupId: string, category?: string, whatWasDone?: string): void {
+  escalate(
+    groupId: string,
+    escalationLevel?: number,
+    category?: string,
+    whatWasDone?: string,
+  ): void {
+
     if (!this._agentId) {
       throw new Error(TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR);
     }
@@ -233,17 +259,23 @@ export class Ticket {
 
     this._groupId = groupId;
 
-    if (category && category !== this.category) {
+    // ALTERA A CATEGORIA
+    if (category) {
       this.category = category;
-      this.escalationLevel = 1;
-    } else {
-      if (this.escalationLevel >= 3) {
-        throw new Error(TicketValidationErrors.ESCALATION_LEVEL_MAX_ERROR);
+    }
+
+    // ALTERA O NÍVEL
+    if (escalationLevel !== undefined) {
+
+      if (![1, 2, 3].includes(escalationLevel)) {
+        throw new Error('Invalid escalation level');
       }
-      this.escalationLevel++;
+
+      this.escalationLevel = escalationLevel;
     }
 
     const previousAgentId = this._agentId;
+
     this._agentId = null;
 
     this._status = TicketStatus.ESCALATED;
@@ -259,7 +291,7 @@ export class Ticket {
 
   // Function to close the ticket and register the solution
   close(solution: string): void {
-    if (this.status !== TicketStatus.IN_PROGRESS) {
+    if (this.status === TicketStatus.CLOSED) {
       throw new Error(TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR);
     }
 

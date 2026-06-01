@@ -2,6 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
 import {
+  AgentField,
+  ClientField,
   TicketEventMessage,
   TicketEvents,
   TicketPriority,
@@ -24,7 +26,7 @@ export class TicketHistoryEntrySchema {
 
   @Prop({ type: String, default: null })
   solution: string | null;
-  
+
   @Prop({ type: String, required: false })
   attachmentUrl?: string;
 
@@ -90,3 +92,30 @@ export type TicketDocument = HydratedDocument<TicketSchemaClass>;
 export type TicketLean = TicketSchemaClass & { _id: string };
 
 export const TicketSchema = SchemaFactory.createForClass(TicketSchemaClass);
+
+export type TicketAggregate = TicketLean & {
+  agent: AgentField | null;
+  client: ClientField | null;
+};
+
+export type TicketMetricsRaw = {
+  total: { total: number }[];
+  byStatus: { _id: string; count: number }[];
+  avgResolutionTime: {
+    count: number;
+    avgHours: number;
+    avgMinutes: number;
+    avgDays: number;
+  }[];
+};
+
+export type TicketMetrics = {
+  total: number;
+  byStatus: Record<string, number>;
+  avgResolutionTime: {
+    count: number;
+    avgHours: number;
+    avgMinutes: number;
+    avgDays: number;
+  };
+};

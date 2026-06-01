@@ -53,7 +53,6 @@ describe('ReadAllTicketUseCase', () => {
     });
     expect(output).toBeDefined();
     expect(Array.isArray(output)).toBe(true);
-    expect(output[0].clientId).toBe(ticket.clientId);
     expect(repository.readAll).toHaveBeenCalledWith({
       clientId: ticket.clientId,
     });

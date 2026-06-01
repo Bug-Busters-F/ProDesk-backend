@@ -12,6 +12,7 @@ import {
   Request,
   UseGuards,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateTicketUseCase } from '../../application/useCases/create/create.usecase';
 import { DeleteTicketUseCase } from '../../application/useCases/delete/delete.usecase';
@@ -28,6 +29,7 @@ import { CreateTicketRequest } from '../dtos/create.dto';
 import { EscalateTicketRequest } from '../dtos/escalateTicket.dto';
 import { TicketMapper } from '../mappers/ticket.mapper';
 import { CloseTicketRequest } from '../dtos/closeTicket.dto';
+import { UpdateTicketStatusRequest } from '../dtos/updateTicketStatus.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -43,7 +45,11 @@ import { Roles } from '../../../auth/guards/roles.decorator';
 import { UserRole } from '../../../shared/enums/user.enum';
 import { GetHistoryFilteredUseCase } from '../../application/useCases/getHistoryFiltered/getHistoryFiltered.usecase';
 import { GetHistoryFiltersRequest } from '../dtos/getHistory.dto';
-import { TicketEvents, TicketStatus } from '../../domain/entities/ticket.entity';
+import {
+  TicketEvents,
+  TicketStatus,
+} from '../../domain/entities/ticket.entity';
+import { GetMetricsUseCase } from '../../application/useCases/getMetrics/getMetrics.usecase';
 
 @ApiTags('Ticket')
 @Controller('tickets')
@@ -59,7 +65,8 @@ export class TicketController {
     private readonly newAgentUseCase: NewAgentTicketUseCase,
     private readonly deleteUseCase: DeleteTicketUseCase,
     private readonly closeUseCase: CloseTicketUseCase,
-  ) { }
+    private readonly getMetricsUseCase: GetMetricsUseCase,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Cria um ticket' })
@@ -79,18 +86,48 @@ export class TicketController {
   @ApiOperation({ summary: 'Retorna todos os tickets' })
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'status', required: false, enum: TicketStatus })
+  @ApiQuery({ name: 'escalationLevel', required: false, type: Number })
+  @ApiQuery({ name: 'onlyMine', required: false, type: Boolean })
   @ApiResponse({
     status: 200,
     description: 'Todos os tickets retornados com sucesso.',
   })
-  async getAll(@Request() req: any) {
+  async getAll(@Request() req: any, @Query() query: any) {
     const response = await this.readAllUseCase.execute({
       userId: req.user.id,
       categories: req.user.categories ?? undefined,
       role: req.user.role,
+      search: query.search,
+      status: query.status as TicketStatus,
+      escalationLevel: query.escalationLevel
+        ? Number(query.escalationLevel)
+        : undefined,
+      onlyMine: query.onlyMine === 'true',
     });
 
     return response;
+  }
+
+  @Get('/metrics')
+  @ApiOperation({ summary: 'Obtém métricas dos tickets' })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT)
+  @ApiQuery({ name: 'categoryId', required: false, type: String })
+  @ApiResponse({
+    status: 200,
+    description: 'Métricas dos tickets obtidas com sucesso.',
+  })
+  async getMetrics(
+    @Request() req: any,
+    @Query('categoryId') categoryId?: string,
+  ) {
+    return await this.getMetricsUseCase.execute({
+      role: req.user.role,
+      categories: req.user.categories ?? undefined,
+      categoryId,
+    });
   }
 
   @Get(':id')
@@ -195,14 +232,63 @@ export class TicketController {
   @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
   @ApiBody({ type: CloseTicketRequest })
   @ApiResponse({ status: 200, description: 'Ticket fechado com sucesso.' })
-  async closeTicket(
-    @Param('id') id: string,
-    @Body() body: CloseTicketRequest,
-  ) {
+  async closeTicket(@Param('id') id: string, @Body() body: CloseTicketRequest) {
     const data = TicketMapper.toCloseTicketInput(id, body);
 
     const response = await this.closeUseCase.execute(data);
 
     return response;
+  }
+
+  @Put(':id/status')
+  @ApiOperation({
+    summary: 'Altera o status de um ticket de forma genérica e integrada',
+  })
+  @ApiParam({ name: 'id', example: 'uuid-do-ticket' })
+  @ApiBody({ type: UpdateTicketStatusRequest })
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.SUPPORT, UserRole.CLIENT)
+  @ApiResponse({
+    status: 200,
+    description: 'Status do ticket alterado com sucesso.',
+  })
+  async updateStatus(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() body: UpdateTicketStatusRequest,
+  ) {
+    if (body.status === TicketStatus.IN_PROGRESS) {
+      const data = TicketMapper.toNewAgentInput(id, req.user.id);
+      return await this.newAgentUseCase.execute(data);
+    }
+
+    if (body.status === TicketStatus.ESCALATED) {
+      if (!body.groupId) {
+        throw new BadRequestException('Escalonamento exige groupId.');
+      }
+      const data = TicketMapper.toEscalateTicketInput(id, {
+        groupId: body.groupId,
+        escalationLevel: body.escalationLevel,
+        category: body.category || '',
+        whatWasDone: body.whatWasDone || '',
+      });
+      return await this.escalateUseCase.execute(data);
+    }
+
+    if (body.status === TicketStatus.CLOSED) {
+      if (!body.solution) {
+        throw new BadRequestException(
+          'Fechamento do chamado exige uma solução descrita.',
+        );
+      }
+      const data = TicketMapper.toCloseTicketInput(id, {
+        solution: body.solution,
+      });
+      return await this.closeUseCase.execute(data);
+    }
+
+    throw new BadRequestException(
+      'Transição de status inválida ou não suportada.',
+    );
   }
 }

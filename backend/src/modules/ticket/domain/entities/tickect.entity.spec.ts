@@ -69,10 +69,12 @@ describe('Ticket entity', () => {
     ticket.assignToAgent(newAgentId);
 
     const newGroupId = randomUUID();
-    ticket.escalate(newGroupId, 'ia');
+
+    ticket.escalate(newGroupId, 1, 'ia');
 
     expect(ticket.status).toBe(TicketStatus.ESCALATED);
     expect(ticket.history.length).toBe(3);
+
     expect(ticket.history[2]).toMatchObject({
       event: TicketEvents.ESCALATE,
       responsibleAgent: newAgentId,
@@ -84,16 +86,31 @@ describe('Ticket entity', () => {
 
     expect(primitiveTicket.groupId).toBe(newGroupId);
     expect(primitiveTicket.category).toBe('ia');
+
+    // categoria alterada => nível volta para 1
     expect(primitiveTicket.escalationLevel).toBe(1);
+
     expect(primitiveTicket.agentId).toBeNull();
     expect(primitiveTicket.updatedAt).toBeInstanceOf(Date);
     expect(primitiveTicket.updatedAt).not.toBeNull();
   });
 
   it('Should throw an error when escalating a ticket without a responsible agent', () => {
-    expect(() => ticket.escalate(randomUUID(), 'iot')).toThrow(
+    expect(() =>
+      ticket.escalate(randomUUID(), 1, 'iot'),
+    ).toThrow(
       TicketValidationErrors.ECALATE_WITH_NO_AGENT_ERROR,
     );
+  });
+
+  it('Should successfully close a ticket when status is ESCALATED', () => {
+    ticket.assignToAgent(randomUUID());
+    ticket.escalate(randomUUID(), 1, 'web_app');
+
+    expect(ticket.status).toBe(TicketStatus.ESCALATED);
+
+    ticket.close('Test solution');
+    expect(ticket.status).toBe(TicketStatus.CLOSED);
   });
 
   it('Close a ticket should change the status and closedAt field, and add the event to history', () => {
@@ -114,18 +131,17 @@ describe('Ticket entity', () => {
     expect(primitiveTicket.closedAt).not.toBeNull();
   });
 
-  it('Should throw an error when closing a ticket with OPEN status', () => {
+  it('Should successfully close a ticket when status is OPEN', () => {
     expect(ticket.status).toBe(TicketStatus.OPEN);
-    expect(() => ticket.close('Test solution')).toThrow(
-      TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR,
-    );
+    
+    ticket.close('Test solution');
+    expect(ticket.status).toBe(TicketStatus.CLOSED);
   });
 
-  it('Should throw an error when closing a ticket with ESCALATED status', () => {
-    ticket.assignToAgent(randomUUID());
-    ticket.escalate(randomUUID(), 'web_app');
+  it('Should throw an error when trying to close a ticket that is already CLOSED', () => {
+    ticket.close('First solution');
+    expect(ticket.status).toBe(TicketStatus.CLOSED);
 
-    expect(ticket.status).toBe(TicketStatus.ESCALATED);
     expect(() => ticket.close('Test solution')).toThrow(
       TicketValidationErrors.CLOSE_WITH_WRONG_STATUS_ERROR,
     );
