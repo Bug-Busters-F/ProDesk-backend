@@ -115,7 +115,7 @@ export class TicketAggregateBuilder {
 
   static cleanup() {
     return {
-      $unset: ['agentData', 'agentId', 'categoryData', '__v'],
+      $unset: ['agentData', 'categoryData', '__v'],
     };
   }
 
