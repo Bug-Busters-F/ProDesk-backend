@@ -32,7 +32,15 @@ export class TicketMongoRepository extends ITicketRepository {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         { _id: raw._id },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        { $set: { ...raw, category: raw.category.id } },
+        {
+          $set: {
+            ...raw,
+            category:
+              typeof raw.category === 'string'
+                ? raw.category
+                : raw.category?.id,
+          },
+        },
         { returnDocument: 'after' },
       )
       .lean<TicketLean>()
